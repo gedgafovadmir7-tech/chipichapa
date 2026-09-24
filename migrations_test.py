@@ -13,7 +13,7 @@ import urllib.request
 from datetime import datetime, timedelta, timezone
 
 # Параметры запуска: python3 migrations_test.py [часы] [файл]
-HOURS = int(sys.argv[1]) if len(sys.argv) > 1 else 1
+HOURS = int(sys.argv[1]) if len(sys.argv) > 1 and sys.argv[1].isdigit() else 1
 
 ENDPOINT = os.environ.get("BITQUERY_ENDPOINT", "https://streaming.bitquery.io/graphql")
 PUMPSWAP = "pAMMBay6oceH9fJKBRHGP5D4bD4sWpmSwMn52FMfXEA"
@@ -60,7 +60,13 @@ query ($mints: [String!], $since: DateTime) {
 
 
 def load_token():
-    with open(os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")) as f:
+    # Сначала переменная окружения (секрет облачного окружения), потом файл .env
+    if os.environ.get("BITQUERY_TOKEN"):
+        return os.environ["BITQUERY_TOKEN"].strip()
+    path = os.path.join(os.path.dirname(os.path.abspath(__file__)), ".env")
+    if not os.path.exists(path):
+        sys.exit("BITQUERY_TOKEN не найден ни в переменных окружения, ни в .env")
+    with open(path) as f:
         for line in f:
             if line.startswith("BITQUERY_TOKEN="):
                 return line.split("=", 1)[1].strip()

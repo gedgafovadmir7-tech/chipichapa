@@ -1,0 +1,2 @@
+run_at_utc,kind,window_start,rows_returned,rows_added,seconds,response_kb,note
+2026-09-24T09:50:58Z,collect,2026-09-24T04:50:56Z,787,175,1.8,972.0,earliest=2026-09-24T04:51:23Z
