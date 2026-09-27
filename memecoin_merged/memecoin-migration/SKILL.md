@@ -8,7 +8,7 @@ description: "Исследование миграций мемкоинов на 
 Этот скилл — объединение двух скиллов. **Ничего не удалено:** весь текст v1.9.1 идёт ниже
 (разделы 1–17) дословно, с добавленными строками и пометками «ДОБАВЛЕНО В v2.0»; журнал — раздел 18;
 тест выбора приоритета — раздел 19. Оригиналы обоих скиллов лежат без изменений в
-`references/originals/` (журнал: `SKILL.md` и `tokens.csv`; его `history.csv.gz` и `find_similar.py`
+`references/originals/` (v1.9.1: `ORIGINAL_memecoin-migration_v1.9.1.md`; журнал: `ORIGINAL_memecoin-journal.md` и `tokens.csv`; его `history.csv.gz` и `find_similar.py`
 перенесены в `journal/` без изменений). `references/dataset.md` — без изменений.
 
 ## Порядок на каждый скрин
