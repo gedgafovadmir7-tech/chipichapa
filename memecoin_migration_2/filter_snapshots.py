@@ -101,6 +101,8 @@ def main():
 
     snap_cols = columns(con, a.snapshots)
     tok_cols = columns(con, a.tokens)
+    print("Колонки tokens:    " + ", ".join(c[0] for c in tok_cols))
+    print("Колонки snapshots: " + ", ".join(c[0] for c in snap_cols))
     s_tok = pick(snap_cols, TOKEN_CANDIDATES, a.token_col, "токена", a.snapshots)
     t_tok = pick(tok_cols, TOKEN_CANDIDATES, a.tokens_token_col, "токена", a.tokens)
     s_time = pick(snap_cols, TIME_CANDIDATES, a.time_col, "времени", a.snapshots)
