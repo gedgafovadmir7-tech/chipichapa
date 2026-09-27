@@ -2,9 +2,14 @@
 chcp 65001 >nul
 cd /d "%~dp0"
 echo Ustanavlivayu duckdb...
-python -m pip install --quiet duckdb
+python -m pip install --quiet --disable-pip-version-check duckdb
 echo.
 python filter_snapshots.py
-echo.
-echo Gotovo. Skopiruy vsyo, chto napisano vyshe, i otprav Claude.
+if errorlevel 1 (
+  echo.
+  echo OSHIBKA. Sdelay skrin etogo okna i otprav Claude.
+) else (
+  echo.
+  echo GOTOVO. Sdelay skrin etogo okna i otprav Claude vmeste s failom snapshots_filtered.parquet
+)
 pause

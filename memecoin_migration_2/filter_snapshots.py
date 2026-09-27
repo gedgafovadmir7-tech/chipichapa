@@ -24,7 +24,7 @@ import duckdb
 
 # Возможные названия колонок — скрипт сам найдёт подходящую
 TOKEN_CANDIDATES = ["mint", "token", "token_address", "mint_address", "address", "token_mint", "ca"]
-TIME_CANDIDATES = ["timestamp", "ts", "time", "block_time", "blocktime", "datetime",
+TIME_CANDIDATES = ["bucket_start", "timestamp", "ts", "time", "block_time", "blocktime", "datetime",
                    "snapshot_time", "created_at", "date"]
 
 
