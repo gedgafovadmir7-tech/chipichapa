@@ -109,6 +109,7 @@ def main():
     for n in ("top10", "curve", "line_usd", "bundl", "holders", "pro", "ins", "snip"):
         p.add_argument("--" + n, type=float, default=None)
     p.add_argument("--mayhem", type=int, default=0)
+    p.add_argument("--buy_usd", type=float, default=None, help="Buys в долларах (вторая цифра Buys на скрине)")
     p.add_argument("--exclude", default=None, help="имя токена, которого не брать из таблицы (для теста)")
     a = p.parse_args()
 
@@ -129,12 +130,26 @@ def main():
               + ", ".join(f"{n}{'✓' if m else '✗'}" for _, m, n in near))
     print(f"  ИТОГ ЭТАПА 2: {p_final:.1%}")
 
+    # v2.2: средний чек покупки — исключение для правила «сделок < 562»
+    if a.buy_usd:
+        avg = a.buy_usd / a.buys
+        print(f"  средняя покупка ${avg:.0f}" + ("  → ≥ $150: правило «сделок < 562» НЕ применять (v2.2)" if avg >= 150 else ""))
+
+    # v2.2: при кривой ≥95% шанс для этапа 3 — из таблицы (зона ≥95%), этап 2 занижает эту зону
+    p_stage3 = p_final
+    if a.curve is not None and a.curve >= 95:
+        z = [r for r in table_rows() if f(r["curve_pct"]) is not None and f(r["curve_pct"]) >= 95]
+        zr = sum(r["migrated"] == "1" for r in z) / len(z)
+        p_stage3 = zr
+        print(f"  v2.2: кривая ≥95% → шанс для этапа 3 из таблицы: {sum(r['migrated'] == '1' for r in z)} из {len(z)} = {zr:.0%}")
+
     print("ЭТАП 3")
     if not a.line_usd:
         print("  нет линии миграции — EV не посчитать")
         return
     route = a.line_usd / a.mc_usd
     win = min(route, 2.0) - 1
+    p_final = p_stage3
     ev = p_final * win - (1 - p_final) * 0.30 - 0.065
     need = (0.30 + 0.065) / (win + 0.30)
     print(f"  маршрут ×{route:.2f}, выигрыш при цели +{win:.0%}, стоп −30%, комиссии 6.5%")
