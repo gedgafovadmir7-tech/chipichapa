@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Desktop 1440x315</title>
+<style>
+  html, body { margin: 0; padding: 0; background: #0B2647; }
+  svg { display: block; }
+  .t  { font-family: Inter, sans-serif; }
+</style>
+</head>
+<body>
+<svg id="banner" width="1440" height="315" viewBox="0 0 1440 315" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="0.35">
+      <stop offset="0" stop-color="#0A2242"/>
+      <stop offset="0.55" stop-color="#0E2D55"/>
+      <stop offset="1" stop-color="#14365F"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="1270" cy="70" r="330" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFC75A" stop-opacity="0.32"/>
+      <stop offset="0.45" stop-color="#F0A848" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#F0A848" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="wood" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8A5E3B"/>
+      <stop offset="0.25" stop-color="#6E4A2E"/>
+      <stop offset="1" stop-color="#3B2717"/>
+    </linearGradient>
+    <linearGradient id="woodFade" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#fff" stop-opacity="0"/>
+      <stop offset="0.28" stop-color="#fff" stop-opacity="1"/>
+      <stop offset="1" stop-color="#fff" stop-opacity="1"/>
+    </linearGradient>
+    <mask id="woodMask"><rect x="1000" y="200" width="440" height="115" fill="url(#woodFade)"/></mask>
+    <linearGradient id="mug" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#D9D2C6"/>
+      <stop offset="0.35" stop-color="#FBF8F2"/>
+      <stop offset="0.7" stop-color="#F1EBE1"/>
+      <stop offset="1" stop-color="#C9C0B2"/>
+    </linearGradient>
+    <linearGradient id="pot" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#B9B2A6"/>
+      <stop offset="0.4" stop-color="#EEE9E0"/>
+      <stop offset="1" stop-color="#A9A195"/>
+    </linearGradient>
+    <linearGradient id="leaf" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#7FB55A"/>
+      <stop offset="1" stop-color="#2F6B34"/>
+    </linearGradient>
+    <linearGradient id="leaf2" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#9BCB6B"/>
+      <stop offset="1" stop-color="#3E7F3B"/>
+    </linearGradient>
+    <filter id="soft" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="7"/></filter>
+    <filter id="soft2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+
+  <!-- фон -->
+  <rect width="1440" height="315" fill="url(#bg)"/>
+  <rect width="1440" height="315" fill="url(#glow)"/>
+  <!-- лёгкие декоративные дуги -->
+  <g fill="none" stroke="#FFFFFF" stroke-opacity="0.05" stroke-width="1.5">
+    <circle cx="840" cy="330" r="260"/>
+    <circle cx="840" cy="330" r="200"/>
+  </g>
+
+  <!-- ===== преимущества (контейнер 835x315 начинается с x=605) ===== -->
+  <g class="t" transform="translate(628,50)">
+    <!-- 1 -->
+    <g>
+      <circle cx="24" cy="24" r="23" fill="#FFC52E" fill-opacity="0.08" stroke="#FFC52E" stroke-width="2"/>
+      <g fill="none" stroke="#FFC52E" stroke-width="2" stroke-linecap="round">
+        <ellipse cx="24" cy="15.5" rx="8" ry="3"/>
+        <path d="M16 15.5v5c0 1.7 3.6 3 8 3s8-1.3 8-3v-5"/>
+        <path d="M16 20.5v5c0 1.7 3.6 3 8 3s8-1.3 8-3v-5"/>
+        <path d="M16 25.5v5c0 1.7 3.6 3 8 3s8-1.3 8-3v-5"/>
+      </g>
+      <text x="62" y="18" fill="#FFFFFF" font-size="15" font-weight="700">Меньше</text>
+      <text x="62" y="37" fill="#FFFFFF" font-size="15" font-weight="700">ежемесячный платёж</text>
+      <text x="62" y="56" fill="#A9BDD8" font-size="12.5" font-weight="500">до комфортного уровня</text>
+    </g>
+    <!-- 2 -->
+    <g transform="translate(0,100)">
+      <circle cx="24" cy="24" r="23" fill="#FFC52E" fill-opacity="0.08" stroke="#FFC52E" stroke-width="2"/>
+      <g fill="none" stroke="#FFC52E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="14" y="15" width="20" height="18" rx="3"/>
+        <path d="M14 21h20M19 12v5M29 12v5"/>
+        <path d="M19.5 27l3 2.6 5.5-5"/>
+      </g>
+      <text x="62" y="18" fill="#FFFFFF" font-size="15" font-weight="700">Понятный план</text>
+      <text x="62" y="37" fill="#FFFFFF" font-size="15" font-weight="700">действий</text>
+      <text x="62" y="56" fill="#A9BDD8" font-size="12.5" font-weight="500">без скрытых платежей</text>
+    </g>
+    <!-- 3 -->
+    <g transform="translate(262,0)">
+      <circle cx="24" cy="24" r="23" fill="#FFC52E" fill-opacity="0.08" stroke="#FFC52E" stroke-width="2"/>
+      <g fill="none" stroke="#FFC52E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M24 12.5l9 3.3v6.6c0 5.6-3.9 9.6-9 11.2-5.1-1.6-9-5.6-9-11.2v-6.6z"/>
+        <path d="M20 23.2l3 2.8 5.2-5.4"/>
+      </g>
+      <text x="62" y="18" fill="#FFFFFF" font-size="15" font-weight="700">Защита от штрафов</text>
+      <text x="62" y="37" fill="#FFFFFF" font-size="15" font-weight="700">и звонков коллекторов</text>
+      <text x="62" y="56" fill="#A9BDD8" font-size="12.5" font-weight="500">на время реструктуризации</text>
+    </g>
+    <!-- 4 -->
+    <g transform="translate(262,100)">
+      <circle cx="24" cy="24" r="23" fill="#FFC52E" fill-opacity="0.08" stroke="#FFC52E" stroke-width="2"/>
+      <g fill="none" stroke="#FFC52E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="24" cy="19" r="5"/>
+        <path d="M14.5 33c1.3-4.8 5-7.4 9.5-7.4s8.2 2.6 9.5 7.4"/>
+      </g>
+      <text x="62" y="18" fill="#FFFFFF" font-size="15" font-weight="700">Персональное</text>
+      <text x="62" y="37" fill="#FFFFFF" font-size="15" font-weight="700">сопровождение</text>
+      <text x="62" y="56" fill="#A9BDD8" font-size="12.5" font-weight="500">на каждом этапе</text>
+    </g>
+  </g>
+
+  <!-- ===== иллюстрация ===== -->
+  <!-- стол -->
+  <g mask="url(#woodMask)">
+    <path d="M1000 236 C1150 226 1300 222 1440 222 L1440 315 L1000 315 Z" fill="url(#wood)"/>
+    <path d="M1000 236 C1150 226 1300 222 1440 222" stroke="#B48659" stroke-width="2" fill="none" opacity="0.7"/>
+    <g stroke="#2E1E12" stroke-opacity="0.35" stroke-width="1.2" fill="none">
+      <path d="M1020 262 C1150 254 1300 252 1440 250"/>
+      <path d="M1040 286 C1170 280 1310 278 1440 276"/>
+      <path d="M1100 304 C1220 300 1330 299 1440 298"/>
+    </g>
+  </g>
+
+  <!-- растение (за кружкой) -->
+  <g>
+    <ellipse cx="1388" cy="232" rx="44" ry="8" fill="#000" opacity="0.35" filter="url(#soft)"/>
+    <g>
+      <path d="M1388 150 C1370 120 1338 104 1312 104 C1322 126 1350 146 1388 152 Z" fill="url(#leaf)"/>
+      <path d="M1390 150 C1384 110 1396 76 1418 58 C1428 90 1414 126 1392 152 Z" fill="url(#leaf2)"/>
+      <path d="M1392 152 C1408 118 1438 102 1462 102 C1450 128 1424 146 1394 154 Z" fill="url(#leaf)"/>
+      <path d="M1386 154 C1360 140 1332 140 1310 152 C1334 166 1362 166 1386 158 Z" fill="url(#leaf2)"/>
+      <path d="M1390 148 C1372 104 1350 84 1328 78 C1332 108 1356 134 1388 152 Z" fill="url(#leaf2)" opacity="0.95"/>
+      <path d="M1394 156 C1420 144 1446 146 1466 160 C1442 172 1414 170 1394 160 Z" fill="url(#leaf2)"/>
+      <g stroke="#1F4D25" stroke-opacity="0.55" stroke-width="1.3" fill="none" stroke-linecap="round">
+        <path d="M1388 151 C1360 132 1336 116 1318 108"/>
+        <path d="M1391 150 C1396 116 1404 86 1416 64"/>
+        <path d="M1393 153 C1412 132 1436 114 1456 106"/>
+      </g>
+    </g>
+    <path d="M1352 160 H1428 L1418 228 Q1416 234 1408 234 H1372 Q1364 234 1362 228 Z" fill="url(#pot)"/>
+    <rect x="1348" y="154" width="84" height="12" rx="4" fill="#F4F0E8"/>
+    <rect x="1348" y="162" width="84" height="4" fill="#000" opacity="0.08"/>
+  </g>
+
+  <!-- ручка -->
+  <g transform="rotate(-14 1300 268)">
+    <ellipse cx="1300" cy="280" rx="70" ry="5" fill="#000" opacity="0.35" filter="url(#soft2)"/>
+    <rect x="1232" y="264" width="130" height="9" rx="4.5" fill="#1A1D24"/>
+    <rect x="1232" y="265" width="130" height="2.5" rx="1.2" fill="#5B6170" opacity="0.8"/>
+    <path d="M1362 264 L1380 268.5 L1362 273 Z" fill="#C9A15B"/>
+    <rect x="1270" y="262" width="34" height="2.5" rx="1.2" fill="#C9A15B"/>
+  </g>
+
+  <!-- блокнот -->
+  <g transform="translate(0,-10) rotate(-7 1135 262)">
+    <rect x="1050" y="214" width="180" height="120" rx="6" fill="#000" opacity="0.4" filter="url(#soft)" transform="translate(6,8)"/>
+    <rect x="1050" y="214" width="180" height="120" rx="6" fill="#FBF8F1"/>
+    <rect x="1050" y="214" width="180" height="16" rx="6" fill="#EFE9DC"/>
+    <g fill="#9AA1AE">
+      <circle cx="1068" cy="214" r="3.5"/><circle cx="1088" cy="214" r="3.5"/><circle cx="1108" cy="214" r="3.5"/>
+      <circle cx="1128" cy="214" r="3.5"/><circle cx="1148" cy="214" r="3.5"/><circle cx="1168" cy="214" r="3.5"/>
+      <circle cx="1188" cy="214" r="3.5"/><circle cx="1208" cy="214" r="3.5"/>
+    </g>
+    <g class="t" font-size="15" font-weight="600" fill="#22365C" font-style="italic">
+      <rect x="1066" y="240" width="13" height="13" rx="2" fill="none" stroke="#22365C" stroke-width="1.6"/>
+      <path d="M1068 246l4 4 9-11" fill="none" stroke="#E8A317" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="1088" y="252">План</text>
+      <rect x="1066" y="266" width="13" height="13" rx="2" fill="none" stroke="#22365C" stroke-width="1.6"/>
+      <path d="M1068 272l4 4 9-11" fill="none" stroke="#E8A317" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>
+      <text x="1088" y="278">Стабильность</text>
+      <rect x="1066" y="292" width="13" height="13" rx="2" fill="none" stroke="#22365C" stroke-width="1.6"/>
+      <text x="1088" y="304">Будущее</text>
+    </g>
+  </g>
+
+  <!-- кружка -->
+  <g>
+    <ellipse cx="1262" cy="236" rx="72" ry="10" fill="#000" opacity="0.45" filter="url(#soft)"/>
+    <!-- ручка кружки -->
+    <path d="M1316 138 C1352 138 1356 196 1316 204" fill="none" stroke="#E7E0D4" stroke-width="13" stroke-linecap="round"/>
+    <path d="M1316 138 C1352 138 1356 196 1316 204" fill="none" stroke="#B9B0A2" stroke-width="3" stroke-linecap="round" opacity="0.6"/>
+    <!-- корпус -->
+    <path d="M1206 120 H1318 V214 Q1318 236 1294 236 H1230 Q1206 236 1206 214 Z" fill="url(#mug)"/>
+    <ellipse cx="1262" cy="120" rx="56" ry="10" fill="#E9E2D6"/>
+    <ellipse cx="1262" cy="121" rx="50" ry="7.5" fill="#5B3920"/>
+    <ellipse cx="1256" cy="120" rx="26" ry="3" fill="#8A5A33" opacity="0.6"/>
+    <!-- пар -->
+    <g fill="none" stroke="#FFFFFF" stroke-opacity="0.22" stroke-width="3" stroke-linecap="round">
+      <path d="M1248 104 C1238 92 1258 84 1248 70"/>
+      <path d="M1270 100 C1262 88 1280 80 1272 64"/>
+    </g>
+    <!-- надпись -->
+    <g class="t" fill="#2A2F3A" font-weight="600" font-style="italic" transform="rotate(-4 1262 175)">
+      <text x="1262" y="168" font-size="19" text-anchor="middle">Всё</text>
+      <text x="1262" y="192" font-size="19" text-anchor="middle">возможно</text>
+    </g>
+  </g>
+</svg>
+</body>
+</html>
