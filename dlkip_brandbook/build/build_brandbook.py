@@ -5,7 +5,7 @@
 разделов задано ниже в content(); картинки рисует build/make_images.py.
 
 Запуск: python3 build/build_brandbook.py
-Результат: out/40'0'0 БРЕНДБУК DLKIP.docx и .pdf
+Результат: out/40'0'0 БРЕНДБУК DLKIP (вариант 2 - адаптированный).docx и .pdf
 """
 import os
 import re
@@ -23,7 +23,7 @@ SRC_DOMA = os.path.join(ROOT, "source", "40'0'0 БРЕНДБУК (1) Домал�
 SRC_DLKIP = os.path.join(ROOT, "source", "40'0'0 БРЕНДБУК (2) DLKIP.docx")
 IMG_DIR = os.path.join(ROOT, "build", "img")
 OUT_DIR = os.path.join(ROOT, "out")
-OUT_NAME = "40'0'0 БРЕНДБУК DLKIP"
+OUT_NAME = "40'0'0 БРЕНДБУК DLKIP (вариант 2 - адаптированный)"
 
 TNR = ('<w:rFonts w:ascii="Times New Roman" w:cs="Times New Roman" '
        'w:eastAsia="Times New Roman" w:hAnsi="Times New Roman"/>')
@@ -95,7 +95,7 @@ class Doc:
         self.num_next = 300
         self.nums = []        # (numId, abstractId)
         self.images = []      # (rId, file)
-        self.bm = 100
+        self.bm = 1000  # id закладок образца заняты до ~31
 
     def add(self, xml):
         self.parts.append(xml)
@@ -447,8 +447,8 @@ def content(d):
         "Где использовать: Заголовки страниц, названия разделов, крупные блоки текста",
         "Источник: Google Fonts (бесплатный)",
     ])
-    d.note("Почему не Rajdhani, как у Домалогики: в Rajdhani нет кириллицы и узбекских букв oʻ, gʻ — "
-           "русские заголовки им не набрать. Exo 2 близок по характеру и поддерживает все нужные языки.")
+    d.note("Не заменяйте Exo 2 шрифтами без кириллицы (например, Rajdhani): в них нет русских букв "
+           "и узбекских oʻ, gʻ, и заголовки набираются случайным системным шрифтом.")
     d.h3("Основной текст")
     d.label("Inter Regular", spaced=True)
     d.bullets([
@@ -848,26 +848,26 @@ def paragraphs(xml):
     return re.findall(r"<w:p[ >].*?</w:p>", body, re.S)
 
 
-def build():
+def title_and_intro(dlkip):
+    """Титул и введение из файла DLKIP (последний абзац введения заканчивается разрывом страницы)."""
+    dl_paras = paragraphs(dlkip["word/document.xml"].decode())
+    intro_end = next(i for i, p in enumerate(dl_paras) if "Следуйте указаниям" in p)
+    return "".join(dl_paras[:intro_end + 1])
+
+
+def package(body, d, out_name):
+    """Собирает docx на основе пакета образца: стили, списки, шрифты и колонтитулы Домалогики,
+    титульная картинка и колонтитул — DLKIP. body — абзацы между <w:body> и sectPr."""
     doma = read_zip(SRC_DOMA)
     dlkip = read_zip(SRC_DLKIP)
 
-    # титул и введение — из файла DLKIP (абзацы 0..30, последний заканчивается разрывом страницы)
-    dl_xml = dlkip["word/document.xml"].decode()
-    dl_paras = paragraphs(dl_xml)
-    intro_end = next(i for i, p in enumerate(dl_paras) if "Следуйте указаниям" in p)
-    head = "".join(dl_paras[:intro_end + 1])
-
-    d = Doc()
-    content(d)
-
-    # документ: шапка XML и sectPr — из образца (титул без колонтитула, нумерация с 0)
+    # шапка XML и sectPr — из образца (титул без колонтитула, нумерация с 0)
     doma_xml = doma["word/document.xml"].decode()
     prefix = doma_xml[:doma_xml.index("<w:body>") + 8]
     sect = re.search(r"<w:sectPr>.*?</w:sectPr>", doma_xml, re.S).group(0)
     # дробные поля и интервалы из экспорта Google Docs не проходят схему OOXML — округляем
     sect = sect.replace("1440.0000000000002", "1440").replace('w:footer="720"/>', 'w:footer="720" w:gutter="0"/>')
-    document = prefix + head + "".join(d.parts) + sect + "</w:body></w:document>"
+    document = prefix + body + sect + "</w:body></w:document>"
     document = document.replace('w:line="331.2"', 'w:line="331"')
 
     files = dict(doma)
@@ -883,6 +883,7 @@ def build():
     # связи: убираем ссылку на Google Drive Домалогики, добавляем картинки
     rels = files["word/_rels/document.xml.rels"].decode()
     rels = re.sub(r'<Relationship Id="rId7" Type="[^"]+/hyperlink"[^>]*/>', "", rels)
+    assert 'r:id="rId7"' not in document
     extra = ""
     for rid, fname in d.images:
         files[f"word/media/{fname}"] = open(os.path.join(IMG_DIR, fname), "rb").read()
@@ -898,7 +899,7 @@ def build():
     files["word/numbering.xml"] = num.replace("</w:numbering>", add + "</w:numbering>").encode()
 
     os.makedirs(OUT_DIR, exist_ok=True)
-    out_docx = os.path.join(OUT_DIR, OUT_NAME + ".docx")
+    out_docx = os.path.join(OUT_DIR, out_name + ".docx")
     order = ["[Content_Types].xml", "_rels/.rels"] + sorted(n for n in files if n not in ("[Content_Types].xml", "_rels/.rels"))
     with zipfile.ZipFile(out_docx, "w", zipfile.ZIP_DEFLATED) as z:
         for n in order:
@@ -907,13 +908,19 @@ def build():
     return out_docx
 
 
+def build():
+    d = Doc()
+    content(d)
+    return package(title_and_intro(read_zip(SRC_DLKIP)) + "".join(d.parts), d, OUT_NAME)
+
+
 def to_pdf(docx):
     with tempfile.TemporaryDirectory() as tmp:
         src = os.path.join(tmp, "brandbook.docx")
         shutil.copy(docx, src)
         subprocess.run(["soffice", "--headless", "--convert-to", "pdf", "--outdir", tmp, src],
                        check=True, capture_output=True, timeout=240)
-        pdf = os.path.join(OUT_DIR, OUT_NAME + ".pdf")
+        pdf = docx[:-len(".docx")] + ".pdf"
         shutil.copy(os.path.join(tmp, "brandbook.pdf"), pdf)
     print("pdf: ", pdf)
     return pdf
