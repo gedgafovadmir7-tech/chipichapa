@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="ad.size" content="width=1440,height=315">
+<title>Banner</title>
+<style>
+  html, body { margin: 0; padding: 0; }
+  body { background: #0A2242; }
+  a.banner { position: relative; display: block; box-sizing: border-box; width: 100%; max-width: 1440px; height: 315px; overflow: hidden; background: #0A2242; }
+  /* картинка прибита к левому краю: при сужении экрана баннер обрезается справа */
+  .art { position: absolute; left: 0; top: 0; width: 1440px; height: 315px; max-width: none; }
+  /* текст — SVG с кривыми (требование площадки) */
+  .txt { position: absolute; left: 6.5%; top: 28px; width: 520px; height: 232px; }
+  @keyframes up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .art { animation: fade .8s ease-out both; }
+  .txt { animation: up .7s ease-out .15s both; transition: transform .2s; }
+  a.banner:hover .txt { transform: translateX(3px); }
+  @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
+  .mob { display: none; }
+  @media (max-width: 767px) {
+    body { background: #fff; }
+    a.banner { height: auto; background: none; padding: 12px; }
+    .art, .txt { display: none; }
+    .mob { display: block; position: relative; height: 110px; border-radius: 14px; overflow: hidden;
+           background: linear-gradient(90deg, rgba(233,238,245,.97) 0%, rgba(233,238,245,.92) 42%, rgba(233,238,245,0) 72%),
+                       url(images/mobile_bg.jpg) right 70% / cover no-repeat #E9EEF5; }
+    .mob .t { position: absolute; left: 14px; top: 16px; width: 160px; height: 66px; }
+  }
+  @media (max-width: 359px) {
+    .mob { background: linear-gradient(90deg, rgba(233,238,245,.97) 0%, rgba(233,238,245,.93) 52%, rgba(233,238,245,0) 86%),
+                       url(images/mobile_bg.jpg) 72% 70% / cover no-repeat #E9EEF5; }
+  }
+</style>
+</head>
+<body>
+<a class="banner" href="%banner.reference_mrc_user1%" target="%banner.target%">
+  <img class="art" src="images/desktop.svg" width="1440" height="315" alt="">
+  <img class="txt" src="images/text_desktop.svg" width="520" height="232" alt="Реструктуризация долгов — новый план, а не точка.">
+  <div class="mob">
+    <img class="t" src="images/text_mobile.svg" width="160" height="66" alt="Долги под контролем">
+  </div>
+</a>
+</body>
+</html>
