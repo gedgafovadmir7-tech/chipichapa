@@ -12,7 +12,7 @@
   /* картинка прибита к левому краю: при сужении экрана баннер обрезается справа */
   .art { position: absolute; left: 0; top: 0; width: 1440px; height: 315px; max-width: none; }
   /* текст — SVG с кривыми (требование площадки) */
-  .txt { position: absolute; left: 6.5%; top: 40px; width: 520px; height: 232px; }
+  .txt { position: absolute; left: 6.5%; top: 28px; width: 520px; height: 232px; }
   @keyframes up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   .art { animation: fade .8s ease-out both; }
@@ -24,9 +24,14 @@
     body { background: #fff; }
     a.banner { height: auto; background: none; padding: 12px; }
     .art, .txt { display: none; }
-    .mob { display: block; position: relative; height: 101px; border-radius: 14px; background: #E9EEF5; overflow: hidden; }
-    .mob .t { position: absolute; left: 14px; top: 12px; width: 160px; height: 66px; }
-    .mob .pic { position: absolute; right: 0; top: 0; width: 124px; height: 101px; }
+    .mob { display: block; position: relative; height: 110px; border-radius: 14px; overflow: hidden;
+           background: linear-gradient(90deg, rgba(233,238,245,.97) 0%, rgba(233,238,245,.92) 42%, rgba(233,238,245,0) 72%),
+                       url(images/mobile_bg.jpg) right 70% / cover no-repeat #E9EEF5; }
+    .mob .t { position: absolute; left: 14px; top: 16px; width: 160px; height: 66px; }
+  }
+  @media (max-width: 359px) {
+    .mob { background: linear-gradient(90deg, rgba(233,238,245,.97) 0%, rgba(233,238,245,.93) 52%, rgba(233,238,245,0) 86%),
+                       url(images/mobile_bg.jpg) 72% 70% / cover no-repeat #E9EEF5; }
   }
 </style>
 </head>
@@ -36,7 +41,6 @@
   <img class="txt" src="images/text_desktop.svg" width="520" height="232" alt="Реструктуризация долгов — новый план, а не точка.">
   <div class="mob">
     <img class="t" src="images/text_mobile.svg" width="160" height="66" alt="Долги под контролем">
-    <img class="pic" src="images/mobile.png" width="124" height="101" alt="">
   </div>
 </a>
 </body>
