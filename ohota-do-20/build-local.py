@@ -12,6 +12,7 @@
 import json
 import pathlib
 import sys
+from datetime import datetime, timezone
 
 HERE = pathlib.Path(__file__).resolve().parent
 MARKER = "var LOCAL_SEED = null;"
@@ -26,11 +27,15 @@ HEAD = (
 def main():
     seed_path = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else HERE / "game-data.json"
     raw = json.loads(seed_path.read_text(encoding="utf-8"))
-    seed = {"lines": raw["lines"], "state": raw["state"]}
+    # builtAt lets an older save in the browser offer the newer progress from this file
+    built_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    seed = {"lines": raw["lines"], "state": raw["state"], "builtAt": built_at}
     page = (HERE / "index.html").read_text(encoding="utf-8")
     if page.count(MARKER) != 1:
         sys.exit("В index.html не найдена строка " + MARKER)
-    blob = json.dumps(seed, ensure_ascii=False).replace("</", "<\\/")
+    # escape every "<" and the JS line separators so no saved text can end or confuse the <script>
+    blob = (json.dumps(seed, ensure_ascii=False)
+            .replace("<", "\\u003c").replace("\u2028", "\\u2028").replace("\u2029", "\\u2029"))
     page = page.replace(MARKER, "var LOCAL_SEED = " + blob + ";")
     out = HERE / "ohota-do-20.html"
     out.write_text(HEAD + page + "</body></html>\n", encoding="utf-8")

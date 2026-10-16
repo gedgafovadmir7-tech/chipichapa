@@ -313,6 +313,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
 .save-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
 .save textarea{resize:vertical;min-height:84px;font-size:12px;line-height:1.4}
 .save-imp{display:grid;gap:8px}
+.nojs{border:1px solid var(--boss);border-radius:12px;padding:12px 14px;font-size:14px}
 
 /* add-boss sheet */
 .sheet{position:fixed;inset:0;z-index:40;background:rgba(5,8,14,.72);display:flex;align-items:flex-end;justify-content:center;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
@@ -376,6 +377,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
 </style>
 
 <main class="wrap">
+  <noscript><p class="nojs">Игре нужен JavaScript, а этот просмотрщик его не запускает. На телефоне открой файл через «Открыть с помощью → Chrome», или играй по ссылке claude.ai.</p></noscript>
   <header class="hdr">
     <div class="hdr-t">
       <span class="eyebrow" id="eyebrow">Карта охоты · МСК</span>
@@ -473,6 +475,10 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
           <textarea class="field num" id="imp-text" rows="4" spellcheck="false" placeholder="Вставь сюда скопированный прогресс"></textarea>
           <div class="save-row"><button type="button" class="btn-main" id="imp-btn">Заменить прогресс</button><span class="f-msg" id="imp-msg" role="status"></span></div>
         </div>
+        <div class="save-imp" id="seed-box" hidden>
+          <p id="seed-text"></p>
+          <div class="save-row"><button type="button" class="btn-main" id="seed-load">Загрузить прогресс из файла</button><button type="button" class="btn-ghost" id="seed-keep">Оставить текущий</button></div>
+        </div>
       </div>
     </details>
   </div>
@@ -517,7 +523,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   var ARRIVAL = '2027-02-14';
   var QUEST_TEXT = 'Лёгкая тренировка · мониторинг Кворка';
   var LOG_CAP = 200;
-  var LOCAL_SEED = {"lines": {"faith": {"bosses": [], "main": true, "order": 1, "rule": "Цели назначаешь ты сам", "title": "Вера"}, "other": {"bosses": [{"ability": "Крит −3, когда заказ сдан.", "goal": "Заказ с HTML-баннером", "hp": 3, "max": 3, "name": "Баннер-голем", "rank": "D", "shield": "пока заказчица не пришлёт рабочие ссылки, удары не проходят.", "status": "current"}, {"ability": "Возрождается каждое воскресенье.", "doneAt": "2026-10-16", "goal": "Уборка", "hp": 0, "max": 1, "name": "Пыльный слизень", "rank": "E", "respawn": "weekly", "status": "done"}], "layout": "pool", "order": 5, "rule": "Мелкие враги, бей любого", "title": "Другие дела"}, "money": {"bosses": [{"ability": "1-го числа восстанавливает все HP.", "goal": "25 000 ₽ за месяц", "hp": 25, "max": 25, "name": "Страж 25к", "rank": "B", "status": "current", "unit": "₽ × 1000"}, {"goal": "50 000 ₽ за месяц", "max": 50, "name": "Страж 50к", "rank": "A", "status": "next", "unit": "₽ × 1000"}, {"goal": "75 000 ₽ за месяц", "max": 75, "name": "Король 75к", "rank": "S", "status": "next", "unit": "₽ × 1000"}], "order": 2, "rule": "1 HP = 1 000 ₽ · 1-го числа HP восстанавливается", "start": "Старт", "title": "Деньги"}, "meme": {"bosses": [{"ability": "Сделка без записи не наносит урона.", "goal": "Записать первые 3 сделки в журнал", "hp": 3, "max": 3, "name": "Хранитель журнала", "rank": "D", "status": "current", "unit": "записи"}, {"goal": "10 сделок строго по своим правилам", "max": 10, "name": "Мемный дракон", "rank": "C", "status": "next"}, {"goal": "Закрыть месяц в плюсе", "max": 1, "name": "Зелёный месяц", "rank": "B", "status": "next"}, {"goal": "3 месяца подряд в плюсе", "max": 3, "name": "Король пампов", "rank": "S", "status": "next"}], "order": 4, "rule": "Каждая сделка по правилам и в журнале", "start": "Старт", "title": "Мемкоины"}, "body": {"bosses": [{"ability": "Если вес вырос, лечится на столько же.", "goal": "88 → 85 кг", "hp": 3, "max": 3, "name": "Тяжёлый панцирь", "rank": "D", "status": "current", "unit": "кг"}, {"goal": "85 → 80 кг", "max": 5, "name": "Каменная шкура", "rank": "C", "status": "next", "unit": "кг"}, {"goal": "80 → 75 кг", "max": 5, "name": "Последний слой", "rank": "B", "status": "next", "unit": "кг"}, {"goal": "75 кг и атлетичное тело", "name": "Атлет", "rank": "S", "status": "next"}], "order": 3, "rule": "Старт 88 кг · 1 кг = 1 HP", "start": "Старт · 88 кг", "title": "Тело"}}, "state": {"checkedThrough": "2026-10-15", "daily": {"date": "2026-10-15", "done": true, "text": "Лёгкая тренировка · мониторинг Кворка"}, "final": {"hp": 999, "max": 1000}, "lastActive": "2026-10-16", "log": [{"d": "2026-10-16", "t": "🗡 Удар по «Пыльный слизень» −1 · ☠️ повержен"}, {"d": "2026-10-15", "t": "Охота началась. Ежедневный квест выполнен: тренировка и мониторинг Кворка."}], "moneyMonth": "2026-10", "rank": "E", "startedAt": "2026-10-15", "streak": 1, "weight": 88}}; // the one-file build (build-local.py) puts the starting progress here
+  var LOCAL_SEED = {"lines": {"faith": {"bosses": [], "main": true, "order": 1, "rule": "Цели назначаешь ты сам", "title": "Вера"}, "other": {"bosses": [{"ability": "Крит −3, когда заказ сдан.", "goal": "Заказ с HTML-баннером", "hp": 3, "max": 3, "name": "Баннер-голем", "rank": "D", "shield": "пока заказчица не пришлёт рабочие ссылки, удары не проходят.", "status": "current"}, {"ability": "Возрождается каждое воскресенье.", "doneAt": "2026-10-16", "goal": "Уборка", "hp": 0, "max": 1, "name": "Пыльный слизень", "rank": "E", "respawn": "weekly", "status": "done"}], "layout": "pool", "order": 5, "rule": "Мелкие враги, бей любого", "title": "Другие дела"}, "money": {"bosses": [{"ability": "1-го числа восстанавливает все HP.", "goal": "25 000 ₽ за месяц", "hp": 25, "max": 25, "name": "Страж 25к", "rank": "B", "status": "current", "unit": "₽ × 1000"}, {"goal": "50 000 ₽ за месяц", "max": 50, "name": "Страж 50к", "rank": "A", "status": "next", "unit": "₽ × 1000"}, {"goal": "75 000 ₽ за месяц", "max": 75, "name": "Король 75к", "rank": "S", "status": "next", "unit": "₽ × 1000"}], "order": 2, "rule": "1 HP = 1 000 ₽ · 1-го числа HP восстанавливается", "start": "Старт", "title": "Деньги"}, "meme": {"bosses": [{"ability": "Сделка без записи не наносит урона.", "goal": "Записать первые 3 сделки в журнал", "hp": 3, "max": 3, "name": "Хранитель журнала", "rank": "D", "status": "current", "unit": "записи"}, {"goal": "10 сделок строго по своим правилам", "max": 10, "name": "Мемный дракон", "rank": "C", "status": "next"}, {"goal": "Закрыть месяц в плюсе", "max": 1, "name": "Зелёный месяц", "rank": "B", "status": "next"}, {"goal": "3 месяца подряд в плюсе", "max": 3, "name": "Король пампов", "rank": "S", "status": "next"}], "order": 4, "rule": "Каждая сделка по правилам и в журнале", "start": "Старт", "title": "Мемкоины"}, "body": {"bosses": [{"ability": "Если вес вырос, лечится на столько же.", "goal": "88 → 85 кг", "hp": 3, "max": 3, "name": "Тяжёлый панцирь", "rank": "D", "status": "current", "unit": "кг"}, {"goal": "85 → 80 кг", "max": 5, "name": "Каменная шкура", "rank": "C", "status": "next", "unit": "кг"}, {"goal": "80 → 75 кг", "max": 5, "name": "Последний слой", "rank": "B", "status": "next", "unit": "кг"}, {"goal": "75 кг и атлетичное тело", "name": "Атлет", "rank": "S", "status": "next"}], "order": 3, "rule": "Старт 88 кг · 1 кг = 1 HP", "start": "Старт · 88 кг", "title": "Тело"}}, "state": {"checkedThrough": "2026-10-15", "daily": {"date": "2026-10-15", "done": true, "text": "Лёгкая тренировка · мониторинг Кворка"}, "final": {"hp": 999, "max": 1000}, "lastActive": "2026-10-16", "log": [{"d": "2026-10-16", "t": "🗡 Удар по «Пыльный слизень» −1 · ☠️ повержен"}, {"d": "2026-10-15", "t": "Охота началась. Ежедневный квест выполнен: тренировка и мониторинг Кворка."}], "moneyMonth": "2026-10", "rank": "E", "startedAt": "2026-10-15", "streak": 1, "weight": 88}, "builtAt": "2026-10-16T12:43:58Z"}; // the one-file build (build-local.py) puts the starting progress here
   var SAVE_KEY = 'ohota.save.v1';
   var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -733,12 +739,12 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   var db = null, canWrite = true, permKnown = false, offlineMsg = '', isLocal = false, localOK = true;
   var tab = lsGet('ohota.tab');
   var sel = {}, confirmDel = null, arenaLock = false, enterKeys = {};
-  var pending = {}, queue = Promise.resolve(), undo = null, upkeepFor = null;
+  var pending = {}, queue = Promise.resolve(), undo = null, upkeepFor = null, remoteSync = false, ldb = null;
 
   function lineKeys(){ return Object.keys(M.lines).sort(function(a, b){ return num(M.lines[a].order, 99) - num(M.lines[b].order, 99); }); }
   function bossesOf(k){ var l = M.lines[k]; return l && Array.isArray(l.bosses) ? l.bosses : []; }
   function isPool(line){ return !!line && line.layout === 'pool'; }
-  function lineColor(k){ return LINE_COLOR[k] || '#8db4cc'; }
+  function lineColor(k){ return Object.prototype.hasOwnProperty.call(LINE_COLOR, k) ? LINE_COLOR[k] : '#8db4cc'; }
   function maxOf(b){ return num(b.max, RANK_HP[b.rank] || 1); }
   function hpOf(b){ return b.status === 'done' ? 0 : clamp(num(b.hp, maxOf(b)), 0, maxOf(b)); }
   function isWeightBoss(b){ return !!b && (b.unit === 'кг' || /\d\s*→\s*\d+(?:[.,]\d+)?\s*кг/.test(b.goal || '')); }
@@ -757,13 +763,17 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     return m ? parseNum(m[1]) : null;
   }
   function targetKg(b){ var m = String(b.goal || '').match(/→\s*(\d+(?:[.,]\d+)?)\s*кг/); return m ? parseNum(m[1]) : null; }
+  function isObj(o){ return !!o && typeof o === 'object' && !Array.isArray(o); }
+  function okKey(k){ return /^[A-Za-z0-9_-]{1,40}$/.test(k) && !(k in Object.prototype); }
+  function cleanLine(l){ l = isObj(l) ? l : {}; l.bosses = Array.isArray(l.bosses) ? l.bosses.filter(isObj) : []; return l; }
   function normState(s){
-    s = s || {};
+    s = isObj(s) ? s : {};
     if (RANKS.indexOf(s.rank) < 0) s.rank = 'E';
     s.streak = num(s.streak, 0);
-    s.final = s.final || {}; s.final.max = num(s.final.max, 1000); s.final.hp = num(s.final.hp, s.final.max);
-    s.daily = s.daily || {};
-    if (!Array.isArray(s.log)) s.log = [];
+    if (!isObj(s.final)) s.final = {};
+    s.final.max = num(s.final.max, 1000); s.final.hp = num(s.final.hp, s.final.max);
+    if (!isObj(s.daily)) s.daily = {};
+    s.log = Array.isArray(s.log) ? s.log.filter(isObj) : [];
     return s;
   }
   function startDate(){ var s = M.state; if (s && isDate(s.startedAt)) return s.startedAt; var l = s && s.log, d = null; if (l) l.forEach(function(e){ if (isDate(e.d) && (!d || e.d < d)) d = e.d; }); return d || TODAY; }
@@ -781,6 +791,11 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
       });
     }).catch(function(e){ onWriteError(e, path); }).then(function(){ pending[path]--; });
   }
+  function remove(path){
+    if (!db) return;
+    pending[path] = (pending[path] || 0) + 1;
+    queue = queue.then(function(){ return db.doc(path).delete(); }).catch(function(e){ onWriteError(e, path); }).then(function(){ pending[path]--; });
+  }
   function onWriteError(e, path){
     var code = e && e.code;
     if (code === 'invalid_argument' && !permKnown) canWrite = false;
@@ -788,7 +803,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     db.doc(path).get().then(function(snap){
       if (!snap.exists) return;
       if (path === 'game/state') M.state = normState(clone(snap.data()));
-      else M.lines[path.split('/')[1]] = clone(snap.data());
+      else M.lines[path.split('/')[1]] = cleanLine(clone(snap.data()));
       render();
     }).catch(function(){});
   }
@@ -1462,7 +1477,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     if (!hpTouched) $('f-hp').value = RANK_HP[r];
     $('f-hpnote').textContent = k === 'money' ? 'На линии «Деньги» 1 HP = 1 000 ₽.' : RANK_INFO[r].name + ': ' + RANK_INFO[r].hint.toLowerCase() + '. HP подставлен по рангу, его можно поправить.';
     $('f-reward-hint').textContent = strong ? 'обязательна для ранга ' + r : 'по желанию';
-    $('f-name').placeholder = PLACEHOLDER[k] || 'Имя босса';
+    $('f-name').placeholder = Object.prototype.hasOwnProperty.call(PLACEHOLDER, k) ? PLACEHOLDER[k] : 'Имя босса';
   }
   function openSheet(mode, k, idx){
     if (!db || !canWrite || !M.lines[k]) return;
@@ -1551,27 +1566,39 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     var data = null, docL = {}, colL = {};
     try { localStorage.setItem(SAVE_KEY + '.t', '1'); localStorage.removeItem(SAVE_KEY + '.t'); } catch (e) { localOK = false; }
     try { data = JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) { data = null; }
-    if (!data || typeof data.lines !== 'object' || !data.lines) data = seed ? clone(seed) : {lines:{}, state:null};
-    function persist(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); return true; } catch (e) { return false; } }
-    if (localOK) persist();
+    // a save without lines counts as no save, so it never hides the progress baked into the file
+    var saved = isObj(data) && isObj(data.lines) && Object.keys(data.lines).length > 0;
+    var seedAt = seed && typeof seed.builtAt === 'string' ? seed.builtAt : null;
+    if (!saved) data = seed ? {lines:clone(seed.lines), state:clone(seed.state), seedAt:seedAt} : {lines:{}, state:null};
+    function persist(){ if (!localOK) return true; try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); return true; } catch (e) { return false; } }
+    if (!saved && seed) persist();
     function get(path){ var p = path.split('/'); return p[0] === 'lines' ? data.lines[p[1]] : path === 'game/state' ? data.state : undefined; }
+    function put(path, body){ var p = path.split('/'); if (p[0] === 'lines') { if (body === undefined) delete data.lines[p[1]]; else data.lines[p[1]] = body; } else if (path === 'game/state') data.state = body === undefined ? null : body; }
     function snapDoc(path){ var d = get(path); return {id:path.split('/').pop(), exists:!!d, data:function(){ return d ? clone(d) : undefined; }, metadata:{fromCache:false, hasPendingWrites:false}}; }
     function snapCol(){ var docs = Object.keys(data.lines).sort().map(function(k){ return snapDoc('lines/' + k); }); return {docs:docs, size:docs.length, empty:!docs.length, docChanges:function(){ return []; }}; }
     function notify(path){ setTimeout(function(){ (docL[path] || []).forEach(function(f){ f(snapDoc(path)); }); if (path.indexOf('lines/') === 0) (colL.lines || []).forEach(function(f){ f(snapCol()); }); }, 0); }
+    function commit(path, body){
+      var prev = get(path); put(path, body);
+      if (!persist()) { put(path, prev); return Promise.reject({code:'quota_exceeded', message:'browser storage refused the save'}); }
+      notify(path); return Promise.resolve();
+    }
+    // another tab saved: show its data, but do not run the daily upkeep on it here
     window.addEventListener('storage', function(e){
       if (e.key !== SAVE_KEY || !e.newValue) return;
-      try { var next = JSON.parse(e.newValue); if (next && next.lines) data = next; } catch (err) { return; }
-      Object.keys(docL).forEach(notify); (colL.lines || []).forEach(function(f){ f(snapCol()); });
+      try { var next = JSON.parse(e.newValue); if (!isObj(next) || !isObj(next.lines)) return; data = next; } catch (err) { return; }
+      TODAY = mskToday(); remoteSync = true;
+      try {
+        Object.keys(docL).forEach(function(k){ (docL[k] || []).forEach(function(f){ f(snapDoc(k)); }); });
+        (colL.lines || []).forEach(function(f){ f(snapCol()); });
+      } finally { remoteSync = false; }
     });
     return {
+      seedOffer: saved && seedAt && data.seedAt !== seedAt ? seedAt : null,
+      markSeed: function(){ data.seedAt = seedAt; persist(); },
       doc:function(path){ return {
         get:function(){ return Promise.resolve(snapDoc(path)); },
-        set:function(body){
-          var p = path.split('/');
-          if (p[0] === 'lines') data.lines[p[1]] = clone(body); else if (path === 'game/state') data.state = clone(body);
-          if (!persist()) return Promise.reject({code:'quota_exceeded', message:'browser storage refused the save'});
-          notify(path); return Promise.resolve();
-        },
+        set:function(body){ return commit(path, clone(body)); },
+        delete:function(){ return commit(path, undefined); },
         onSnapshot:function(f){ (docL[path] = docL[path] || []).push(f); setTimeout(function(){ f(snapDoc(path)); }, 0); return function(){}; }
       }; },
       collection:function(path){ return {onSnapshot:function(f){ (colL[path] = colL[path] || []).push(f); setTimeout(function(){ f(snapCol()); }, 0); return function(){}; }}; }
@@ -1580,14 +1607,42 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
 
   /* ---------- save box: copy progress out, paste it in ---------- */
   function renderSaveBox(){
-    $('save-where').textContent = isLocal ? '· в этом браузере' : '· в claude.ai';
-    $('save-text').textContent = isLocal
-      ? 'Прогресс хранится в этом браузере на этом устройстве. Чтобы перенести его в игру на claude.ai или показать Claude, нажми «Скопировать прогресс» и вставь там.'
+    var noStore = isLocal && !localOK;
+    $('save-where').textContent = !db ? '· недоступно' : noStore ? '· не сохраняется' : isLocal ? '· в этом браузере' : '· в claude.ai';
+    $('save-text').textContent = !db ? 'Прогресс недоступен: открой игру в claude.ai, войдя в свой аккаунт.'
+      : noStore ? 'Этот браузер не даёт файлу сохранять прогресс: всё пропадёт, когда закроешь вкладку. Перед закрытием нажми «Скопировать прогресс», или открой файл в Chrome либо Edge на компьютере.'
+      : isLocal ? 'Прогресс хранится в этом браузере на этом устройстве. Чтобы перенести его в игру на claude.ai или показать Claude, нажми «Скопировать прогресс» и вставь там.'
       : 'Прогресс хранится в claude.ai, его видит и меняет Claude. Чтобы перенести его в игру-файл, нажми «Скопировать прогресс» и вставь там.';
+    $('exp-btn').hidden = !db;
     $('imp-open').hidden = !db || !canWrite;
+    if (noStore) $('save-box').open = true;
   }
   var impArmed = false;
-  function resetImport(){ impArmed = false; $('imp-btn').textContent = 'Заменить прогресс'; $('imp-msg').textContent = ''; }
+  function resetImport(){ impArmed = false; $('imp-btn').textContent = 'Заменить прогресс'; $('imp-msg').textContent = ''; $('imp-btn').hidden = !db || !canWrite; }
+  // replace the whole progress: lines missing from the new data are removed
+  function applyProgress(lines, st){
+    Object.keys(M.lines).forEach(function(k){ if (!Object.prototype.hasOwnProperty.call(lines, k)) { delete M.lines[k]; remove('lines/' + k); } });
+    Object.keys(lines).forEach(function(k){ M.lines[k] = lines[k]; write('lines/' + k, lines[k]); });
+    M.state = st; write('game/state', st);
+    M.haveLines = M.haveState = true;
+    undo = null; upkeepFor = null; confirmDel = null;
+    lineKeys().forEach(function(k){ sel[k] = defaultSel(k); });
+    bestSig = headSig = trackSig = stageSig = infoSig = actSig = logSig = '';
+    if (!M.lines[tab]) tab = null;
+    render();
+    setTimeout(upkeep, 400);
+  }
+  // check and clean pasted progress before anything is written
+  function prepareProgress(data){
+    if (!isObj(data) || !isObj(data.lines) || !isObj(data.state)) return null;
+    var keys = Object.keys(data.lines);
+    if (!keys.length || !keys.every(function(k){ return okKey(k) && isObj(data.lines[k]) && Array.isArray(data.lines[k].bosses); })) return null;
+    try {
+      var lines = {};
+      keys.forEach(function(k){ lines[k] = cleanLine(clone(data.lines[k])); });
+      return {lines:lines, state:normState(clone(data.state))};
+    } catch (e) { return null; }
+  }
   $('exp-btn').addEventListener('click', function(){
     if (!M.state || !lineKeys().length) { toast('Прогресс ещё не загрузился.'); return; }
     var text = JSON.stringify({game:'ohota-do-20', v:1, savedAt:mskToday(), lines:M.lines, state:M.state});
@@ -1602,22 +1657,27 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   $('imp-btn').addEventListener('click', function(){
     var msg = $('imp-msg'), data;
     try { data = JSON.parse($('imp-text').value.trim()); } catch (e) { msg.textContent = 'Это не похоже на скопированный прогресс.'; return; }
-    var ok = data && typeof data.lines === 'object' && data.lines && data.state && typeof data.state === 'object' && Object.keys(data.lines).length &&
-      Object.keys(data.lines).every(function(k){ return /^[A-Za-z0-9_-]{1,40}$/.test(k) && data.lines[k] && Array.isArray(data.lines[k].bosses); });
-    if (!ok) { msg.textContent = 'В тексте нет линий и состояния игры.'; return; }
+    var prep = prepareProgress(data);
+    if (!prep) { msg.textContent = 'В тексте нет линий и состояния игры.'; return; }
     if (!impArmed) { impArmed = true; $('imp-btn').textContent = 'Точно заменить? Нажми ещё раз'; msg.textContent = 'Текущий прогресс здесь заменится вставленным.'; return; }
     if (!db || !canWrite) return;
-    Object.keys(data.lines).forEach(function(k){ M.lines[k] = clone(data.lines[k]); write('lines/' + k, M.lines[k]); });
-    M.state = normState(clone(data.state)); write('game/state', M.state);
-    M.haveLines = M.haveState = true;
-    undo = null; upkeepFor = null; confirmDel = null;
-    lineKeys().forEach(function(k){ sel[k] = defaultSel(k); });
-    bestSig = headSig = trackSig = stageSig = infoSig = actSig = logSig = '';
-    if (!M.lines[tab]) tab = null;
     $('imp-box').hidden = true; $('imp-text').value = ''; resetImport();
-    render(); toast('Прогресс загружен');
-    setTimeout(upkeep, 400);
+    applyProgress(prep.lines, prep.state);
+    toast('Прогресс загружен');
   });
+  function fmtStamp(iso){ try { return new Intl.DateTimeFormat('ru-RU', {timeZone:'Europe/Moscow', day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit'}).format(new Date(iso)); } catch (e) { return iso; } }
+  function offerSeed(at){
+    $('seed-text').textContent = 'В этом файле вшит прогресс от ' + fmtStamp(at) + ' (МСК), а в браузере сохранён другой. Какой оставить?';
+    $('seed-box').hidden = false; $('save-box').open = true;
+    toast('В файле есть другой прогресс. Выбери, какой оставить, в блоке «Сохранение» внизу.', {ms:9000});
+  }
+  $('seed-load').addEventListener('click', function(){
+    var prep = prepareProgress(LOCAL_SEED);
+    $('seed-box').hidden = true;
+    if (!prep || !ldb) return;
+    ldb.markSeed(); applyProgress(prep.lines, prep.state); toast('Загружен прогресс из файла');
+  });
+  $('seed-keep').addEventListener('click', function(){ $('seed-box').hidden = true; if (ldb) ldb.markSeed(); toast('Оставлен прогресс из браузера'); });
 
   /* ---------- boot ---------- */
   makeTopo();
@@ -1630,7 +1690,8 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     snap.docs.forEach(function(d){
       var p = 'lines/' + d.id; if (pending[p] > 0) return;
       var body = d.data(); if (!body) return;
-      if (JSON.stringify(M.lines[d.id]) !== JSON.stringify(body)) { M.lines[d.id] = clone(body); if (!Array.isArray(M.lines[d.id].bosses)) M.lines[d.id].bosses = []; changed = true; }
+      var line = cleanLine(clone(body));
+      if (JSON.stringify(M.lines[d.id]) !== JSON.stringify(line)) { M.lines[d.id] = line; changed = true; }
     });
     var ids = snap.docs.map(function(d){ return d.id; });
     Object.keys(M.lines).forEach(function(id){ if (ids.indexOf(id) < 0 && !(pending['lines/' + id] > 0)) { delete M.lines[id]; changed = true; } });
@@ -1644,7 +1705,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
       return;
     }
     if (changed) render();
-    upkeep();
+    if (!remoteSync) upkeep();
   }
   function applyState(snap){
     if (pending['game/state'] > 0) return;
@@ -1654,16 +1715,19 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     if (changed) M.state = s;
     afterLoad(changed || first);
   }
-  function offline(msg){ offlineMsg = msg; showEmpty('Нет связи с хранилищем игры', msg); $('quest').disabled = true; }
+  function offline(msg){ offlineMsg = msg; showEmpty('Нет связи с хранилищем игры', msg); $('quest').disabled = true; renderSaveBox(); }
 
   (async function(){
     var api = window.claude && typeof window.claude.use === 'function' ? window.claude : null;
     if (!api) {
-      db = localDB(LOCAL_SEED); isLocal = true;
-      if (!localOK) toast('Этот браузер не даёт файлу сохранять прогресс. Открой файл в Chrome или Edge на компьютере, или играй по ссылке claude.ai.', {err:true, ms:15000});
+      db = ldb = localDB(LOCAL_SEED); isLocal = true;
+      setTimeout(function(){
+        if (!localOK) toast('Этот браузер не даёт файлу сохранять прогресс. Перед закрытием нажми «Скопировать прогресс» внизу, или открой файл в Chrome либо Edge на компьютере.', {err:true, ms:15000});
+        else if (ldb.seedOffer) offerSeed(ldb.seedOffer);
+      }, 900);
     } else {
       try { db = await api.use('db'); } catch (e) { db = null; }
-      if (!db) { offline('Открой игру в claude.ai, войдя в свой аккаунт: прогресс хранится там.'); return; }
+      if (!db) { db = null; offline('Открой игру в claude.ai, войдя в свой аккаунт: прогресс хранится там.'); return; }
       try {
         var user = await api.use('user');
         if (user) { var w = await user.can('data.write'); if (w === false) canWrite = false; if (w !== null) permKnown = true; }
