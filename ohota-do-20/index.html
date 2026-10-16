@@ -309,6 +309,10 @@ details > ul{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
 details li{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px;font-size:13.5px;color:var(--muted)}
 details li b,details li time{font-family:var(--font-mono);font-size:12px;color:var(--fg);padding-top:1px}
 .rules li{grid-template-columns:70px minmax(0,1fr)}
+.save{--c:var(--faith);display:grid;gap:10px;margin-top:12px;font-size:13px;color:var(--muted)}
+.save-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.save textarea{resize:vertical;min-height:84px;font-size:12px;line-height:1.4}
+.save-imp{display:grid;gap:8px}
 
 /* add-boss sheet */
 .sheet{position:fixed;inset:0;z-index:40;background:rgba(5,8,14,.72);display:flex;align-items:flex-end;justify-content:center;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
@@ -456,6 +460,21 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
         <li><b>14.02</b><span>0 HP — «Легенда»; снял половину — «Выжил»; меньше — «Обычная жизнь победила»</span></li>
       </ul>
     </details>
+    <details id="save-box">
+      <summary>Сохранение <small id="save-where"></small></summary>
+      <div class="save">
+        <p id="save-text">Прогресс загружается.</p>
+        <div class="save-row">
+          <button type="button" class="btn-ghost" id="exp-btn">Скопировать прогресс</button>
+          <button type="button" class="btn-ghost" id="imp-open">Вставить прогресс</button>
+        </div>
+        <div class="save-imp" id="imp-box" hidden>
+          <label for="imp-text" class="sr">Прогресс для вставки</label>
+          <textarea class="field num" id="imp-text" rows="4" spellcheck="false" placeholder="Вставь сюда скопированный прогресс"></textarea>
+          <div class="save-row"><button type="button" class="btn-main" id="imp-btn">Заменить прогресс</button><span class="f-msg" id="imp-msg" role="status"></span></div>
+        </div>
+      </div>
+    </details>
   </div>
 </main>
 
@@ -498,6 +517,8 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   var ARRIVAL = '2027-02-14';
   var QUEST_TEXT = 'Лёгкая тренировка · мониторинг Кворка';
   var LOG_CAP = 200;
+  var LOCAL_SEED = null; // the one-file build (build-local.py) puts the starting progress here
+  var SAVE_KEY = 'ohota.save.v1';
   var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 
   /* ---------- small helpers ---------- */
@@ -709,7 +730,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
 
   /* ---------- model ---------- */
   var M = {lines:{}, state:null, haveLines:false, haveState:false};
-  var db = null, canWrite = true, permKnown = false, offlineMsg = '';
+  var db = null, canWrite = true, permKnown = false, offlineMsg = '', isLocal = false, localOK = true;
   var tab = lsGet('ohota.tab');
   var sel = {}, confirmDel = null, arenaLock = false, enterKeys = {};
   var pending = {}, queue = Promise.resolve(), undo = null, upkeepFor = null;
@@ -1525,6 +1546,79 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   if (!REDUCED) setInterval(function(){ if (Date.now() - lastMove < 3000) return; $('stage').querySelectorAll('.mon.is-current').forEach(function(m){ m.style.setProperty('--px', ((Math.random() - .5) * 6).toFixed(1) + 'px'); m.style.setProperty('--py', ((Math.random() - .5) * 4).toFixed(1) + 'px'); }); }, 2600);
   document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') { TODAY = mskToday(); render(); upkeep(); } });
 
+  /* ---------- local mode: the game opened as a plain file keeps progress in this browser ---------- */
+  function localDB(seed){
+    var data = null, docL = {}, colL = {};
+    try { localStorage.setItem(SAVE_KEY + '.t', '1'); localStorage.removeItem(SAVE_KEY + '.t'); } catch (e) { localOK = false; }
+    try { data = JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) { data = null; }
+    if (!data || typeof data.lines !== 'object' || !data.lines) data = seed ? clone(seed) : {lines:{}, state:null};
+    function persist(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); return true; } catch (e) { return false; } }
+    if (localOK) persist();
+    function get(path){ var p = path.split('/'); return p[0] === 'lines' ? data.lines[p[1]] : path === 'game/state' ? data.state : undefined; }
+    function snapDoc(path){ var d = get(path); return {id:path.split('/').pop(), exists:!!d, data:function(){ return d ? clone(d) : undefined; }, metadata:{fromCache:false, hasPendingWrites:false}}; }
+    function snapCol(){ var docs = Object.keys(data.lines).sort().map(function(k){ return snapDoc('lines/' + k); }); return {docs:docs, size:docs.length, empty:!docs.length, docChanges:function(){ return []; }}; }
+    function notify(path){ setTimeout(function(){ (docL[path] || []).forEach(function(f){ f(snapDoc(path)); }); if (path.indexOf('lines/') === 0) (colL.lines || []).forEach(function(f){ f(snapCol()); }); }, 0); }
+    window.addEventListener('storage', function(e){
+      if (e.key !== SAVE_KEY || !e.newValue) return;
+      try { var next = JSON.parse(e.newValue); if (next && next.lines) data = next; } catch (err) { return; }
+      Object.keys(docL).forEach(notify); (colL.lines || []).forEach(function(f){ f(snapCol()); });
+    });
+    return {
+      doc:function(path){ return {
+        get:function(){ return Promise.resolve(snapDoc(path)); },
+        set:function(body){
+          var p = path.split('/');
+          if (p[0] === 'lines') data.lines[p[1]] = clone(body); else if (path === 'game/state') data.state = clone(body);
+          if (!persist()) return Promise.reject({code:'quota_exceeded', message:'browser storage refused the save'});
+          notify(path); return Promise.resolve();
+        },
+        onSnapshot:function(f){ (docL[path] = docL[path] || []).push(f); setTimeout(function(){ f(snapDoc(path)); }, 0); return function(){}; }
+      }; },
+      collection:function(path){ return {onSnapshot:function(f){ (colL[path] = colL[path] || []).push(f); setTimeout(function(){ f(snapCol()); }, 0); return function(){}; }}; }
+    };
+  }
+
+  /* ---------- save box: copy progress out, paste it in ---------- */
+  function renderSaveBox(){
+    $('save-where').textContent = isLocal ? '· в этом браузере' : '· в claude.ai';
+    $('save-text').textContent = isLocal
+      ? 'Прогресс хранится в этом браузере на этом устройстве. Чтобы перенести его в игру на claude.ai или показать Claude, нажми «Скопировать прогресс» и вставь там.'
+      : 'Прогресс хранится в claude.ai, его видит и меняет Claude. Чтобы перенести его в игру-файл, нажми «Скопировать прогресс» и вставь там.';
+    $('imp-open').hidden = !db || !canWrite;
+  }
+  var impArmed = false;
+  function resetImport(){ impArmed = false; $('imp-btn').textContent = 'Заменить прогресс'; $('imp-msg').textContent = ''; }
+  $('exp-btn').addEventListener('click', function(){
+    if (!M.state || !lineKeys().length) { toast('Прогресс ещё не загрузился.'); return; }
+    var text = JSON.stringify({game:'ohota-do-20', v:1, savedAt:mskToday(), lines:M.lines, state:M.state});
+    var manual = function(){ $('imp-box').hidden = false; resetImport(); var t = $('imp-text'); t.value = text; t.focus(); t.select(); $('imp-msg').textContent = 'Скопируй выделенный текст вручную.'; };
+    try { navigator.clipboard.writeText(text).then(function(){ toast('Прогресс скопирован. Вставь его в другой версии игры или отправь Claude.'); }, manual); } catch (e) { manual(); }
+  });
+  $('imp-open').addEventListener('click', function(){
+    var box = $('imp-box'); box.hidden = !box.hidden; resetImport();
+    if (!box.hidden) { $('imp-text').value = ''; $('imp-text').focus(); }
+  });
+  $('imp-text').addEventListener('input', resetImport);
+  $('imp-btn').addEventListener('click', function(){
+    var msg = $('imp-msg'), data;
+    try { data = JSON.parse($('imp-text').value.trim()); } catch (e) { msg.textContent = 'Это не похоже на скопированный прогресс.'; return; }
+    var ok = data && typeof data.lines === 'object' && data.lines && data.state && typeof data.state === 'object' && Object.keys(data.lines).length &&
+      Object.keys(data.lines).every(function(k){ return /^[A-Za-z0-9_-]{1,40}$/.test(k) && data.lines[k] && Array.isArray(data.lines[k].bosses); });
+    if (!ok) { msg.textContent = 'В тексте нет линий и состояния игры.'; return; }
+    if (!impArmed) { impArmed = true; $('imp-btn').textContent = 'Точно заменить? Нажми ещё раз'; msg.textContent = 'Текущий прогресс здесь заменится вставленным.'; return; }
+    if (!db || !canWrite) return;
+    Object.keys(data.lines).forEach(function(k){ M.lines[k] = clone(data.lines[k]); write('lines/' + k, M.lines[k]); });
+    M.state = normState(clone(data.state)); write('game/state', M.state);
+    M.haveLines = M.haveState = true;
+    undo = null; upkeepFor = null; confirmDel = null;
+    lineKeys().forEach(function(k){ sel[k] = defaultSel(k); });
+    bestSig = headSig = trackSig = stageSig = infoSig = actSig = logSig = '';
+    if (!M.lines[tab]) tab = null;
+    $('imp-box').hidden = true; $('imp-text').value = ''; resetImport();
+    render(); toast('Прогресс загружен');
+    setTimeout(upkeep, 400);
+  });
+
   /* ---------- boot ---------- */
   makeTopo();
   $('final-face').innerHTML = FINAL_FACE;
@@ -1544,7 +1638,11 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     afterLoad(changed || first);
   }
   function afterLoad(changed){
-    if (M.haveLines && M.haveState && !lineKeys().length) { showEmpty('Карта охоты пуста', 'Данных игры пока нет. Попроси Claude загрузить линии и боссов.'); return; }
+    if (M.haveLines && M.haveState && !lineKeys().length) {
+      showEmpty('Карта охоты пуста', isLocal ? 'Вставь сохранённый прогресс в блоке «Сохранение» внизу страницы.' : 'Данных игры пока нет. Попроси Claude загрузить линии и боссов.');
+      if (isLocal) $('save-box').open = true;
+      return;
+    }
     if (changed) render();
     upkeep();
   }
@@ -1560,12 +1658,18 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
 
   (async function(){
     var api = window.claude && typeof window.claude.use === 'function' ? window.claude : null;
-    try { db = api ? await api.use('db') : null; } catch (e) { db = null; }
-    if (!db) { offline('Открой игру в claude.ai, войдя в свой аккаунт: прогресс хранится там.'); return; }
-    try {
-      var user = await api.use('user');
-      if (user) { var w = await user.can('data.write'); if (w === false) canWrite = false; if (w !== null) permKnown = true; }
-    } catch (e) {}
+    if (!api) {
+      db = localDB(LOCAL_SEED); isLocal = true;
+      if (!localOK) toast('Этот браузер не даёт файлу сохранять прогресс. Открой файл в Chrome или Edge на компьютере, или играй по ссылке claude.ai.', {err:true, ms:15000});
+    } else {
+      try { db = await api.use('db'); } catch (e) { db = null; }
+      if (!db) { offline('Открой игру в claude.ai, войдя в свой аккаунт: прогресс хранится там.'); return; }
+      try {
+        var user = await api.use('user');
+        if (user) { var w = await user.can('data.write'); if (w === false) canWrite = false; if (w !== null) permKnown = true; }
+      } catch (e) {}
+    }
+    renderSaveBox();
     db.collection('lines').onSnapshot(applyLines, function(){ offline('Не получилось загрузить линии. Обнови страницу.'); });
     db.doc('game/state').onSnapshot(applyState, function(){ toast('Не получилось загрузить состояние игры. Обнови страницу.', {err:true}); });
   })();

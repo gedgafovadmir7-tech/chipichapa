@@ -1,0 +1,1678 @@
+<!doctype html><html lang="ru"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style></head><body><title>Охота до 20</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Onest:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: one phone-width column. On top the final boss "Обычная жизнь", then the hunter (rank, streak, daily quest),
+   a bestiary bar where every line is one enemy portrait, and a single arena with that line's monster to tap.
+   Deliberately one dark theme: a night map of the hunt. Each line carries its own hue via --c. */
+:root{
+  --bg:#0c111d;
+  --panel:#141b2b;
+  --panel-2:#1e273b;
+  --rule:#2c3652;
+  --fg:#ece6d6;
+  --muted:#8e96aa;
+  --grain:rgba(236,230,214,.035);
+  --faith:#e2b55b;
+  --money:#48c08c;
+  --body:#e8674f;
+  --meme:#b48cf2;
+  --other:#8db4cc;
+  --boss:#d43a52;
+  --font-display:"Unbounded","Arial Black",system-ui,sans-serif;
+  --font-body:"Onest","Segoe UI",system-ui,-apple-system,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,"SFMono-Regular",Menlo,Consolas,monospace;
+  color-scheme:dark;
+}
+html{background:var(--bg)}
+body{
+  background:var(--bg);
+  background-image:radial-gradient(circle at 1px 1px,var(--grain) 1px,transparent 0);
+  background-size:22px 22px;
+  color:var(--fg);
+  font-family:var(--font-body);
+  font-size:15px;
+  line-height:1.5;
+  -webkit-tap-highlight-color:transparent;
+}
+*{box-sizing:border-box}
+h1,h2,h3,p{margin:0}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer}
+button:disabled{cursor:default;opacity:.55}
+:focus-visible{outline:2px solid var(--fg);outline-offset:2px;border-radius:6px}
+.num{font-family:var(--font-mono);font-variant-numeric:tabular-nums}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.wrap{
+  max-width:620px;
+  margin:0 auto;
+  padding-block:20px 64px;
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  display:grid;
+  gap:16px;
+}
+
+/* ---------- header ---------- */
+.hdr{display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.hdr-t{display:grid;gap:4px;min-width:0}
+.eyebrow{font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+h1{font-family:var(--font-display);font-weight:800;font-size:clamp(28px,7.4vw,40px);line-height:1.02;text-wrap:balance}
+h1 span{color:var(--boss)}
+.icon-btn{width:40px;height:40px;flex:none;border-radius:12px;border:1px solid var(--rule);background:var(--panel);display:grid;place-items:center;color:var(--muted)}
+.icon-btn svg{width:20px;height:20px}
+.icon-btn[aria-pressed="true"]{color:var(--fg)}
+
+/* ---------- final boss + hunter ---------- */
+.top{
+  --c:var(--boss);
+  position:relative;
+  border:1px solid color-mix(in srgb,var(--boss) 42%,var(--rule));
+  border-radius:18px;
+  background:radial-gradient(120% 160% at 100% 0%,color-mix(in srgb,var(--boss) 20%,transparent),transparent 60%),var(--panel);
+  padding:14px;
+  display:grid;
+  gap:12px;
+}
+.final{display:grid;grid-template-columns:62px minmax(0,1fr) auto;gap:12px;align-items:center}
+.final-face{width:62px;height:62px;filter:drop-shadow(0 0 10px color-mix(in srgb,var(--boss) 55%,transparent))}
+.final-face svg{width:100%;height:100%;overflow:visible}
+.final-face .ff-body{transform-box:fill-box;transform-origin:50% 100%;animation:sigh 6s ease-in-out infinite}
+@keyframes sigh{50%{transform:scale(1.02,.97)}}
+.final-face.hurt{animation:hurt .45s ease-out}
+.final-face.healed{animation:fheal .9s ease-out}
+@keyframes hurt{0%{filter:brightness(2.4) drop-shadow(0 0 14px var(--boss))}25%{transform:translateX(-5px) rotate(-5deg)}55%{transform:translateX(4px) rotate(3deg)}100%{transform:none}}
+@keyframes fheal{0%,100%{transform:none}40%{transform:scale(1.12);filter:drop-shadow(0 0 18px var(--boss)) brightness(1.3)}}
+.final-main{display:grid;gap:5px;min-width:0}
+.final-main small{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--boss)}
+.final-main b{font-family:var(--font-display);font-weight:800;font-size:clamp(17px,4.6vw,22px);line-height:1.1}
+.days{display:grid;justify-items:end;line-height:1}
+.days .big{font-family:var(--font-display);font-weight:800;font-size:clamp(30px,8vw,42px)}
+.days span:last-child{color:var(--muted);font-size:11.5px;margin-top:4px;text-align:right;max-width:9ch;line-height:1.2}
+.bar{height:10px;border-radius:5px;background:var(--panel-2);overflow:hidden}
+.bar > i{display:block;height:100%;width:100%;border-radius:5px;background:var(--c,var(--boss));transition:width .6s cubic-bezier(.3,.9,.3,1)}
+.bar.big{height:14px;border-radius:7px;background:color-mix(in srgb,var(--c) 12%,var(--bg))}
+.bar.big > i{background:linear-gradient(90deg,color-mix(in srgb,var(--c) 75%,#fff),var(--c));box-shadow:0 0 12px color-mix(in srgb,var(--c) 45%,transparent)}
+.hp-line{display:flex;justify-content:space-between;gap:2px 12px;flex-wrap:wrap;font-size:12px;color:var(--muted)}
+.hunter{display:grid;grid-template-columns:auto auto minmax(0,1fr);gap:8px;align-items:stretch}
+.rank-badge,.streak{display:grid;justify-items:center;align-content:center;gap:1px;padding:6px 12px;border-radius:12px;background:var(--panel-2);min-width:62px}
+.rank-badge b{font-family:var(--font-display);font-weight:800;font-size:22px;line-height:1;color:var(--rc,var(--muted));text-shadow:0 0 14px color-mix(in srgb,var(--rc,var(--muted)) 50%,transparent)}
+.rank-badge small,.streak small{font-size:10.5px;color:var(--muted);white-space:nowrap}
+.streak .s-row{display:flex;align-items:center;gap:3px}
+.streak svg{width:18px;height:18px;transform-origin:50% 90%;transform:scale(var(--fs,.8))}
+.streak b{font-family:var(--font-display);font-weight:800;font-size:20px;line-height:1}
+.streak.rage{background:color-mix(in srgb,var(--body) 22%,var(--panel-2));box-shadow:0 0 0 1px color-mix(in srgb,var(--body) 60%,transparent)}
+.streak.rage svg{animation:flick .5s ease-in-out infinite alternate}
+@keyframes flick{to{transform:scale(calc(var(--fs,1) * 1.12)) rotate(4deg)}}
+.streak.bump{animation:bump .5s ease-out}
+@keyframes bump{40%{transform:scale(1.15)}}
+.quest{
+  display:flex;align-items:center;gap:10px;text-align:left;min-width:0;
+  border:1px solid color-mix(in srgb,var(--faith) 55%,var(--rule));border-radius:12px;
+  background:color-mix(in srgb,var(--faith) 10%,var(--panel-2));padding:7px 10px;
+}
+.quest .q-box{width:24px;height:24px;flex:none;border-radius:7px;border:2px solid var(--faith);display:grid;place-items:center;color:var(--bg)}
+.quest .q-box svg{width:15px;height:15px;opacity:0}
+.quest .q-txt{display:grid;min-width:0}
+.quest .q-txt b{font-weight:600;font-size:13.5px;line-height:1.2}
+.quest .q-txt small{font-size:11.5px;color:var(--muted);line-height:1.25}
+.quest.done:disabled{opacity:1}
+.quest.done{border-color:color-mix(in srgb,var(--money) 45%,var(--rule));background:color-mix(in srgb,var(--money) 8%,var(--panel-2))}
+.quest.done .q-box{border-color:var(--money);background:var(--money)}
+.quest.done .q-box svg{opacity:1}
+.quest.pop .q-box{animation:pop .5s cubic-bezier(.2,1.8,.4,1)}
+@keyframes pop{0%{transform:scale(.4)}100%{transform:scale(1)}}
+
+/* ---------- bestiary: one portrait per line ---------- */
+.bestiary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.beast{border:0;background:none;padding:4px 0 2px;display:grid;justify-items:center;gap:3px;min-width:0;border-radius:12px}
+.beast-ring{position:relative;width:58px;height:58px;max-width:100%;display:grid;place-items:center}
+.beast-ring > svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
+.beast-ring .rb{fill:none;stroke:var(--panel-2);stroke-width:4}
+.beast-ring .rf{fill:none;stroke:var(--c);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
+.beast-face{width:42px;height:42px;display:grid;place-items:center;border-radius:50%;background:radial-gradient(circle at 50% 60%,color-mix(in srgb,var(--c) 18%,var(--bg)),var(--bg) 70%)}
+.beast-face svg{width:46px;height:46px;overflow:visible;margin-top:-4px}
+.beast-face .ph{font-family:var(--font-display);font-weight:800;font-size:17px;color:var(--c)}
+.beast-name{font-size:11.5px;line-height:1.15;color:var(--muted);max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.beast-count{font-size:10px;color:var(--muted);opacity:.8}
+.beast.is-sel .beast-name{color:var(--c);font-weight:600}
+.beast.is-sel .beast-face{box-shadow:0 0 0 2px var(--bg),0 0 0 3px color-mix(in srgb,var(--c) 70%,transparent),0 0 18px color-mix(in srgb,var(--c) 45%,transparent)}
+.beast.is-main .beast-name::before{content:"★ ";color:var(--faith)}
+
+/* ---------- arena ---------- */
+.arena{
+  --c:var(--other);
+  position:relative;overflow:hidden;
+  border:1px solid color-mix(in srgb,var(--c) 38%,var(--rule));
+  border-radius:20px;
+  background-color:var(--panel);
+  background-image:radial-gradient(75% 52% at 50% 40%,color-mix(in srgb,var(--c) 17%,transparent),transparent 72%),var(--topo,none);
+  background-repeat:no-repeat;
+  background-position:center,center 30%;
+  background-size:auto,640px 460px;
+  padding:14px 14px 16px;
+  display:grid;gap:10px;
+  transition:border-color .3s;
+}
+.arena.rage{border-color:color-mix(in srgb,var(--body) 70%,var(--rule));box-shadow:inset 0 0 50px -18px color-mix(in srgb,var(--body) 80%,transparent)}
+.arena.shake{animation:ashake .45s ease-out}
+@keyframes ashake{15%{transform:translate(-6px,3px)}30%{transform:translate(5px,-4px)}45%{transform:translate(-4px,2px)}60%{transform:translate(3px,-1px)}80%{transform:translate(-1px,1px)}}
+.arena-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
+.arena-head h2{font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--c)}
+.arena-head p{font-size:12.5px;color:var(--muted);flex-basis:100%}
+.head-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+.head-add{border:1px solid color-mix(in srgb,var(--c) 60%,transparent);background:color-mix(in srgb,var(--c) 12%,transparent);color:var(--c);border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.chip{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);border-radius:999px;padding:2px 8px}
+.rage-chip{color:var(--body);border-color:color-mix(in srgb,var(--body) 60%,transparent)}
+
+.track-scroll{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:var(--rule) transparent;margin-inline:-4px}
+.track{list-style:none;margin:0;padding:2px 4px;display:flex;align-items:flex-start;width:max-content;min-width:100%}
+.step{position:relative;width:80px;flex:none}
+.step + .step::before{content:"";position:absolute;top:20px;left:calc(-50% + 20px);right:calc(50% + 20px);border-top:2px dashed var(--rule)}
+.step.reached::before{border-top-style:solid;border-top-color:color-mix(in srgb,var(--c) 75%,transparent)}
+.track.is-pool .step::before{display:none}
+.step-btn{width:100%;border:0;background:none;padding:2px 2px 4px;display:grid;justify-items:center;gap:4px;text-align:center}
+.orb-box{height:40px;display:grid;place-items:center}
+.orb{width:30px;height:30px;border-radius:50%;display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:11px;border:2px dashed var(--rule);background:var(--bg);color:var(--muted);transition:transform .15s ease}
+.lbl{font-size:11.5px;line-height:1.2;color:var(--muted);max-width:76px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.is-done .orb{border:2px solid color-mix(in srgb,var(--c) 45%,transparent);background:color-mix(in srgb,var(--c) 22%,var(--panel));color:var(--fg)}
+.is-done .lbl{text-decoration:line-through;text-decoration-color:color-mix(in srgb,var(--c) 80%,transparent)}
+.is-current .orb{width:36px;height:36px;border:2px solid var(--c);background:var(--c);color:var(--bg);box-shadow:0 0 0 4px color-mix(in srgb,var(--c) 18%,transparent)}
+.is-current .lbl{color:var(--fg);font-weight:600}
+.is-sealed .orb{border-color:color-mix(in srgb,var(--c) 55%,transparent);color:var(--c)}
+.is-gold .orb{box-shadow:0 0 0 3px color-mix(in srgb,var(--faith) 55%,transparent),0 0 14px var(--faith)}
+.is-sel .orb{transform:scale(1.1);outline:2px solid var(--fg);outline-offset:3px}
+.is-sel .lbl{color:var(--fg)}
+.step.add .orb{border:2px dashed color-mix(in srgb,var(--c) 65%,transparent);color:var(--c);font-family:var(--font-body);font-weight:500;font-size:18px}
+.step.add .lbl{color:var(--c)}
+.step-btn:hover .orb{transform:scale(1.06)}
+
+/* stage + monsters */
+.stage{position:relative;min-height:232px;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:4px 8px;padding-top:6px}
+.slot{display:grid;justify-items:center;gap:0;width:132px;max-width:46%}
+.slot-name{font-size:12px;color:var(--muted);text-align:center;line-height:1.2;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.slot.picked .slot-name{color:var(--fg);font-weight:600}
+.mon{
+  position:relative;border:0;background:none;padding:0;
+  width:216px;max-width:100%;aspect-ratio:1;display:block;
+  touch-action:manipulation;user-select:none;-webkit-user-select:none;isolation:isolate;
+}
+.stage.pool .mon{width:132px}
+.mon svg{display:block;width:100%;height:100%;overflow:visible}
+.mon .m-body{transform-box:fill-box;transform-origin:50% 100%;animation:breathe 3.4s ease-in-out infinite}
+@keyframes breathe{50%{transform:scale(1.035,.972)}}
+.mon .eye{transform-box:fill-box;transform-origin:center;animation:blink 5.6s infinite}
+@keyframes blink{0%,94%,100%{transform:scaleY(1)}96.5%{transform:scaleY(.08)}}
+.mon .pupil{transform:translate(var(--px,0px),var(--py,0px));transition:transform .28s ease-out}
+.mon .xeye{display:none}
+.mon .brow{opacity:0;transition:opacity .35s}
+.mon.angry .brow{opacity:1}
+.mon .crack{opacity:0;transition:opacity .45s}
+.mon[data-crack="1"] .k1,.mon[data-crack="2"] .k1,.mon[data-crack="2"] .k2,.mon[data-crack="3"] .crack{opacity:1}
+.mon .m-shield{opacity:0;transition:opacity .3s}
+.mon.shielded .m-shield{opacity:1}
+.mon .m-ring{transform-box:fill-box;transform-origin:center;animation:spin 16s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.mon.is-current{cursor:pointer}
+.mon.is-current::after{content:"";position:absolute;left:22%;right:22%;bottom:5%;height:9%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--c) 40%,transparent),transparent);z-index:-1}
+.mon.is-done svg{filter:grayscale(1) brightness(.55)}
+.mon.is-done .pupil{display:none}
+.mon.is-done .xeye{display:inline}
+.mon.is-done .m-body{animation:none;transform:rotate(-7deg) translateY(4px)}
+.mon.is-done .eye{animation:none}
+.mon.is-next svg,.mon.is-sealed svg{filter:brightness(0) drop-shadow(0 0 1px color-mix(in srgb,var(--c) 90%,transparent)) drop-shadow(0 0 10px color-mix(in srgb,var(--c) 35%,transparent));opacity:.85}
+.mon-q{position:absolute;inset:0;display:none;place-items:center;font-family:var(--font-display);font-weight:800;font-size:44px;color:color-mix(in srgb,var(--c) 75%,transparent);padding-top:14%}
+.mon.is-next .mon-q,.mon.is-sealed .mon-q{display:grid}
+.mon.gold::before{content:"";position:absolute;inset:8%;border-radius:50%;background:radial-gradient(closest-side,color-mix(in srgb,var(--faith) 42%,transparent),transparent);animation:aura 2.2s ease-in-out infinite;z-index:-1}
+.mon.gold svg{filter:drop-shadow(0 0 6px color-mix(in srgb,var(--faith) 80%,transparent))}
+@keyframes aura{50%{transform:scale(1.12);opacity:.6}}
+.mon.hit{animation:hit .4s ease-out}
+@keyframes hit{0%{filter:brightness(2.7) saturate(.3)}14%{transform:translateX(-9px) scale(1.07,.9)}34%{transform:translateX(8px) rotate(2deg);filter:none}56%{transform:translateX(-5px)}78%{transform:translateX(2px)}100%{transform:none}}
+.mon.crit-hit{animation:crit .62s ease-out}
+@keyframes crit{0%{filter:brightness(3.2) saturate(0)}10%{transform:scale(1.16,.82) rotate(-6deg)}26%{transform:translateX(12px) scale(.94,1.08) rotate(5deg);filter:brightness(1.6)}46%{transform:translateX(-9px) rotate(-3deg);filter:none}66%{transform:translateX(5px)}100%{transform:none}}
+.mon.dying{animation:die 1s ease-in forwards;pointer-events:none}
+@keyframes die{0%{transform:none}18%{transform:scale(1.14) rotate(-5deg);filter:brightness(3)}40%{transform:scale(1.05) rotate(4deg);filter:brightness(2)}100%{transform:translateY(46px) scale(.15) rotate(30deg);opacity:0;filter:brightness(3) blur(3px)}}
+.mon.enter{animation:enter .8s cubic-bezier(.2,1.5,.35,1) both}
+@keyframes enter{from{transform:translateY(46px) scale(.25);opacity:0}}
+.mon.nope{animation:nope .38s ease-out}
+@keyframes nope{25%{transform:translateX(-6px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+.mon.blocked .m-shield{animation:sflash .5s ease-out}
+@keyframes sflash{0%{opacity:1;filter:brightness(3)}100%{opacity:1}}
+.mon.healed svg{animation:mheal .9s ease-out}
+@keyframes mheal{40%{filter:drop-shadow(0 0 16px #48c08c) brightness(1.3)}}
+.stage-empty{display:grid;justify-items:center;gap:10px;text-align:center;padding:24px 8px;color:var(--muted);font-size:13.5px;max-width:34ch;margin:0 auto}
+.stage-empty .ghost{width:96px;height:96px;border-radius:50%;border:2px dashed color-mix(in srgb,var(--c) 60%,transparent);display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:34px;color:var(--c);animation:aura 3s ease-in-out infinite}
+.stage-empty b{color:var(--fg);font-family:var(--font-display);font-weight:600;font-size:14px}
+
+.fx{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:5}
+.dmg{position:absolute;left:0;top:0;font-family:var(--font-display);font-weight:800;font-size:30px;line-height:1;color:#fff;white-space:nowrap;text-shadow:0 2px 0 var(--bg),0 0 14px color-mix(in srgb,var(--c) 90%,transparent);will-change:transform,opacity}
+.dmg.crit{font-size:44px;color:#ffd27a;text-shadow:0 3px 0 #5a1020,0 0 22px var(--boss)}
+.dmg.heal{color:#7ef0b8}
+.dmg.mini{font-size:18px;color:#ff8a9a;text-shadow:0 2px 0 var(--bg)}
+.dmg.block{font-size:22px;letter-spacing:.06em;color:var(--c)}
+.dmg small{display:block;font-size:12px;letter-spacing:.14em;text-align:center;margin-top:2px}
+.pt{position:absolute;left:0;top:0;border-radius:50%;will-change:transform,opacity}
+.slash{position:absolute;left:0;top:0;width:200px;height:200px;overflow:visible}
+
+/* boss detail */
+.info{display:grid;gap:7px}
+.info-top{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:2px 12px}
+.info h3{font-family:var(--font-display);font-weight:600;font-size:17px;line-height:1.25}
+.tag{font-family:var(--font-mono);font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--c)}
+.goal{font-size:13.5px;color:var(--fg)}
+.extra{font-size:13px;color:var(--muted)}
+.extra b{color:var(--c);font-weight:600}
+.shield{font-size:13px;border:1px solid color-mix(in srgb,var(--c) 55%,transparent);background:color-mix(in srgb,var(--c) 9%,transparent);border-radius:10px;padding:6px 10px;display:flex;flex-wrap:wrap;gap:4px 10px;align-items:baseline;justify-content:space-between}
+.shield b{color:var(--c)}
+.reward{font-size:13px;border:1px dashed color-mix(in srgb,var(--faith) 60%,transparent);border-radius:10px;padding:6px 10px;color:var(--fg)}
+.reward b{color:var(--faith)}
+.reward-set{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.reward-set span{font-size:12.5px;color:var(--faith);flex-basis:100%}
+.reward-set input{flex:1 1 160px;min-width:0}
+.gold-line{font-size:12.5px;color:var(--faith);font-family:var(--font-mono)}
+.info-actions{display:flex;justify-content:flex-end;gap:14px;flex-wrap:wrap}
+.link-btn{border:0;background:none;padding:2px 0;font-size:12.5px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
+.link-btn.danger{color:var(--boss)}
+.link-btn.accent{color:var(--c)}
+
+/* actions */
+.act{display:grid;gap:8px;border-top:1px solid var(--rule);padding-top:12px}
+.act-hint{font-size:12px;color:var(--muted);text-align:center}
+.field{width:100%;min-width:0;border:1px solid var(--rule);border-radius:10px;background:var(--bg);padding:9px 12px;font-size:14.5px;color:var(--fg)}
+.field:focus{outline:none;border-color:var(--c)}
+.field.pulse{animation:fpulse .7s ease-out}
+@keyframes fpulse{0%{box-shadow:0 0 0 0 color-mix(in srgb,var(--c) 70%,transparent)}100%{box-shadow:0 0 0 12px transparent}}
+.act-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px}
+.inp{position:relative;display:block;min-width:0}
+.inp .field{padding-right:38px}
+.inp span{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none}
+.btn-hit,.btn-crit{
+  border:0;border-radius:12px;padding:12px 10px;min-height:52px;
+  display:flex;align-items:center;justify-content:center;gap:10px;
+  font-family:var(--font-display);font-weight:800;font-size:15px;letter-spacing:.02em;
+  transition:transform .1s ease;
+}
+.btn-hit{background:var(--c);color:var(--bg);box-shadow:0 4px 0 color-mix(in srgb,var(--c) 45%,#000)}
+.btn-crit{background:var(--boss);color:#fff;box-shadow:0 4px 0 #6c1526,0 0 18px -4px var(--boss)}
+.btn-hit b,.btn-crit b{font-family:var(--font-mono);font-weight:700;font-size:14px;opacity:.85}
+.btn-hit:active,.btn-crit:active{transform:translateY(3px);box-shadow:none}
+.ro-note{font-size:12.5px;color:var(--muted);text-align:center}
+
+/* journal + rules */
+.bottom{display:grid;gap:12px}
+details{border:1px solid var(--rule);border-radius:14px;background:var(--panel);padding:12px 14px}
+summary{cursor:pointer;font-family:var(--font-display);font-weight:600;font-size:14px}
+summary small{font-family:var(--font-body);font-weight:400;font-size:12px;color:var(--muted);margin-left:6px}
+details > ul{list-style:none;margin:12px 0 0;padding:0;display:grid;gap:8px}
+details li{display:grid;grid-template-columns:54px minmax(0,1fr);gap:10px;font-size:13.5px;color:var(--muted)}
+details li b,details li time{font-family:var(--font-mono);font-size:12px;color:var(--fg);padding-top:1px}
+.rules li{grid-template-columns:70px minmax(0,1fr)}
+.save{--c:var(--faith);display:grid;gap:10px;margin-top:12px;font-size:13px;color:var(--muted)}
+.save-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px}
+.save textarea{resize:vertical;min-height:84px;font-size:12px;line-height:1.4}
+.save-imp{display:grid;gap:8px}
+
+/* add-boss sheet */
+.sheet{position:fixed;inset:0;z-index:40;background:rgba(5,8,14,.72);display:flex;align-items:flex-end;justify-content:center;padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px))}
+.sheet-card{--c:var(--other);width:100%;max-width:560px;max-height:100%;overflow:auto;border:1px solid color-mix(in srgb,var(--c) 45%,var(--rule));border-radius:18px;background:var(--panel);padding:16px;display:grid;gap:12px;animation:rise .28s ease-out}
+@keyframes rise{from{transform:translateY(24px);opacity:0}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.sheet-head h2{font-family:var(--font-display);font-weight:800;font-size:17px}
+.sheet-head h2 span{color:var(--c)}
+.x{width:34px;height:34px;border-radius:10px;border:1px solid var(--rule);background:none;color:var(--muted);font-size:18px;line-height:1}
+.sheet label{display:grid;gap:4px;font-size:12px;color:var(--muted);min-width:0}
+.f-row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:end}
+.f-set{border:0;margin:0;padding:0;min-width:0}
+.f-set legend{font-size:12px;color:var(--muted);padding:0;margin-bottom:6px}
+.f-lines{display:flex;flex-wrap:wrap;gap:6px}
+.sheet .ln{--lc:var(--other);display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--muted);cursor:pointer}
+.sheet .ln::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--lc)}
+.sheet .ln:has(input:checked){border-color:var(--lc);color:var(--fg);background:color-mix(in srgb,var(--lc) 14%,transparent)}
+.f-ranks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.sheet .rk{--rc:var(--muted);display:grid;gap:1px;align-content:start;border:1px solid var(--rule);border-radius:12px;padding:8px 9px;cursor:pointer;background:var(--bg)}
+.rk b{font-family:var(--font-display);font-weight:800;font-size:18px;line-height:1.1;color:var(--rc)}
+.rk .rk-name{font-size:12.5px;font-weight:600;color:var(--fg)}
+.rk small{font-size:11px;line-height:1.25;color:var(--muted)}
+.rk i{font-style:normal;font-family:var(--font-mono);font-size:10.5px;color:var(--muted);margin-top:3px}
+.sheet .rk:has(input:checked){border-color:var(--rc);background:color-mix(in srgb,var(--rc) 13%,var(--bg));box-shadow:0 0 16px -5px var(--rc)}
+.sheet .rk:has(input:focus-visible),.sheet .ln:has(input:focus-visible){outline:2px solid var(--fg);outline-offset:2px}
+#f-reward-hint{font-style:normal;color:var(--faith)}
+.f-note{font-size:12px;color:var(--muted)}
+.check{display:flex!important;grid-template-columns:none;align-items:flex-start;gap:10px!important;font-size:13px!important;color:var(--fg)!important;border:1px solid color-mix(in srgb,var(--faith) 40%,var(--rule));border-radius:10px;padding:9px 11px}
+.check input{margin:3px 0 0;accent-color:var(--faith);width:16px;height:16px;flex:none}
+.check b{color:var(--faith)}
+.check span span{color:var(--muted)}
+.f-actions{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.btn-main{border:0;border-radius:10px;background:var(--c);color:var(--bg);font-weight:600;padding:10px 18px}
+.btn-ghost{border:1px solid var(--rule);border-radius:10px;background:none;padding:9px 16px;color:var(--muted)}
+.f-msg{font-size:12.5px;color:var(--boss)}
+
+/* overlays */
+.ovl{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:radial-gradient(circle at 50% 45%,rgba(12,17,29,.7),rgba(5,8,14,.94));padding:24px max(16px,env(safe-area-inset-right,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));animation:fade .25s ease-out}
+@keyframes fade{from{opacity:0}}
+.ovl-card{--c:var(--boss);position:relative;width:100%;max-width:400px;display:grid;justify-items:center;gap:10px;text-align:center}
+.ovl-card h2{font-family:var(--font-display);font-weight:800;font-size:clamp(22px,6vw,28px);line-height:1.15;text-wrap:balance}
+.ovl-sub{font-size:14px;color:var(--muted)}
+.ovl-sub b{color:var(--fg)}
+.stamp{font-family:var(--font-display);font-weight:800;font-size:clamp(30px,10vw,46px);letter-spacing:.06em;color:var(--boss);border:4px solid var(--boss);border-radius:10px;padding:4px 16px;transform:rotate(-7deg);animation:stamp .5s cubic-bezier(.2,1.6,.4,1) both;text-shadow:0 0 22px color-mix(in srgb,var(--boss) 60%,transparent)}
+@keyframes stamp{from{transform:rotate(-7deg) scale(2.6);opacity:0}}
+.ovl-reward{border:1px dashed var(--faith);border-radius:12px;padding:10px 14px;font-size:14px;color:var(--fg);animation:rise .4s .35s ease-out both}
+.ovl-reward b{color:var(--faith)}
+.rank-big{position:relative;isolation:isolate;width:132px;height:132px;display:grid;place-items:center;font-family:var(--font-display);font-weight:800;font-size:72px;line-height:1;color:var(--c);text-shadow:0 0 30px var(--c);animation:stamp .6s cubic-bezier(.2,1.6,.4,1) both}
+.rank-big::before{content:"";position:absolute;inset:-40px;border-radius:50%;background:repeating-conic-gradient(from 0deg,color-mix(in srgb,var(--c) 30%,transparent) 0 8deg,transparent 8deg 22deg);mask:radial-gradient(closest-side,#000 30%,transparent);-webkit-mask:radial-gradient(closest-side,#000 30%,transparent);animation:spin 12s linear infinite;z-index:-1}
+.ovl .btn-main{margin-top:8px;background:var(--c);min-width:160px}
+.ovl-tap{font-size:11.5px;color:var(--muted)}
+
+/* toast */
+.toast{position:fixed;left:50%;bottom:calc(16px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:45;width:min(560px,calc(100% - 32px));display:flex;align-items:center;justify-content:space-between;gap:12px;border:1px solid var(--rule);border-radius:14px;background:var(--panel-2);padding:10px 12px 10px 14px;font-size:13.5px;box-shadow:0 12px 30px rgba(0,0,0,.45);animation:rise .22s ease-out}
+.toast button{border:0;border-radius:8px;background:var(--fg);color:var(--bg);font-weight:600;padding:6px 12px;flex:none}
+.toast.err{border-color:color-mix(in srgb,var(--boss) 60%,var(--rule))}
+
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
+}
+</style>
+
+<main class="wrap">
+  <header class="hdr">
+    <div class="hdr-t">
+      <span class="eyebrow" id="eyebrow">Карта охоты · МСК</span>
+      <h1>Охота до <span>20</span></h1>
+    </div>
+    <button class="icon-btn" id="snd" type="button" aria-pressed="true" aria-label="Звук ударов"></button>
+  </header>
+
+  <section class="top" id="top" aria-label="Финальный босс и охотник">
+    <div class="final">
+      <div class="final-face" id="final-face"></div>
+      <div class="final-main">
+        <small>Финальный босс · 14.02.2027</small>
+        <b>Обычная жизнь</b>
+        <div class="bar"><i id="final-bar"></i></div>
+        <div class="hp-line"><span class="num" id="final-hp">1 000 / 1 000 HP</span><span id="final-ending">Любой удар по боссу ранит и её</span></div>
+      </div>
+      <div class="days"><span class="big num" id="days">—</span><span id="days-unit">дней до прибытия</span></div>
+    </div>
+    <div class="hunter">
+      <div class="rank-badge" id="rank-badge"><b id="rank">E</b><small>мой ранг</small></div>
+      <div class="streak" id="streak-box">
+        <span class="s-row"><svg viewBox="0 0 24 24" aria-hidden="true"><defs><linearGradient id="flame" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#d43a52"/><stop offset=".55" stop-color="#e8674f"/><stop offset="1" stop-color="#e2b55b"/></linearGradient></defs><path fill="url(#flame)" d="M12 2.2c.7 3.3 4 5.2 5.5 8.5 1.6 3.5.2 8.4-3.7 9.8-4.7 1.7-9.4-1.4-9.4-6.3 0-2.6 1.3-4.5 2.9-6-.1 1.6.4 3 1.6 4-.4-4 1-7.5 3.1-10z"/></svg><b class="num" id="streak">0</b></span>
+        <small id="streak-unit">дней серии</small>
+      </div>
+      <button class="quest" id="quest" type="button" disabled>
+        <span class="q-box"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.2 4.2L19 7" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+        <span class="q-txt"><b id="quest-title">Квест дня</b><small>Лёгкая тренировка · мониторинг Кворка</small></span>
+      </button>
+    </div>
+  </section>
+
+  <nav class="bestiary" id="bestiary" aria-label="Линии боссов"></nav>
+
+  <section class="arena" id="arena" aria-label="Арена">
+    <div class="arena-head" id="arena-head"><h2>Арена</h2><p>Поднимаем карту охоты…</p></div>
+    <div class="track-scroll"><ol class="track" id="track"></ol></div>
+    <div class="stage" id="stage">
+      <div class="stage-empty"><span class="ghost">?</span><b>Враги выходят из тумана</b><span>Сейчас здесь появится босс выбранной линии. Сделал шаг к цели — тапни по нему.</span></div>
+    </div>
+    <div class="info" id="info"></div>
+    <form class="act" id="act" autocomplete="off" hidden>
+      <label for="note" class="sr">Что сделал</label>
+      <input class="field" id="note" maxlength="140" placeholder="Что сделал? Строка попадёт в журнал">
+      <div class="act-row" id="act-hit">
+        <button type="button" class="btn-hit" id="btn-hit">Удар <b id="hit-dmg">−1</b></button>
+        <button type="button" class="btn-crit" id="btn-crit">Крит <b id="crit-dmg">−3</b></button>
+      </div>
+      <div class="act-row" id="act-money" hidden>
+        <label class="inp" for="rub"><span class="sr">Сколько заработал</span><input class="field num" id="rub" type="text" inputmode="numeric" placeholder="Заработал"><span>₽</span></label>
+        <button type="submit" class="btn-hit" id="btn-rub">Нанести урон</button>
+      </div>
+      <div class="act-row" id="act-weight" hidden>
+        <label class="inp" for="kg"><span class="sr">Вес сейчас</span><input class="field num" id="kg" type="text" inputmode="decimal" placeholder="Вес сейчас"><span>кг</span></label>
+        <button type="submit" class="btn-hit" id="btn-kg">Взвеситься</button>
+      </div>
+      <p class="act-hint" id="act-hint">Сделал шаг к цели — тапни по врагу</p>
+    </form>
+    <p class="ro-note" id="ro-note" hidden>Только просмотр: менять игру может её владелец.</p>
+    <div class="fx" id="fx" aria-hidden="true"></div>
+  </section>
+
+  <div class="bottom">
+    <details id="journal">
+      <summary>Журнал битвы <small id="log-sum"></small></summary>
+      <ul id="log"><li><time>—</time><span>Записи появятся после первых ударов.</span></li></ul>
+    </details>
+    <details>
+      <summary>Правила</summary>
+      <ul class="rules">
+        <li><b>Удар −1</b><span>любой шаг к цели: отклик, работа над заказом, учёба, тренировка</span></li>
+        <li><b>Крит −3</b><span>реальный результат: заказчик ответил, заказ сдан, цель закрыта</span></li>
+        <li><b>1 000 ₽</b><span>−1 HP денежному боссу; 1-го числа он восстанавливается</span></li>
+        <li><b>1 кг</b><span>−1 HP боссу тела, набранный вес его лечит</span></li>
+        <li><b>×2</b><span>ярость: после 7 дней серии весь урон удваивается</span></li>
+        <li><b>Серия</b><span>квест дня выполнен — +1; пропустил день — серия сгорает</span></li>
+        <li><b>+10</b><span>Обычной жизни за каждый пустой день</span></li>
+        <li><b>Ранг</b><span>равен рангу сильнейшего поверженного босса</span></li>
+        <li><b>E → S</b><span>E Мелочь · D Задача · C Испытание · B Рубеж · A Вершина · S Мечта</span></li>
+        <li><b>Награда</b><span>за боссов C и выше назначается заранее, забираешь после победы</span></li>
+        <li><b>Золотой</b><span>враг живёт 3 дня, удары по нему бьют Обычную жизнь вдвое</span></li>
+        <li><b>14.02</b><span>0 HP — «Легенда»; снял половину — «Выжил»; меньше — «Обычная жизнь победила»</span></li>
+      </ul>
+    </details>
+    <details id="save-box">
+      <summary>Сохранение <small id="save-where"></small></summary>
+      <div class="save">
+        <p id="save-text">Прогресс загружается.</p>
+        <div class="save-row">
+          <button type="button" class="btn-ghost" id="exp-btn">Скопировать прогресс</button>
+          <button type="button" class="btn-ghost" id="imp-open">Вставить прогресс</button>
+        </div>
+        <div class="save-imp" id="imp-box" hidden>
+          <label for="imp-text" class="sr">Прогресс для вставки</label>
+          <textarea class="field num" id="imp-text" rows="4" spellcheck="false" placeholder="Вставь сюда скопированный прогресс"></textarea>
+          <div class="save-row"><button type="button" class="btn-main" id="imp-btn">Заменить прогресс</button><span class="f-msg" id="imp-msg" role="status"></span></div>
+        </div>
+      </div>
+    </details>
+  </div>
+</main>
+
+<div class="sheet" id="sheet" hidden>
+  <form class="sheet-card" id="add-form" autocomplete="off">
+    <div class="sheet-head"><h2 id="add-title">Новый босс</h2><button type="button" class="x" id="add-x" aria-label="Закрыть">×</button></div>
+    <fieldset class="f-set" id="f-lines-set"><legend>Линия</legend><div class="f-lines" id="f-lines"></div></fieldset>
+    <label for="f-name">Имя босса<input class="field" id="f-name" maxlength="60" placeholder="Например: Отрисовка на Кворке"></label>
+    <fieldset class="f-set"><legend>Ранг: насколько он силён</legend><div class="f-ranks" id="f-ranks"></div></fieldset>
+    <div class="f-row">
+      <label for="f-hp">HP<input class="field num" id="f-hp" type="number" min="1" max="100000" step="1" inputmode="numeric" value="3"></label>
+      <p class="f-note" id="f-hpnote">HP подставляется по рангу, его можно поправить.</p>
+    </div>
+    <label for="f-goal">Цель<input class="field" id="f-goal" maxlength="120" placeholder="Как его победить"></label>
+    <label for="f-reward" id="f-reward-wrap"><span>Награда за победу · <i id="f-reward-hint">по желанию</i></span><input class="field" id="f-reward" maxlength="80" placeholder="Что подаришь себе после победы"></label>
+    <label class="check" id="f-gold-wrap" for="f-gold"><input type="checkbox" id="f-gold"><span><b>Золотой враг.</b> <span>Живёт 3 дня, удары по нему бьют Обычную жизнь вдвое.</span></span></label>
+    <div class="f-actions"><button type="submit" class="btn-main" id="f-submit">Выпустить босса</button><button type="button" class="btn-ghost" id="add-cancel">Отмена</button><span class="f-msg" id="f-msg" role="status"></span></div>
+  </form>
+</div>
+
+<div class="ovl" id="ovl" hidden></div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+  'use strict';
+  var RANKS = ['E','D','C','B','A','S'];
+  var RANK_HP = {E:1, D:3, C:10, B:25, A:50, S:100};
+  var RANK_COLOR = {E:'#8e96aa', D:'#8db4cc', C:'#48c08c', B:'#b48cf2', A:'#e8674f', S:'#e2b55b'};
+  var RANK_INFO = {
+    E:{name:'Мелочь', hint:'Одно действие, один подход'},
+    D:{name:'Задача', hint:'Несколько шагов, пара дней'},
+    C:{name:'Испытание', hint:'Неделя-две упорной работы'},
+    B:{name:'Рубеж', hint:'Месяц, нужна система'},
+    A:{name:'Вершина', hint:'Несколько месяцев'},
+    S:{name:'Мечта', hint:'Цель, которая меняет жизнь'}
+  };
+  var LINE_COLOR = {faith:'#e2b55b', money:'#48c08c', body:'#e8674f', meme:'#b48cf2', other:'#8db4cc'};
+  var STATUS = {done:'Повержен', current:'Бой сейчас', next:'Впереди', sealed:'Скрыт'};
+  var ARRIVAL = '2027-02-14';
+  var QUEST_TEXT = 'Лёгкая тренировка · мониторинг Кворка';
+  var LOG_CAP = 200;
+  var LOCAL_SEED = {"lines": {"faith": {"bosses": [], "main": true, "order": 1, "rule": "Цели назначаешь ты сам", "title": "Вера"}, "other": {"bosses": [{"ability": "Крит −3, когда заказ сдан.", "goal": "Заказ с HTML-баннером", "hp": 3, "max": 3, "name": "Баннер-голем", "rank": "D", "shield": "пока заказчица не пришлёт рабочие ссылки, удары не проходят.", "status": "current"}, {"ability": "Возрождается каждое воскресенье.", "doneAt": "2026-10-16", "goal": "Уборка", "hp": 0, "max": 1, "name": "Пыльный слизень", "rank": "E", "respawn": "weekly", "status": "done"}], "layout": "pool", "order": 5, "rule": "Мелкие враги, бей любого", "title": "Другие дела"}, "money": {"bosses": [{"ability": "1-го числа восстанавливает все HP.", "goal": "25 000 ₽ за месяц", "hp": 25, "max": 25, "name": "Страж 25к", "rank": "B", "status": "current", "unit": "₽ × 1000"}, {"goal": "50 000 ₽ за месяц", "max": 50, "name": "Страж 50к", "rank": "A", "status": "next", "unit": "₽ × 1000"}, {"goal": "75 000 ₽ за месяц", "max": 75, "name": "Король 75к", "rank": "S", "status": "next", "unit": "₽ × 1000"}], "order": 2, "rule": "1 HP = 1 000 ₽ · 1-го числа HP восстанавливается", "start": "Старт", "title": "Деньги"}, "meme": {"bosses": [{"ability": "Сделка без записи не наносит урона.", "goal": "Записать первые 3 сделки в журнал", "hp": 3, "max": 3, "name": "Хранитель журнала", "rank": "D", "status": "current", "unit": "записи"}, {"goal": "10 сделок строго по своим правилам", "max": 10, "name": "Мемный дракон", "rank": "C", "status": "next"}, {"goal": "Закрыть месяц в плюсе", "max": 1, "name": "Зелёный месяц", "rank": "B", "status": "next"}, {"goal": "3 месяца подряд в плюсе", "max": 3, "name": "Король пампов", "rank": "S", "status": "next"}], "order": 4, "rule": "Каждая сделка по правилам и в журнале", "start": "Старт", "title": "Мемкоины"}, "body": {"bosses": [{"ability": "Если вес вырос, лечится на столько же.", "goal": "88 → 85 кг", "hp": 3, "max": 3, "name": "Тяжёлый панцирь", "rank": "D", "status": "current", "unit": "кг"}, {"goal": "85 → 80 кг", "max": 5, "name": "Каменная шкура", "rank": "C", "status": "next", "unit": "кг"}, {"goal": "80 → 75 кг", "max": 5, "name": "Последний слой", "rank": "B", "status": "next", "unit": "кг"}, {"goal": "75 кг и атлетичное тело", "name": "Атлет", "rank": "S", "status": "next"}], "order": 3, "rule": "Старт 88 кг · 1 кг = 1 HP", "start": "Старт · 88 кг", "title": "Тело"}}, "state": {"checkedThrough": "2026-10-15", "daily": {"date": "2026-10-15", "done": true, "text": "Лёгкая тренировка · мониторинг Кворка"}, "final": {"hp": 999, "max": 1000}, "lastActive": "2026-10-16", "log": [{"d": "2026-10-16", "t": "🗡 Удар по «Пыльный слизень» −1 · ☠️ повержен"}, {"d": "2026-10-15", "t": "Охота началась. Ежедневный квест выполнен: тренировка и мониторинг Кворка."}], "moneyMonth": "2026-10", "rank": "E", "startedAt": "2026-10-15", "streak": 1, "weight": 88}}; // the one-file build (build-local.py) puts the starting progress here
+  var SAVE_KEY = 'ohota.save.v1';
+  var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  /* ---------- small helpers ---------- */
+  function $(id){ return document.getElementById(id); }
+  function h(tag, props){
+    var el = document.createElement(tag);
+    if (props) for (var k in props){
+      var v = props[k];
+      if (v == null || v === false) continue;
+      if (k === 'class') el.className = v;
+      else if (k === 'text') el.textContent = v;
+      else if (k === 'html') el.innerHTML = v;
+      else if (k === 'style') el.style.cssText = v;
+      else if (k.slice(0, 2) === 'on') el.addEventListener(k.slice(2), v);
+      else el.setAttribute(k, v === true ? '' : v);
+    }
+    for (var i = 2; i < arguments.length; i++) add(el, arguments[i]);
+    return el;
+  }
+  function add(el, kid){
+    if (kid == null || kid === false) return;
+    if (Array.isArray(kid)) { kid.forEach(function(k){ add(el, k); }); return; }
+    el.append(kid instanceof Node ? kid : document.createTextNode(String(kid)));
+  }
+  function fill(el){ el.replaceChildren(); for (var i = 1; i < arguments.length; i++) add(el, arguments[i]); return el; }
+  function lsGet(k){ try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function lsSet(k, v){ try { localStorage.setItem(k, v); } catch (e) {} }
+  function clone(o){ return o == null ? o : JSON.parse(JSON.stringify(o)); }
+  function num(v, d){ return typeof v === 'number' && isFinite(v) ? v : d; }
+  function r3(x){ return Math.round(x * 1000) / 1000; }
+  function clamp(x, a, b){ return Math.max(a, Math.min(b, x)); }
+  function plural(n, f){ var a = Math.abs(Math.floor(n)) % 100, b = a % 10; if (!Number.isInteger(n)) return f[1]; if (a > 10 && a < 20) return f[2]; if (b > 1 && b < 5) return f[1]; if (b === 1) return f[0]; return f[2]; }
+  function fmt(n){ if (typeof n !== 'number' || !isFinite(n)) return '?'; return n.toLocaleString('ru-RU', {maximumFractionDigits:1}); }
+  function rub(n){ return Math.round(n).toLocaleString('ru-RU') + ' ₽'; }
+  function parseNum(s){ var v = parseFloat(String(s).replace(/\s/g, '').replace(',', '.')); return isFinite(v) ? v : NaN; }
+
+  /* ---------- dates (Moscow) ---------- */
+  function mskToday(){ try { return new Intl.DateTimeFormat('en-CA', {timeZone:'Europe/Moscow', year:'numeric', month:'2-digit', day:'2-digit'}).format(new Date()); } catch (e) { return new Date(Date.now() + 3 * 36e5).toISOString().slice(0, 10); } }
+  function toUTC(d){ var p = String(d).split('-').map(Number); return Date.UTC(p[0], p[1] - 1, p[2]); }
+  function addDays(d, n){ return new Date(toUTC(d) + n * 864e5).toISOString().slice(0, 10); }
+  function diffDays(a, b){ return Math.round((toUTC(b) - toUTC(a)) / 864e5); }
+  function dow(d){ return new Date(toUTC(d)).getUTCDay(); }
+  function isDate(s){ return typeof s === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(s); }
+  function maxDate(){ var m = null; for (var i = 0; i < arguments.length; i++) { var d = arguments[i]; if (isDate(d) && (!m || d > m)) m = d; } return m; }
+  function shortDate(iso){ if (!isDate(iso)) return '—'; var p = iso.split('-'); return p[2] + '.' + p[1]; }
+  function sundayAfter(a, b){ var n = addDays(a, (7 - dow(a)) % 7 || 7); return n <= b; }
+  var TODAY = mskToday();
+
+  /* ---------- seeded randomness for monsters ---------- */
+  function hash(s){ var x = 2166136261; for (var i = 0; i < s.length; i++) { x ^= s.charCodeAt(i); x = Math.imul(x, 16777619); } return x >>> 0; }
+  function rng(seed){ return function(){ seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function hexRgb(c){ c = c.replace('#', ''); return [0, 2, 4].map(function(i){ return parseInt(c.slice(i, i + 2), 16); }); }
+  function mix(a, b, t){ var x = hexRgb(a), y = hexRgb(b); return '#' + x.map(function(v, i){ return Math.round(v + (y[i] - v) * t).toString(16).padStart(2, '0'); }).join(''); }
+  function shade(c, t){ return t > 0 ? mix(c, '#ffffff', t) : mix(c, '#0c111d', -t); }
+  function f1(v){ return (Math.round(v * 10) / 10).toString(); }
+  function spline(p){
+    var n = p.length, d = 'M' + f1(p[0][0]) + ' ' + f1(p[0][1]);
+    for (var i = 0; i < n; i++) {
+      var p0 = p[(i - 1 + n) % n], p1 = p[i], p2 = p[(i + 1) % n], p3 = p[(i + 2) % n];
+      d += ' C' + [p1[0] + (p2[0] - p0[0]) / 6, p1[1] + (p2[1] - p0[1]) / 6, p2[0] - (p3[0] - p1[0]) / 6, p2[1] - (p3[1] - p1[1]) / 6, p2[0], p2[1]].map(f1).join(' ');
+    }
+    return d + 'Z';
+  }
+
+  var uidN = 0, svgCache = {};
+  /* One monster per boss name: body blob, eyes, mouth and horns all come from the name's hash; rank adds size and horns. */
+  function monsterSVG(seed, color, rank){
+    var ck = seed + '|' + color + '|' + rank;
+    var id = 'm' + (++uidN);
+    if (svgCache[ck]) return svgCache[ck].replace(/__ID__/g, id);
+    var R = rng(hash(seed)), ri = Math.max(0, RANKS.indexOf(rank));
+    var cx = 100, cy = 118, base = 46 + ri * 3.6;
+    var light = shade(color, .38), dark = shade(color, -.42), deep = shade(color, -.68), cream = '#f5efe0', ink = '#0c111d';
+    var n = 7 + Math.floor(R() * 5), wob = .1 + R() * .18, pts = [];
+    for (var i = 0; i < n; i++) {
+      var a = -Math.PI / 2 + i / n * Math.PI * 2, rr = base * (1 - wob / 2 + R() * wob);
+      pts.push([cx + Math.cos(a) * rr * 1.06, Math.min(cy + Math.sin(a) * rr * .92, cy + base * .8)]);
+    }
+    var bodyD = spline(pts), top = cy - base * .9, o = [];
+    o.push('<defs><radialGradient id="__ID__g" cx="38%" cy="28%" r="80%"><stop offset="0" stop-color="' + light + '"/><stop offset=".55" stop-color="' + color + '"/><stop offset="1" stop-color="' + dark + '"/></radialGradient><clipPath id="__ID__c"><path d="' + bodyD + '"/></clipPath></defs>');
+    o.push('<ellipse cx="100" cy="' + f1(cy + base * .84 + 9) + '" rx="' + f1(base * .95) + '" ry="8" fill="#000" opacity=".38"/>');
+    o.push('<g class="m-body">');
+    // horns behind the body
+    function horn(x, dir, len, w){
+      var y = top + base * .16, tx = x + dir * len * .55, ty = y - len;
+      return '<path d="M' + f1(x - w / 2) + ' ' + f1(y + 8) + ' Q' + f1(x + dir * len * .05) + ' ' + f1(y - len * .55) + ' ' + f1(tx) + ' ' + f1(ty) + ' Q' + f1(x + dir * (len * .3 + w * .5)) + ' ' + f1(y - len * .3) + ' ' + f1(x + w / 2) + ' ' + f1(y + 8) + 'Z" fill="' + deep + '" stroke="' + deep + '" stroke-width="2" stroke-linejoin="round"/>';
+    }
+    if (ri === 0) {
+      if (R() > .45) { var ax = cx + R() * 24 - 12; o.push('<path d="M' + cx + ' ' + f1(top + 6) + ' Q' + f1(ax - 10) + ' ' + f1(top - 12) + ' ' + f1(ax) + ' ' + f1(top - 22) + '" fill="none" stroke="' + deep + '" stroke-width="3" stroke-linecap="round"/><circle cx="' + f1(ax) + '" cy="' + f1(top - 24) + '" r="5" fill="' + light + '" stroke="' + deep + '" stroke-width="2"/>'); }
+    } else {
+      var hl = ri === 1 ? 13 : 16 + ri * 5, hw = 13 + ri * 1.5;
+      o.push(horn(cx - base * .44, -1, hl, hw), horn(cx + base * .44, 1, hl, hw));
+      if (ri >= 3) for (var s = -1; s <= 1; s++) { var sx = cx + s * base * .2; o.push('<path d="M' + f1(sx - 7) + ' ' + f1(top + 9) + ' L' + f1(sx) + ' ' + f1(top - 9 - (s === 0 ? 5 : 0)) + ' L' + f1(sx + 7) + ' ' + f1(top + 9) + 'Z" fill="' + deep + '"/>'); }
+    }
+    // feet and arms
+    [-1, 1].forEach(function(d){ o.push('<ellipse cx="' + f1(cx + d * base * .42) + '" cy="' + f1(cy + base * .8 + 2) + '" rx="14" ry="8" fill="' + dark + '" stroke="' + deep + '" stroke-width="2"/>'); });
+    if (R() > .35) [-1, 1].forEach(function(d){ o.push('<ellipse cx="' + f1(cx + d * base * 1.02) + '" cy="' + f1(cy + base * .18) + '" rx="9" ry="15" transform="rotate(' + (d * 28) + ' ' + f1(cx + d * base * 1.02) + ' ' + f1(cy + base * .18) + ')" fill="' + dark + '" stroke="' + deep + '" stroke-width="2"/>'); });
+    o.push('<path d="' + bodyD + '" fill="url(#__ID__g)" stroke="' + deep + '" stroke-width="3"/>');
+    // belly, spots, cracks — clipped to the body
+    var inner = '<ellipse cx="' + cx + '" cy="' + f1(cy + base * .42) + '" rx="' + f1(base * .62) + '" ry="' + f1(base * .42) + '" fill="' + light + '" opacity=".22"/>';
+    var ns = 3 + Math.floor(R() * 3);
+    for (var k = 0; k < ns; k++) { var sa = R() * Math.PI * 2, sr = base * (.35 + R() * .45); inner += '<circle cx="' + f1(cx + Math.cos(sa) * sr) + '" cy="' + f1(cy + Math.sin(sa) * sr * .8 - 4) + '" r="' + f1(3 + R() * 6) + '" fill="' + light + '" opacity=".3"/>'; }
+    for (var c = 1; c <= 3; c++) {
+      var px = cx + (R() - .5) * base * 1.3, py = cy - base * .5 + R() * base * .5, d = 'M' + f1(px) + ' ' + f1(py);
+      for (var z = 0; z < 4; z++) { px += (R() - .5) * 18; py += 7 + R() * 7; d += ' L' + f1(px) + ' ' + f1(py); }
+      inner += '<path class="crack k' + c + '" d="' + d + '" fill="none" stroke="' + deep + '" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/>';
+    }
+    o.push('<g clip-path="url(#__ID__c)">' + inner + '</g>');
+    // eyes
+    var ne = [1, 2, 2, 2, 3, 2][Math.floor(R() * 6)], ey = cy - base * .2, er = (ne === 1 ? 17 : ne === 2 ? 12.5 : 10) * (.9 + R() * .3);
+    var xs = ne === 1 ? [cx] : ne === 2 ? [cx - base * .36, cx + base * .36] : [cx - base * .5, cx, cx + base * .5];
+    xs.forEach(function(x, j){
+      var y = ne === 3 && j === 1 ? ey - 9 : ey, side = x < cx - 1 ? -1 : x > cx + 1 ? 1 : 0;
+      var b1 = side === 0 ? [x - er, y - er * 1.35, x + er, y - er * 1.35] : side < 0 ? [x - er * 1.05, y - er * 1.65, x + er * .95, y - er * 1.05] : [x - er * .95, y - er * 1.05, x + er * 1.05, y - er * 1.65];
+      o.push('<path class="brow" d="M' + b1.slice(0, 2).map(f1).join(' ') + ' L' + b1.slice(2).map(f1).join(' ') + '" stroke="' + deep + '" stroke-width="4.5" stroke-linecap="round"/>');
+      o.push('<g class="eye" style="animation-delay:' + (R() * 5).toFixed(2) + 's"><ellipse cx="' + f1(x) + '" cy="' + f1(y) + '" rx="' + f1(er) + '" ry="' + f1(er * 1.06) + '" fill="' + cream + '" stroke="' + deep + '" stroke-width="2.2"/>' +
+        '<g class="pupil"><circle cx="' + f1(x) + '" cy="' + f1(y + er * .12) + '" r="' + f1(er * .5) + '" fill="' + ink + '"/><circle cx="' + f1(x - er * .17) + '" cy="' + f1(y - er * .08) + '" r="' + f1(er * .16) + '" fill="#fff"/></g>' +
+        '<path class="xeye" d="M' + f1(x - er * .5) + ' ' + f1(y - er * .5) + ' L' + f1(x + er * .5) + ' ' + f1(y + er * .5) + ' M' + f1(x + er * .5) + ' ' + f1(y - er * .5) + ' L' + f1(x - er * .5) + ' ' + f1(y + er * .5) + '" stroke="' + ink + '" stroke-width="3.4" stroke-linecap="round"/></g>');
+    });
+    if (R() > .5) [-1, 1].forEach(function(d){ o.push('<ellipse cx="' + f1(cx + d * base * .62) + '" cy="' + f1(ey + er + 9) + '" rx="7" ry="4" fill="' + shade(color, .55) + '" opacity=".45"/>'); });
+    // mouth
+    var my = cy + base * .32, mw = base * (.46 + R() * .34), mt = Math.floor(R() * 3);
+    if (mt === 0) {
+      o.push('<path d="M' + f1(cx - mw / 2) + ' ' + f1(my) + ' Q' + cx + ' ' + f1(my + mw * .6) + ' ' + f1(cx + mw / 2) + ' ' + f1(my) + 'Z" fill="' + deep + '"/>');
+      var nt = 4 + Math.floor(R() * 3), tw = mw / nt;
+      for (var t = 0; t < nt; t++) { var tx0 = cx - mw / 2 + t * tw; o.push('<path d="M' + f1(tx0 + 1) + ' ' + f1(my) + ' L' + f1(tx0 + tw / 2) + ' ' + f1(my + 7) + ' L' + f1(tx0 + tw - 1) + ' ' + f1(my) + 'Z" fill="' + cream + '"/>'); }
+    } else if (mt === 1) {
+      o.push('<path d="M' + f1(cx - mw / 2) + ' ' + f1(my - 3) + ' Q' + cx + ' ' + f1(my + mw * .36) + ' ' + f1(cx + mw / 2) + ' ' + f1(my - 3) + '" fill="none" stroke="' + deep + '" stroke-width="4.5" stroke-linecap="round"/>');
+      [-1, 1].forEach(function(d){ var fx = cx + d * mw * .24; o.push('<path d="M' + f1(fx - 4) + ' ' + f1(my + 3) + ' L' + f1(fx) + ' ' + f1(my + 12) + ' L' + f1(fx + 4) + ' ' + f1(my + 2) + 'Z" fill="' + cream + '" stroke="' + deep + '" stroke-width="1.2"/>'); });
+    } else {
+      o.push('<ellipse cx="' + cx + '" cy="' + f1(my + 3) + '" rx="' + f1(mw * .2) + '" ry="' + f1(mw * .26) + '" fill="' + deep + '"/><ellipse cx="' + cx + '" cy="' + f1(my + 3 + mw * .12) + '" rx="' + f1(mw * .11) + '" ry="' + f1(mw * .08) + '" fill="#e8674f" opacity=".7"/>');
+    }
+    if (ri === 5) o.push('<path d="M' + f1(cx - 24) + ' ' + f1(top + 4) + ' L' + f1(cx - 29) + ' ' + f1(top - 22) + ' L' + f1(cx - 12) + ' ' + f1(top - 9) + ' L' + cx + ' ' + f1(top - 30) + ' L' + f1(cx + 12) + ' ' + f1(top - 9) + ' L' + f1(cx + 29) + ' ' + f1(top - 22) + ' L' + f1(cx + 24) + ' ' + f1(top + 4) + 'Z" fill="#e2b55b" stroke="#6b4b12" stroke-width="2.4" stroke-linejoin="round"/><circle cx="' + cx + '" cy="' + f1(top - 6) + '" r="4" fill="#d43a52"/>');
+    o.push('</g>');
+    var shR = Math.min(base + 22, 88);
+    o.push('<g class="m-shield"><circle cx="100" cy="' + f1(cy - 6) + '" r="' + f1(shR) + '" fill="' + color + '" fill-opacity=".1" stroke="' + light + '" stroke-width="2.6" stroke-opacity=".85"/><circle class="m-ring" cx="100" cy="' + f1(cy - 6) + '" r="' + f1(shR - 7) + '" fill="none" stroke="' + light + '" stroke-width="1.4" stroke-dasharray="7 9" stroke-opacity=".7"/></g>');
+    var svg = '<svg viewBox="0 0 200 200" aria-hidden="true" focusable="false">' + o.join('') + '</svg>';
+    svgCache[ck] = svg;
+    return svg.replace(/__ID__/g, id);
+  }
+
+  var FINAL_FACE = '<svg viewBox="0 0 100 100" aria-hidden="true" focusable="false"><defs><linearGradient id="ffg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a8195"/><stop offset="1" stop-color="#363c4e"/></linearGradient></defs>' +
+    '<ellipse cx="50" cy="95" rx="30" ry="4" fill="#000" opacity=".45"/><g class="ff-body">' +
+    '<path d="M20 94 C17 62 22 30 50 27 C78 30 83 62 80 94 Z" fill="url(#ffg)" stroke="#232836" stroke-width="2.5"/>' +
+    '<ellipse cx="39" cy="53" rx="7" ry="5" fill="#d9d4c7"/><ellipse cx="61" cy="53" rx="7" ry="5" fill="#d9d4c7"/>' +
+    '<circle cx="39" cy="55.4" r="2.6" fill="#0c111d"/><circle cx="61" cy="55.4" r="2.6" fill="#0c111d"/>' +
+    '<path d="M32 53.3 A7 5 0 0 1 46 53.3 Z" fill="#666d81" stroke="#232836" stroke-width="1.6"/><path d="M54 53.3 A7 5 0 0 1 68 53.3 Z" fill="#666d81" stroke="#232836" stroke-width="1.6"/>' +
+    '<path d="M33 61 Q39 63 45 61 M55 61 Q61 63 67 61" stroke="#232836" fill="none" stroke-width="1.4" opacity=".7"/>' +
+    '<path d="M41 71 Q50 69 59 71" stroke="#1b1f2b" stroke-width="2.6" fill="none" stroke-linecap="round"/>' +
+    '<path d="M43 79 L50 84 L57 79 Z" fill="#e8e3d6"/><path d="M47.6 81 L52.4 81 L51.5 85 L54 93.5 L50 97.5 L46 93.5 L48.5 85 Z" fill="#d43a52" stroke="#5a1020" stroke-width="1"/>' +
+    '</g></svg>';
+
+  function makeTopo(){
+    var R = rng(20270214), nz = [], n = 12, paths = '';
+    for (var i = 0; i < n; i++) nz.push(R() - .5);
+    for (var k = 0; k < 8; k++) {
+      var pts = [], base = 34 + k * 30;
+      for (var j = 0; j < n; j++) { var a = j / n * Math.PI * 2, rr = base * (1 + nz[j] * .32) + (R() - .5) * 5; pts.push([320 + Math.cos(a) * rr * 1.45, 230 + Math.sin(a) * rr]); }
+      paths += '<path d="' + spline(pts) + '"/>';
+    }
+    var svg = '<svg xmlns="http://www.w3.org/2000/svg" width="640" height="460" viewBox="0 0 640 460"><g fill="none" stroke="#ece6d6" stroke-opacity=".055" stroke-width="1.2">' + paths + '</g></svg>';
+    document.documentElement.style.setProperty('--topo', 'url("data:image/svg+xml,' + encodeURIComponent(svg) + '")');
+  }
+
+  /* ---------- sound ---------- */
+  var AC = null, noiseBuf = null, muted = lsGet('ohota.muted') === '1';
+  function audio(){
+    if (muted) return null;
+    try {
+      if (!AC) { var C = window.AudioContext || window.webkitAudioContext; if (!C) return null; AC = new C(); }
+      if (AC.state === 'suspended') AC.resume();
+    } catch (e) { return null; }
+    return AC;
+  }
+  function tone(f, d, type, vol, f2, delay){
+    var a = audio(); if (!a) return;
+    var t = a.currentTime + (delay || 0), o = a.createOscillator(), g = a.createGain();
+    o.type = type || 'sine'; o.frequency.setValueAtTime(f, t);
+    if (f2) o.frequency.exponentialRampToValueAtTime(f2, t + d);
+    g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(vol || .2, t + .012); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    o.connect(g); g.connect(a.destination); o.start(t); o.stop(t + d + .05);
+  }
+  function noise(d, vol, freq, delay){
+    var a = audio(); if (!a) return;
+    if (!noiseBuf) { noiseBuf = a.createBuffer(1, Math.floor(a.sampleRate * .7), a.sampleRate); var ch = noiseBuf.getChannelData(0); for (var i = 0; i < ch.length; i++) ch[i] = Math.random() * 2 - 1; }
+    var t = a.currentTime + (delay || 0), s = a.createBufferSource(), bp = a.createBiquadFilter(), g = a.createGain();
+    s.buffer = noiseBuf; bp.type = 'bandpass'; bp.frequency.value = freq || 1200; bp.Q.value = .9;
+    g.gain.setValueAtTime(vol || .3, t); g.gain.exponentialRampToValueAtTime(.0001, t + d);
+    s.connect(bp); bp.connect(g); g.connect(a.destination); s.start(t); s.stop(t + d + .05);
+  }
+  var SFX = {
+    hit: function(){ noise(.13, .5, 1900); tone(170, .2, 'sine', .55, 55); },
+    crit: function(){ noise(.3, .75, 800); tone(240, .4, 'sawtooth', .22, 45); tone(1320, .3, 'triangle', .18, 1980, .05); },
+    block: function(){ tone(1250, .18, 'square', .09, 950); tone(1900, .26, 'triangle', .1, null, .02); },
+    coin: function(){ tone(1568, .09, 'square', .07); tone(2093, .22, 'square', .07, null, .07); },
+    heal: function(){ tone(330, .5, 'sine', .22, 520); },
+    kill: function(){ noise(.6, .45, 420); [523, 659, 784, 1047].forEach(function(f, i){ tone(f, .26, 'triangle', .22, null, .1 + i * .09); }); },
+    rank: function(){ [392, 523, 659, 784, 1047].forEach(function(f, i){ tone(f, .34, 'sawtooth', .09, null, i * .11); tone(f * 2, .3, 'triangle', .07, null, i * .11); }); },
+    quest: function(){ tone(880, .14, 'sine', .22); tone(1319, .3, 'sine', .22, null, .1); },
+    nope: function(){ tone(180, .14, 'square', .06, 140); }
+  };
+  function buzz(p){ try { if (!muted && navigator.vibrate) navigator.vibrate(p); } catch (e) {} }
+  function renderSound(){
+    var b = $('snd');
+    b.setAttribute('aria-pressed', muted ? 'false' : 'true');
+    b.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" fill="currentColor" stroke="none"/>' +
+      (muted ? '<path d="M16 9.5l5 5M21 9.5l-5 5"/>' : '<path d="M15.5 9a4 4 0 0 1 0 6M18.3 6.5a7.5 7.5 0 0 1 0 11"/>') + '</svg>';
+  }
+
+  /* ---------- model ---------- */
+  var M = {lines:{}, state:null, haveLines:false, haveState:false};
+  var db = null, canWrite = true, permKnown = false, offlineMsg = '', isLocal = false, localOK = true;
+  var tab = lsGet('ohota.tab');
+  var sel = {}, confirmDel = null, arenaLock = false, enterKeys = {};
+  var pending = {}, queue = Promise.resolve(), undo = null, upkeepFor = null;
+
+  function lineKeys(){ return Object.keys(M.lines).sort(function(a, b){ return num(M.lines[a].order, 99) - num(M.lines[b].order, 99); }); }
+  function bossesOf(k){ var l = M.lines[k]; return l && Array.isArray(l.bosses) ? l.bosses : []; }
+  function isPool(line){ return !!line && line.layout === 'pool'; }
+  function lineColor(k){ return LINE_COLOR[k] || '#8db4cc'; }
+  function maxOf(b){ return num(b.max, RANK_HP[b.rank] || 1); }
+  function hpOf(b){ return b.status === 'done' ? 0 : clamp(num(b.hp, maxOf(b)), 0, maxOf(b)); }
+  function isWeightBoss(b){ return !!b && (b.unit === 'кг' || /\d\s*→\s*\d+(?:[.,]\d+)?\s*кг/.test(b.goal || '')); }
+  function isWeekly(b){ return b.respawn === 'weekly' || /воскресень/i.test(b.ability || ''); }
+  function bossMode(k, b){ if (!b || b.status !== 'current') return 'none'; if (k === 'money') return 'money'; if (k === 'body' && isWeightBoss(b)) return 'weight'; return 'hit'; }
+  function rage(){ return !!M.state && num(M.state.streak, 0) >= 7; }
+  function defaultSel(k){
+    var b = bossesOf(k), i = b.findIndex(function(x){ return x.status === 'current'; });
+    if (i < 0) for (var j = b.length - 1; j >= 0; j--) if (b[j].status === 'done') { i = j; break; }
+    return i < 0 ? 0 : i;
+  }
+  function selIdx(k){ var b = bossesOf(k); if (sel[k] == null || sel[k] >= b.length) sel[k] = defaultSel(k); return sel[k]; }
+  function curWeight(){
+    var s = M.state; if (s && typeof s.weight === 'number') return s.weight;
+    var l = M.lines.body, m = l && l.start && String(l.start).match(/(\d+(?:[.,]\d+)?)\s*кг/);
+    return m ? parseNum(m[1]) : null;
+  }
+  function targetKg(b){ var m = String(b.goal || '').match(/→\s*(\d+(?:[.,]\d+)?)\s*кг/); return m ? parseNum(m[1]) : null; }
+  function normState(s){
+    s = s || {};
+    if (RANKS.indexOf(s.rank) < 0) s.rank = 'E';
+    s.streak = num(s.streak, 0);
+    s.final = s.final || {}; s.final.max = num(s.final.max, 1000); s.final.hp = num(s.final.hp, s.final.max);
+    s.daily = s.daily || {};
+    if (!Array.isArray(s.log)) s.log = [];
+    return s;
+  }
+  function startDate(){ var s = M.state; if (s && isDate(s.startedAt)) return s.startedAt; var l = s && s.log, d = null; if (l) l.forEach(function(e){ if (isDate(e.d) && (!d || e.d < d)) d = e.d; }); return d || TODAY; }
+  function questDone(){ var d = M.state && M.state.daily; return !!d && d.done && d.date === TODAY; }
+
+  /* ---------- writes: one at a time, whole documents ---------- */
+  function write(path, body){
+    if (!db) return;
+    var data = clone(body);
+    pending[path] = (pending[path] || 0) + 1;
+    queue = queue.then(function(){
+      return db.doc(path).set(data).catch(function(e){
+        if (e && e.code === 'unavailable') return new Promise(function(r){ setTimeout(r, 400 + Math.random() * 700); }).then(function(){ return db.doc(path).set(data); });
+        throw e;
+      });
+    }).catch(function(e){ onWriteError(e, path); }).then(function(){ pending[path]--; });
+  }
+  function onWriteError(e, path){
+    var code = e && e.code;
+    if (code === 'invalid_argument' && !permKnown) canWrite = false;
+    toast(code === 'invalid_argument' ? 'Не сохранилось: у этого аккаунта нет права менять игру.' : code === 'quota_exceeded' ? 'Не сохранилось: хранилище игры переполнено.' : 'Не сохранилось. Проверь связь и сделай ход ещё раз.', {err:true});
+    db.doc(path).get().then(function(snap){
+      if (!snap.exists) return;
+      if (path === 'game/state') M.state = normState(clone(snap.data()));
+      else M.lines[path.split('/')[1]] = clone(snap.data());
+      render();
+    }).catch(function(){});
+  }
+  function begin(){ return {before:{lines:clone(M.lines), state:clone(M.state)}, touched:{}, fx:[]}; }
+  function save(T, undoLabel){
+    Object.keys(T.touched).forEach(function(k){ write('lines/' + k, M.lines[k]); });
+    write('game/state', M.state);
+    undo = undoLabel ? {before:T.before, touched:Object.keys(T.touched), at:Date.now()} : null;
+  }
+  function logAdd(t, d){ M.state.log.unshift({d:d || TODAY, t:t}); if (M.state.log.length > LOG_CAP) M.state.log.length = LOG_CAP; }
+  function guard(){
+    if (!db || !M.state) return false;
+    if (!canWrite) { toast('Только просмотр: менять игру может её владелец.'); return false; }
+    TODAY = mskToday();
+    if (upkeepFor !== TODAY) upkeep();
+    return true;
+  }
+
+  /* ---------- rules ---------- */
+  function promote(line){
+    if (isPool(line) || line.bosses.some(function(b){ return b.status === 'current'; })) return null;
+    var nb = line.bosses.find(function(b){ return b.status === 'next' || b.status === 'sealed'; });
+    if (!nb) return null;
+    nb.status = 'current'; nb.max = maxOf(nb); nb.hp = nb.max;
+    return nb;
+  }
+  function damage(T, k, idx, amount, carry){
+    var line = M.lines[k], b = line.bosses[idx], left = amount, kills = [];
+    T.touched[k] = true;
+    while (b && b.status === 'current' && left > 0) {
+      b.max = maxOf(b);
+      var hp = hpOf(b), take = Math.min(hp, left);
+      b.hp = r3(hp - take); left = r3(left - take);
+      if (b.hp > 0) break;
+      b.hp = 0; b.status = 'done'; b.doneAt = TODAY; kills.push(b);
+      var nb = promote(line);
+      if (nb) T.fx.push({type:'next', key:k, boss:nb});
+      if (!carry || !nb || (k === 'body' && !isWeightBoss(nb))) break;
+      b = nb;
+    }
+    return kills;
+  }
+  function hitFinal(amount){ var f = M.state.final, was = f.hp; f.hp = Math.max(0, r3(f.hp - amount)); return was > 0 && f.hp === 0; }
+  function checkRank(T){
+    var best = RANKS.indexOf(M.state.rank);
+    lineKeys().forEach(function(k){ bossesOf(k).forEach(function(b){ if (b.status === 'done') best = Math.max(best, RANKS.indexOf(b.rank)); }); });
+    var nr = RANKS[Math.max(0, best)];
+    if (nr !== M.state.rank) { M.state.rank = nr; logAdd('⬆️ Новый ранг: ' + nr); T.fx.push({type:'rank', rank:nr}); }
+  }
+  function afterHit(T, k, kills, finalDmg){
+    var legend = hitFinal(finalDmg);
+    M.state.lastActive = TODAY;
+    checkRank(T);
+    if (legend) { logAdd('🏆 Обычная жизнь повержена. Ты — Легенда.'); T.fx.push({type:'legend'}); }
+    T.fx = kills.map(function(b){ return {type:'kill', key:k, boss:clone(b)}; }).concat(T.fx);
+  }
+
+  /* ---------- player actions ---------- */
+  function takeNote(){ var n = $('note'), v = n.value.trim().replace(/\s+/g, ' '); n.value = ''; return v; }
+  function strike(k, idx, kind, pt){
+    if (!guard()) return;
+    var b = bossesOf(k)[idx];
+    if (!b || b.status !== 'current') return;
+    if (kind === 'hit' && b.shield) { fxBlock(k, idx, pt, b); return; }
+    var note = takeNote(), T = begin(), mult = rage() ? 2 : 1, dmg = (kind === 'crit' ? 3 : 1) * mult, gold = b.gold ? 2 : 1, name = b.name;
+    var kills = damage(T, k, idx, dmg, false);
+    logAdd((kind === 'crit' ? '💥 Крит' : '🗡 Удар') + ' по «' + name + '» −' + fmt(dmg) + (mult > 1 ? ' (ярость ×2)' : '') + (gold > 1 ? ' · золотой ×2' : '') + (note ? ' · ' + note : '') + (kills.length ? ' · ☠️ повержен' : ''));
+    afterHit(T, k, kills, dmg * gold);
+    save(T, true);
+    playHit({key:k, idx:idx, pt:pt, dmg:dmg, crit:kind === 'crit', rage:mult > 1, finalDmg:dmg * gold, kills:kills, fx:T.fx, label:kind === 'crit' ? 'Крит засчитан' : 'Удар засчитан'});
+  }
+  function earn(amount){
+    if (!guard()) return;
+    var idx = bossesOf('money').findIndex(function(b){ return b.status === 'current'; });
+    if (idx < 0) return;
+    var note = takeNote(), T = begin(), mult = rage() ? 2 : 1, dmg = r3(amount / 1000 * mult), name = bossesOf('money')[idx].name;
+    var kills = damage(T, 'money', idx, dmg, true);
+    logAdd('💰 +' + rub(amount) + ' → «' + name + '» −' + fmt(dmg) + (mult > 1 ? ' (ярость ×2)' : '') + (note ? ' · ' + note : '') + (kills.length ? ' · ☠️ повержен' : ''));
+    afterHit(T, 'money', kills, dmg);
+    save(T, true);
+    playHit({key:'money', idx:idx, dmg:dmg, coin:true, rage:mult > 1, finalDmg:dmg, kills:kills, fx:T.fx, label:'Заработок засчитан'});
+  }
+  function weigh(w){
+    if (!guard()) return;
+    var idx = bossesOf('body').findIndex(function(b){ return b.status === 'current'; });
+    if (idx < 0) return;
+    var b = bossesOf('body')[idx], cur = curWeight(), note = takeNote(), T = begin(), name = b.name, delta = cur == null ? 0 : r3(cur - w);
+    M.state.weight = w; M.state.lastActive = TODAY;
+    if (delta > 0) {
+      var mult = rage() ? 2 : 1, dmg = r3(delta * mult), kills = damage(T, 'body', idx, dmg, true);
+      logAdd('⚖️ ' + fmt(w) + ' кг (−' + fmt(delta) + ') → «' + name + '» −' + fmt(dmg) + (mult > 1 ? ' (ярость ×2)' : '') + (note ? ' · ' + note : '') + (kills.length ? ' · ☠️ повержен' : ''));
+      afterHit(T, 'body', kills, dmg);
+      save(T, true);
+      playHit({key:'body', idx:idx, dmg:dmg, rage:mult > 1, finalDmg:dmg, kills:kills, fx:T.fx, label:'Вес записан'});
+    } else if (delta < 0) {
+      var heal = Math.min(-delta, maxOf(b) - hpOf(b));
+      b.hp = r3(hpOf(b) + heal); T.touched.body = true;
+      logAdd('⚖️ ' + fmt(w) + ' кг (+' + fmt(-delta) + ') → «' + name + '» лечится +' + fmt(heal) + (note ? ' · ' + note : ''));
+      save(T, true);
+      fxHeal('body', idx, heal);
+      render();
+      toastUndo('Вес записан. Босс подлечился');
+    } else {
+      logAdd('⚖️ ' + fmt(w) + ' кг' + (cur == null ? ' · стартовый вес' : ' · без изменений') + (note ? ' · ' + note : ''));
+      save(T, true);
+      render();
+      toastUndo('Вес записан');
+    }
+  }
+  function doQuest(){
+    if (!guard() || questDone()) return;
+    var T = begin(), s = M.state, d = s.daily || {};
+    s.streak = d.done && d.date === addDays(TODAY, -1) ? num(s.streak, 0) + 1 : 1;
+    s.daily = {date:TODAY, done:true, text:QUEST_TEXT};
+    s.lastActive = TODAY;
+    logAdd('✅ Квест дня · серия ' + s.streak + ' ' + plural(s.streak, ['день','дня','дней']));
+    if (s.streak === 7) { logAdd('🔥 Ярость: 7 дней подряд, весь урон ×2'); T.fx.push({type:'rage'}); }
+    save(T, true);
+    SFX.quest(); buzz(20);
+    render();
+    restartClass($('quest'), 'pop', 600); restartClass($('streak-box'), 'bump', 600);
+    toastUndo('Квест дня выполнен');
+    queueOverlays(T.fx);
+  }
+  function dropShield(k, idx){
+    if (!guard()) return;
+    var b = bossesOf(k)[idx]; if (!b || !b.shield) return;
+    var T = begin(); delete b.shield; T.touched[k] = true;
+    logAdd('🛡 Щит «' + b.name + '» снят — удары проходят');
+    M.state.lastActive = TODAY;
+    save(T, true); SFX.block(); render(); toastUndo('Щит снят');
+  }
+  function setReward(k, idx, text){
+    if (!guard()) return;
+    var b = bossesOf(k)[idx]; if (!b) return;
+    var T = begin(); b.reward = text; T.touched[k] = true;
+    logAdd('🎁 Награда за «' + b.name + '»: ' + text);
+    save(T, true); SFX.coin(); render(); toastUndo('Награда назначена');
+  }
+  function removeBoss(k, idx){
+    if (!guard()) return;
+    var line = M.lines[k], T = begin(), gone = line.bosses.splice(idx, 1)[0];
+    if (!gone) return;
+    if (gone.status === 'current') promote(line);
+    T.touched[k] = true; confirmDel = null;
+    logAdd('✖ Убран босс «' + gone.name + '»');
+    sel[k] = defaultSel(k);
+    save(T, true); render(); toastUndo('Босс убран');
+  }
+  function addBoss(k, boss){
+    if (!guard()) return false;
+    var line = M.lines[k], T = begin(), hasCur = line.bosses.some(function(b){ return b.status === 'current'; });
+    boss.status = isPool(line) || !hasCur ? 'current' : 'next';
+    line.bosses.push(boss); T.touched[k] = true;
+    logAdd('➕ Новый босс «' + boss.name + '» (' + boss.rank + ', ' + fmt(boss.max) + ' HP)' + (boss.gold ? ' · ⭐ золотой' : ''));
+    sel[k] = line.bosses.length - 1;
+    enterKeys[k + '|' + sel[k]] = true;
+    if (tab !== k) { tab = k; lsSet('ohota.tab', k); confirmDel = null; }
+    save(T, true); SFX.coin(); render(); toastUndo('Босс выпущен');
+    return true;
+  }
+  function editBoss(k, idx, f){
+    if (!guard()) return;
+    var b = bossesOf(k)[idx]; if (!b) return;
+    var T = begin(), oldMax = maxOf(b), dealt = oldMax - hpOf(b), was = b.name;
+    b.name = f.name; b.rank = f.rank;
+    if (f.goal) b.goal = f.goal; else delete b.goal;
+    if (f.reward) b.reward = f.reward; else delete b.reward;
+    if (f.max !== oldMax) {
+      b.max = f.max;
+      if (b.status === 'current') b.hp = r3(clamp(f.max - dealt, Math.min(1, f.max), f.max));
+      else if (b.status !== 'done') b.hp = f.max;
+    }
+    T.touched[k] = true; confirmDel = null;
+    logAdd('✏️ Босс «' + was + '» изменён' + (was !== b.name ? ' → «' + b.name + '»' : '') + ' (' + b.rank + ' · ' + RANK_INFO[b.rank].name + ', ' + fmt(maxOf(b)) + ' HP)');
+    save(T, true); render(); toastUndo('Босс изменён');
+  }
+  function doUndo(){
+    if (!undo || !db) return;
+    var u = undo; undo = null;
+    u.touched.forEach(function(k){ if (u.before.lines[k]) M.lines[k] = u.before.lines[k]; write('lines/' + k, M.lines[k]); });
+    M.state = u.before.state; write('game/state', M.state);
+    lineKeys().forEach(function(k){ sel[k] = defaultSel(k); });
+    hideToast(); render(); toast('Ход отменён');
+  }
+
+  /* ---------- daily upkeep: empty days, burnt streak, monthly reset, respawns, escapes ---------- */
+  function upkeep(){
+    if (!db || !canWrite || !M.haveLines || !M.haveState) return;
+    TODAY = mskToday();
+    if (upkeepFor === TODAY) return;
+    for (var p in pending) if (pending[p] > 0) return;
+    if (!M.state) { if (!lineKeys().length) return; M.state = normState({}); }
+    upkeepFor = TODAY;
+    var before = JSON.stringify(M.state), T = begin(), s = M.state, yest = addDays(TODAY, -1), notes = [];
+    var lastLog = s.log.length ? s.log[0].d : null;
+    if (!isDate(s.startedAt)) s.startedAt = startDate();
+    if (!isDate(s.lastActive)) s.lastActive = maxDate(lastLog, s.daily.done ? s.daily.date : null) || TODAY;
+    if (!isDate(s.checkedThrough)) s.checkedThrough = s.lastActive < yest ? s.lastActive : yest;
+    var from = maxDate(s.lastActive, s.checkedThrough), empty = diffDays(from, yest);
+    if (empty > 0) {
+      var heal = Math.min(empty * 10, s.final.max - s.final.hp);
+      s.final.hp = r3(s.final.hp + heal);
+      logAdd('🕸 Пустых дней: ' + empty + ' · Обычная жизнь +' + fmt(empty * 10) + ' HP', yest);
+      notes.push('Обычная жизнь +' + fmt(empty * 10) + ' HP за ' + empty + ' ' + plural(empty, ['пустой день','пустых дня','пустых дней']));
+      T.fx.push({type:'final-heal'});
+    }
+    if (yest > s.checkedThrough) s.checkedThrough = yest;
+    var lastQ = s.daily.done ? s.daily.date : null;
+    if (s.streak > 0 && (!lastQ || lastQ < yest)) { s.streak = 0; logAdd('🔥 Серия сгорела: квест дня пропущен', yest); notes.push('серия сгорела'); }
+    var month = TODAY.slice(0, 7);
+    if (!s.moneyMonth) s.moneyMonth = month;
+    else if (s.moneyMonth < month) {
+      var mb = bossesOf('money').find(function(b){ return b.status === 'current'; });
+      if (mb && hpOf(mb) < maxOf(mb)) { mb.hp = maxOf(mb); T.touched.money = true; logAdd('📅 Новый месяц: «' + mb.name + '» снова ' + fmt(mb.hp) + ' HP'); notes.push('«' + mb.name + '» восстановился к новому месяцу'); }
+      s.moneyMonth = month;
+    }
+    lineKeys().forEach(function(k){
+      var line = M.lines[k], arr = bossesOf(k);
+      for (var i = arr.length - 1; i >= 0; i--) {
+        var b = arr[i];
+        if (b.status === 'done' && isPool(line) && isWeekly(b) && isDate(b.doneAt) && sundayAfter(b.doneAt, TODAY)) {
+          b.status = 'current'; b.max = maxOf(b); b.hp = b.max; delete b.doneAt; T.touched[k] = true;
+          logAdd('🟢 «' + b.name + '» возродился'); notes.push('«' + b.name + '» возродился');
+        }
+        if (b.gold && b.status !== 'done' && isDate(b.until) && b.until < TODAY) {
+          arr.splice(i, 1); T.touched[k] = true;
+          if (b.status === 'current') promote(line);
+          logAdd('💨 Золотой враг «' + b.name + '» сбежал'); notes.push('золотой враг «' + b.name + '» сбежал');
+        }
+      }
+    });
+    var touched = Object.keys(T.touched);
+    if (touched.length || JSON.stringify(M.state) !== before) undo = null;
+    touched.forEach(function(k){ write('lines/' + k, M.lines[k]); });
+    if (JSON.stringify(M.state) !== before) write('game/state', M.state);
+    if (touched.length) lineKeys().forEach(function(k){ sel[k] = defaultSel(k); });
+    render();
+    if (notes.length) {
+      var t = notes.join(' · '); toast(t.charAt(0).toUpperCase() + t.slice(1));
+      if (T.fx.some(function(f){ return f.type === 'final-heal'; })) restartClass($('final-face'), 'healed', 950);
+    }
+  }
+
+  /* ---------- effects ---------- */
+  function restartClass(el, cls, ms){ if (!el) return; el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); clearTimeout(el['_t' + cls]); el['_t' + cls] = setTimeout(function(){ el.classList.remove(cls); }, ms || 700); }
+  function monNode(k, idx){ return $('stage').querySelector('.mon[data-key="' + k + '"][data-idx="' + idx + '"]'); }
+  function arenaPt(node){
+    var ar = $('arena').getBoundingClientRect();
+    if (node) { var r = node.getBoundingClientRect(); return {x:r.left - ar.left + r.width / 2, y:r.top - ar.top + r.height * .45}; }
+    return {x:ar.width / 2, y:150};
+  }
+  function floatText(layer, x, y, html, cls, dy){
+    var el = h('div', {class:'dmg ' + (cls || ''), html:html});
+    layer.append(el);
+    var w = el.offsetWidth, ht = el.offsetHeight, jx = (Math.random() - .5) * 30;
+    var from = 'translate(' + (x - w / 2) + 'px,' + (y - ht / 2) + 'px) scale(.6)';
+    var to = 'translate(' + (x - w / 2 + jx) + 'px,' + (y - ht / 2 - (dy || 90)) + 'px) scale(1)';
+    if (!el.animate || REDUCED) { el.style.transform = to; setTimeout(function(){ el.remove(); }, 900); return; }
+    el.animate([{transform:from, opacity:0}, {transform:'translate(' + (x - w / 2) + 'px,' + (y - ht / 2 - 18) + 'px) scale(1.25)', opacity:1, offset:.18}, {transform:to, opacity:0}], {duration:cls && cls.indexOf('crit') >= 0 ? 1300 : 1000, easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish = function(){ el.remove(); };
+  }
+  function burst(x, y, n, colors, big){
+    if (REDUCED || !document.body.animate) return;
+    var fx = $('fx');
+    for (var i = 0; i < n; i++) {
+      var s = (big ? 5 : 3) + Math.random() * (big ? 8 : 5), a = Math.random() * Math.PI * 2, d = (big ? 70 : 40) + Math.random() * (big ? 140 : 70);
+      var p = h('span', {class:'pt'}); p.style.width = p.style.height = s + 'px'; p.style.background = colors[i % colors.length];
+      fx.append(p);
+      p.animate([{transform:'translate(' + (x - s / 2) + 'px,' + (y - s / 2) + 'px) scale(1)', opacity:1}, {transform:'translate(' + (x - s / 2 + Math.cos(a) * d) + 'px,' + (y - s / 2 + Math.sin(a) * d + 30) + 'px) scale(.2)', opacity:0}], {duration:500 + Math.random() * 500, easing:'cubic-bezier(.15,.7,.3,1)'}).onfinish = (function(el){ return function(){ el.remove(); }; })(p);
+    }
+  }
+  function slash(x, y, crit){
+    if (REDUCED || !document.body.animate) return;
+    var ang = -35 + Math.random() * 70, len = crit ? 190 : 140, NS = 'http://www.w3.org/2000/svg';
+    var svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'slash'); svg.setAttribute('viewBox', '0 0 200 200');
+    svg.style.transform = 'translate(' + (x - 100) + 'px,' + (y - 100) + 'px) rotate(' + ang + 'deg)';
+    var p = document.createElementNS(NS, 'path');
+    p.setAttribute('d', 'M' + (100 - len / 2) + ' 104 Q100 92 ' + (100 + len / 2) + ' 98');
+    p.setAttribute('fill', 'none'); p.setAttribute('stroke', crit ? '#ffd27a' : '#fff'); p.setAttribute('stroke-width', crit ? '7' : '5'); p.setAttribute('stroke-linecap', 'round');
+    p.style.filter = 'drop-shadow(0 0 6px ' + (crit ? '#d43a52' : '#fff') + ')';
+    p.setAttribute('stroke-dasharray', String(len + 20)); p.setAttribute('stroke-dashoffset', String(len + 20));
+    svg.append(p); $('fx').append(svg);
+    p.animate([{strokeDashoffset:len + 20, opacity:1}, {strokeDashoffset:0, opacity:1, offset:.45}, {strokeDashoffset:-(len + 20), opacity:0}], {duration:crit ? 420 : 320, easing:'ease-out'}).onfinish = function(){ svg.remove(); };
+  }
+  function hurtFinal(amount){
+    restartClass($('final-face'), 'hurt', 500);
+    var top = $('top'), bar = $('final-bar'), tr = top.getBoundingClientRect(), br = bar.getBoundingClientRect();
+    var x = Math.max(40, br.right - tr.left), y = br.top - tr.top;
+    var layer = top.querySelector('.fx-top'); if (!layer) { layer = h('div', {class:'fx', 'aria-hidden':'true'}); layer.classList.add('fx-top'); top.append(layer); }
+    floatText(layer, Math.min(x, tr.width - 30), y, '−' + fmt(amount), 'mini', 44);
+  }
+  function fxBlock(k, idx, pt, b){
+    var node = monNode(k, idx), p = pt || arenaPt(node);
+    restartClass(node, 'blocked', 520); restartClass(node, 'nope', 420);
+    floatText($('fx'), p.x, p.y, 'ЩИТ<small>удар не прошёл</small>', 'block', 70);
+    burst(p.x, p.y, 8, [shade(lineColor(k), .5), '#fff'], false);
+    SFX.block(); buzz(10);
+    toast('Щит держит: ' + b.shield + ' Крит проходит.');
+  }
+  function fxHeal(k, idx, amount){
+    var node = monNode(k, idx), p = arenaPt(node);
+    if (node) restartClass(node, 'healed', 950);
+    floatText($('fx'), p.x, p.y, '+' + fmt(amount), 'heal', 80);
+    SFX.heal(); buzz(8);
+  }
+  function playHit(o){
+    var node = monNode(o.key, o.idx), p = o.pt || arenaPt(node), col = lineColor(o.key);
+    if (o.crit) { SFX.crit(); buzz([25, 30, 45]); } else if (o.coin) { SFX.coin(); SFX.hit(); buzz(15); } else { SFX.hit(); buzz(15); }
+    if (node) restartClass(node, o.crit ? 'crit-hit' : 'hit', o.crit ? 650 : 420);
+    if (o.crit && !REDUCED) restartClass($('arena'), 'shake', 480);
+    slash(p.x, p.y, o.crit);
+    burst(p.x, p.y, o.crit ? 20 : 10, o.coin ? ['#e2b55b', '#f5d48a', col] : [col, shade(col, .5), '#fff'], o.crit);
+    floatText($('fx'), p.x, p.y - 10, '−' + fmt(o.dmg) + (o.crit ? '<small>КРИТ' + (o.rage ? ' · ×2' : '') + '</small>' : o.rage ? '<small>ЯРОСТЬ ×2</small>' : ''), o.crit ? 'crit' : '', o.crit ? 110 : 90);
+    hurtFinal(o.finalDmg);
+    if (o.kills.length) killSequence(o, node, p);
+    else { render(); toastUndo(o.label); queueOverlays(o.fx); }
+  }
+  function killSequence(o, node, p){
+    arenaLock = true;
+    renderTop(); renderBestiary(); renderLog();
+    var bar = $('info').querySelector('.bar i'); if (bar) bar.style.width = '0%';
+    var hpTxt = $('info').querySelector('.hp-now'); if (hpTxt) hpTxt.textContent = '0 / ' + fmt(maxOf(o.kills[0])) + ' HP';
+    setTimeout(function(){
+      if (node) node.classList.add('dying');
+      var col = lineColor(o.key);
+      burst(p.x, p.y, 36, [col, shade(col, .5), '#fff', '#d43a52'], true);
+      SFX.kill(); buzz([40, 40, 90]);
+    }, 280);
+    setTimeout(function(){
+      arenaLock = false;
+      sel[o.key] = defaultSel(o.key);
+      if (o.fx.some(function(f){ return f.type === 'next' && f.key === o.key; })) enterKeys[o.key + '|' + sel[o.key]] = true;
+      render();
+      queueOverlays(o.fx);
+      toastUndo(o.label);
+    }, 1250);
+  }
+
+  /* ---------- overlays: kill, rank, rage, legend ---------- */
+  var ovlQ = [], ovlOpen = false, ovlTimer = null;
+  function queueOverlays(fx){
+    var nextOf = {};
+    fx.forEach(function(f){ if (f.type === 'next') nextOf[f.key] = f.boss; });
+    fx.forEach(function(f){
+      if (f.type === 'kill') { ovlQ.push({type:'kill', boss:f.boss, key:f.key, next:nextOf[f.key]}); delete nextOf[f.key]; } else if (f.type === 'rank' || f.type === 'rage' || f.type === 'legend') ovlQ.push(f);
+    });
+    if (!ovlOpen) showOverlay();
+  }
+  function showOverlay(){
+    var o = ovlQ.shift(), box = $('ovl');
+    if (!o) { ovlOpen = false; box.hidden = true; box.replaceChildren(); return; }
+    ovlOpen = true;
+    var card = h('div', {class:'ovl-card'});
+    if (o.type === 'kill') {
+      card.style.setProperty('--c', lineColor(o.key));
+      add(card, [
+        h('div', {class:'stamp'}, 'ПОВЕРЖЕН'),
+        h('h2', {}, o.boss.name),
+        h('p', {class:'ovl-sub'}, 'Ранг ' + o.boss.rank + (o.boss.goal ? ' · ' + o.boss.goal : '')),
+        o.boss.reward ? h('p', {class:'ovl-reward'}, 'Награда твоя: ', h('b', {}, o.boss.reward)) : null,
+        o.next ? h('p', {class:'ovl-sub'}, 'Из тумана выходит ', h('b', {}, o.next.name), ' · ранг ' + o.next.rank) : null
+      ]);
+    } else if (o.type === 'rank') {
+      card.style.setProperty('--c', RANK_COLOR[o.rank] || '#e2b55b');
+      add(card, [h('div', {class:'rank-big'}, o.rank), h('h2', {}, 'Новый ранг: ' + o.rank + ' · ' + RANK_INFO[o.rank].name), h('p', {class:'ovl-sub'}, 'Ранг равен сильнейшему боссу, которого ты победил.')]);
+      SFX.rank();
+    } else if (o.type === 'rage') {
+      card.style.setProperty('--c', '#e8674f');
+      add(card, [h('div', {class:'stamp'}, 'ЯРОСТЬ'), h('h2', {}, '7 дней серии подряд'), h('p', {class:'ovl-sub'}, 'Пока серия жива, весь урон ', h('b', {}, '×2'), '.')]);
+      SFX.rank();
+    } else {
+      card.style.setProperty('--c', '#e2b55b');
+      add(card, [h('div', {class:'stamp'}, 'ЛЕГЕНДА'), h('h2', {}, 'Обычная жизнь повержена'), h('p', {class:'ovl-sub'}, 'Она так и не пришла за тобой.')]);
+      SFX.rank();
+    }
+    var btn = h('button', {type:'button', class:'btn-main', onclick:closeOverlay}, 'Дальше');
+    add(card, [btn, h('span', {class:'ovl-tap'}, 'или тапни в любом месте')]);
+    box.replaceChildren(card); box.hidden = false;
+    setTimeout(function(){ try { btn.focus({preventScroll:true}); } catch (e) {} }, 50);
+    clearTimeout(ovlTimer); ovlTimer = setTimeout(closeOverlay, 6000);
+  }
+  function closeOverlay(){ clearTimeout(ovlTimer); showOverlay(); }
+  $('ovl').addEventListener('click', function(e){ if (e.target === $('ovl') || !e.target.closest('button')) closeOverlay(); });
+
+  /* ---------- toast ---------- */
+  var toastTimer = null;
+  function toast(text, opt){
+    var t = $('toast'); opt = opt || {};
+    t.className = 'toast' + (opt.err ? ' err' : '');
+    fill(t, h('span', {}, text), opt.action ? h('button', {type:'button', onclick:opt.action}, opt.actionText) : null);
+    t.hidden = false;
+    clearTimeout(toastTimer); toastTimer = setTimeout(hideToast, opt.ms || 4200);
+  }
+  function hideToast(){ $('toast').hidden = true; }
+  function toastUndo(text){ toast(text, {action:doUndo, actionText:'Отменить', ms:8000}); }
+
+  /* ---------- render: top card ---------- */
+  function renderTop(){
+    var d = diffDays(TODAY, ARRIVAL);
+    $('days').textContent = d > 0 ? d : 0;
+    $('days-unit').textContent = d > 0 ? plural(d, ['день','дня','дней']) + ' до прибытия' : 'Она пришла';
+    var s = M.state; if (!s) return;
+    var day = diffDays(startDate(), TODAY) + 1, total = diffDays(startDate(), ARRIVAL) + 1;
+    $('eyebrow').textContent = d > 0 ? 'День охоты ' + day + ' из ' + total + ' · МСК' : 'Охота окончена · 14.02.2027';
+    var f = s.final, max = f.max, cur = clamp(f.hp, 0, max), dealt = (max - cur) / max;
+    $('final-bar').style.width = (cur / max * 100) + '%';
+    $('final-hp').textContent = fmt(cur) + ' / ' + fmt(max) + ' HP';
+    var ending = cur === 0 ? '«Легенда»' : dealt >= .5 ? '«Выжил»' : '«Обычная жизнь победила»';
+    $('final-ending').textContent = 'Концовка ' + ending + (cur > 0 && dealt < .5 && d > 0 ? ' · до «Выжил» −' + fmt(r3(cur - max / 2)) : '');
+    var rk = s.rank || 'E';
+    $('rank').textContent = rk; $('rank-badge').style.setProperty('--rc', RANK_COLOR[rk]);
+    var st = num(s.streak, 0);
+    $('streak').textContent = st; $('streak-unit').textContent = st >= 7 ? 'ярость ×2' : plural(st, ['день','дня','дней']) + ' серии';
+    $('streak-box').classList.toggle('rage', st >= 7);
+    $('streak-box').style.setProperty('--fs', String(Math.min(1.25, .75 + st * .07)));
+    var q = $('quest'), done = questDone();
+    q.classList.toggle('done', done);
+    q.disabled = done || !db || !canWrite;
+    q.setAttribute('aria-pressed', done ? 'true' : 'false');
+    $('quest-title').textContent = done ? 'Квест выполнен' : 'Квест дня · отметить';
+  }
+
+  /* ---------- render: bestiary bar ---------- */
+  var bestSig = '';
+  function frontBoss(k){ var arr = bossesOf(k), i = arr.findIndex(function(b){ return b.status === 'current'; }); return i < 0 ? null : arr[i]; }
+  function renderBestiary(){
+    var keys = lineKeys(), parts = [tab];
+    keys.forEach(function(k){ var b = frontBoss(k); parts.push(k, M.lines[k].title, b ? b.name + b.rank + hpOf(b) + '/' + maxOf(b) : '-', bossesOf(k).filter(function(x){ return x.status === 'done'; }).length, bossesOf(k).length); });
+    var sig = parts.join('|'); if (sig === bestSig) return; bestSig = sig;
+    var nav = $('bestiary'), C = 2 * Math.PI * 29;
+    nav.replaceChildren();
+    keys.forEach(function(k){
+      var line = M.lines[k], b = frontBoss(k), arr = bossesOf(k), doneN = arr.filter(function(x){ return x.status === 'done'; }).length;
+      var ratio = b ? hpOf(b) / maxOf(b) : 0;
+      var face = h('span', {class:'beast-face'});
+      if (b) face.innerHTML = monsterSVG(b.name, lineColor(k), b.rank);
+      else face.append(h('span', {class:'ph'}, arr.length ? '✓' : '+'));
+      var btn = h('button', {type:'button', class:'beast' + (k === tab ? ' is-sel' : '') + (line.main ? ' is-main' : ''), 'aria-pressed':k === tab ? 'true' : 'false', 'aria-label':(line.title || k) + (b ? ': ' + b.name + ', ' + fmt(hpOf(b)) + ' из ' + fmt(maxOf(b)) + ' HP' : ''), onclick:function(){ setTab(k); }},
+        h('span', {class:'beast-ring', html:'<svg viewBox="0 0 64 64" aria-hidden="true"><circle class="rb" cx="32" cy="32" r="29"/><circle class="rf" cx="32" cy="32" r="29" stroke-dasharray="' + C.toFixed(1) + '" stroke-dashoffset="' + (C * (1 - ratio)).toFixed(1) + '"/></svg>'}, face),
+        h('span', {class:'beast-name'}, line.title || k),
+        h('span', {class:'beast-count num'}, doneN + '/' + arr.length)
+      );
+      btn.style.setProperty('--c', lineColor(k));
+      nav.append(btn);
+    });
+  }
+  function setTab(k){ if (tab === k) return; tab = k; lsSet('ohota.tab', k); confirmDel = null; render(); }
+
+  /* ---------- render: arena ---------- */
+  var headSig = '', trackSig = '', stageSig = '', infoSig = '';
+  function renderArena(){
+    var arena = $('arena');
+    if (!tab || !M.lines[tab]) return;
+    var k = tab, line = M.lines[k], arr = bossesOf(k), pool = isPool(line), si = selIdx(k), color = lineColor(k);
+    arena.style.setProperty('--c', color);
+    arena.classList.toggle('rage', rage());
+    var hs = [k, line.title, line.rule, line.main, rage(), !!db && canWrite].join('|');
+    if (hs !== headSig) {
+      headSig = hs;
+      fill($('arena-head'), h('h2', {}, line.title || k), line.main ? h('span', {class:'chip'}, 'Главная') : null,
+        h('span', {class:'head-right'}, rage() ? h('span', {class:'chip rage-chip'}, 'Ярость ×2') : null, db && canWrite ? h('button', {type:'button', class:'head-add', onclick:function(){ openAdd(k); }}, '+ Новый босс') : null),
+        line.rule ? h('p', {}, line.rule) : null);
+    }
+    // path of bosses
+    var ts = [k, si, canWrite, pool].concat(arr.map(function(b){ return b.name + b.rank + b.status + (b.gold ? 'g' : ''); })).join('|');
+    if (ts !== trackSig) {
+      trackSig = ts;
+      var track = $('track');
+      track.className = 'track' + (pool ? ' is-pool' : '');
+      track.replaceChildren();
+      arr.forEach(function(b, i){
+        var st = STATUS[b.status] ? b.status : 'next', reached = st === 'done' || st === 'current';
+        track.append(h('li', {class:'step is-' + st + (reached ? ' reached' : '') + (i === si ? ' is-sel' : '') + (b.gold && st !== 'done' ? ' is-gold' : '')},
+          h('button', {type:'button', class:'step-btn', 'aria-pressed':i === si ? 'true' : 'false', onclick:function(){ sel[k] = i; confirmDel = null; render(); }},
+            h('span', {class:'orb-box'}, h('span', {class:'orb'}, st === 'sealed' ? '?' : (b.rank || '?'))),
+            h('span', {class:'lbl'}, st === 'sealed' ? '???' : (b.name || 'Без имени')))));
+      });
+      if (db && canWrite) track.append(h('li', {class:'step add'},
+        h('button', {type:'button', class:'step-btn', onclick:function(){ openAdd(k); }},
+          h('span', {class:'orb-box'}, h('span', {class:'orb', 'aria-hidden':'true'}, '+')),
+          h('span', {class:'lbl'}, 'Добавить'))));
+    }
+    renderStage(k, line, arr, pool, si);
+    renderInfo(k, arr, si);
+    renderAct(k, arr[si]);
+  }
+  function stageIdxs(k, arr, pool, si){
+    if (!arr.length) return [];
+    if (!pool) return [si];
+    var cur = []; arr.forEach(function(b, i){ if (b.status === 'current') cur.push(i); });
+    if (arr[si] && arr[si].status !== 'current') return [si];
+    return cur;
+  }
+  function renderStage(k, line, arr, pool, si){
+    var stage = $('stage'), idxs = stageIdxs(k, arr, pool, si), color = lineColor(k);
+    var sig = k + '#' + idxs.map(function(i){ var b = arr[i]; return i + ':' + b.name + ':' + b.rank + ':' + b.status; }).join(',') + '#' + pool;
+    if (sig !== stageSig) {
+      stageSig = sig;
+      stage.className = 'stage' + (pool && idxs.length > 1 ? ' pool' : '');
+      stage.replaceChildren();
+      if (!idxs.length) {
+        stage.append(h('div', {class:'stage-empty'},
+          h('span', {class:'ghost'}, '?'),
+          h('b', {}, line.main ? 'Линия веры ждёт твоих целей' : pool ? 'Все враги повержены' : 'Здесь пока пусто'),
+          h('span', {}, line.main ? 'Боссов сюда назначаешь только ты. Нажми «+» и впиши первую цель.' : 'Нажми «+», чтобы выпустить нового босса.'),
+          db && canWrite ? h('button', {type:'button', class:'btn-main', onclick:function(){ openAdd(k); }}, line.main ? 'Назначить цель' : 'Выпустить босса') : null));
+      }
+      idxs.forEach(function(i){
+        var b = arr[i], st = STATUS[b.status] ? b.status : 'next';
+        var btn = h('button', {type:'button', class:'mon is-' + st, 'data-key':k, 'data-idx':String(i), html:monsterSVG(b.name || 'boss', color, b.rank)});
+        btn.append(h('span', {class:'mon-q', 'aria-hidden':'true'}, '?'));
+        btn.addEventListener('click', function(e){ onMonster(k, i, e); });
+        var ek = k + '|' + i;
+        if (enterKeys[ek]) { delete enterKeys[ek]; btn.classList.add('enter'); setTimeout(function(){ btn.classList.remove('enter'); }, 850); }
+        if (pool && idxs.length > 1) stage.append(h('div', {class:'slot'}, btn, h('span', {class:'slot-name'}, b.name)));
+        else stage.append(btn);
+      });
+    }
+    stage.querySelectorAll('.mon').forEach(function(btn){
+      var i = Number(btn.dataset.idx), b = arr[i]; if (!b) return;
+      var cur = b.status === 'current', ratio = hpOf(b) / maxOf(b);
+      btn.classList.toggle('angry', cur && ratio < .4);
+      btn.dataset.crack = cur ? String(ratio >= .75 ? 0 : ratio >= .5 ? 1 : ratio >= .25 ? 2 : 3) : '0';
+      btn.classList.toggle('shielded', cur && !!b.shield);
+      btn.classList.toggle('gold', !!b.gold && b.status !== 'done');
+      var slot = btn.parentNode.classList.contains('slot') ? btn.parentNode : null;
+      if (slot) slot.classList.toggle('picked', i === si);
+      var mode = bossMode(k, b);
+      btn.setAttribute('aria-label', cur ? (mode === 'hit' ? 'Ударить: ' + b.name : b.name + ': впиши ' + (mode === 'money' ? 'заработок' : 'вес')) : b.name + ' — ' + STATUS[b.status]);
+    });
+  }
+  function onMonster(k, i, e){
+    var line = M.lines[k], b = bossesOf(k)[i], node = monNode(k, i);
+    if (!b) return;
+    if (isPool(line) && selIdx(k) !== i) { sel[k] = i; confirmDel = null; render(); return; }
+    if (b.status !== 'current') {
+      if (node) restartClass(node, 'nope', 400); SFX.nope();
+      toast(b.status === 'done' ? '«' + b.name + '» уже повержен.' : 'До «' + b.name + '» ещё не дошёл: сначала текущий босс линии.');
+      return;
+    }
+    if (!db || !canWrite) { if (node) restartClass(node, 'nope', 400); return; }
+    var mode = bossMode(k, b);
+    if (mode === 'hit') {
+      var pt = null;
+      if (e && e.detail > 0 && e.clientX) { var ar = $('arena').getBoundingClientRect(); pt = {x:e.clientX - ar.left, y:e.clientY - ar.top}; }
+      strike(k, i, 'hit', pt);
+    } else {
+      var inp = $(mode === 'money' ? 'rub' : 'kg');
+      if (node) restartClass(node, 'nope', 400);
+      restartClass(inp, 'pulse', 720);
+      try { inp.focus({preventScroll:true}); } catch (err) { inp.focus(); }
+    }
+  }
+  function renderInfo(k, arr, si){
+    var info = $('info'), b = arr[si];
+    if (!b) { infoSig = ''; info.replaceChildren(); return; }
+    var st = STATUS[b.status] ? b.status : 'next', mode = bossMode(k, b), wr = db && canWrite;
+    var armed = !!confirmDel && confirmDel.key === k && confirmDel.i === si;
+    var sig = [k, si, b.name, b.rank, st, b.goal, b.ability, b.shield, b.reward, b.gold, b.until, b.unit, b.doneAt, maxOf(b), armed, wr, TODAY].join('|');
+    if (sig !== infoSig) {
+      infoSig = sig;
+      var tag = (st === 'sealed' ? 'Скрыт' : STATUS[st] + ' · ранг ' + (b.rank || '?') + (RANK_INFO[b.rank] ? ' · ' + RANK_INFO[b.rank].name : '')) +(st === 'done' && b.doneAt ? ' · ' + shortDate(b.doneAt) : '');
+      var kids = [h('div', {class:'info-top'}, h('h3', {}, st === 'sealed' ? '???' : b.name), h('span', {class:'tag'}, tag))];
+      if (st !== 'sealed') {
+        kids.push(h('div', {class:'bar big', role:'img'}, h('i')), h('div', {class:'hp-line'}, h('span', {class:'num hp-now'}), h('span', {class:'hp-extra'})));
+      }
+      if (b.goal && st !== 'sealed') kids.push(h('p', {class:'goal'}, b.goal));
+      if (b.gold && st !== 'done') {
+        var esc = isDate(b.until) ? diffDays(TODAY, b.until) + 1 : null;
+        kids.push(h('p', {class:'gold-line'}, '⭐ Золотой враг · удары бьют Обычную жизнь ×2' + (esc == null ? '' : esc > 1 ? ' · сбежит через ' + esc + ' ' + plural(esc, ['день','дня','дней']) : ' · последний день, завтра сбежит')));
+      }
+      if (b.shield && st === 'current') kids.push(h('div', {class:'shield'}, h('span', {}, h('b', {}, 'Щит: '), b.shield), wr ? h('button', {type:'button', class:'link-btn accent', onclick:function(){ dropShield(k, si); }}, 'Щит пал') : null));
+      if (b.ability && st !== 'done') kids.push(h('p', {class:'extra'}, h('b', {}, 'Способность: '), b.ability));
+      if (b.reward) kids.push(h('p', {class:'reward'}, h('b', {}, st === 'done' ? 'Награда получена: ' : 'Награда за победу: '), b.reward));
+      else if (RANKS.indexOf(b.rank) >= 2 && st !== 'done' && wr) {
+        var rin = h('input', {class:'field', id:'reward-in', maxlength:'80', placeholder:'Например: новые наушники'});
+        kids.push(h('form', {class:'reward-set', onsubmit:function(e){ e.preventDefault(); var v = rin.value.trim(); if (v) setReward(k, si, v); else rin.focus(); }},
+          h('span', {}, 'Ранг ' + b.rank + ': назначь награду заранее, заберёшь после победы.'), rin, h('button', {type:'submit', class:'btn-ghost'}, 'Назначить')));
+      }
+      if (wr && st !== 'done') kids.push(h('div', {class:'info-actions'}, h('button', {type:'button', class:'link-btn', onclick:function(){ openEdit(k, si); }}, 'Изменить'), h('button', {type:'button', class:'link-btn' + (armed ? ' danger' : ''), onclick:function(){ if (armed) removeBoss(k, si); else { confirmDel = {key:k, i:si}; render(); } }}, armed ? 'Точно убрать? Нажми ещё раз' : 'Убрать босса')));
+      fill(info, kids);
+    }
+    var bar = info.querySelector('.bar i');
+    if (bar) {
+      var cur = hpOf(b), mx = maxOf(b);
+      bar.style.width = (cur / mx * 100) + '%';
+      bar.parentNode.setAttribute('aria-label', fmt(cur) + ' из ' + fmt(mx) + ' HP');
+      info.querySelector('.hp-now').textContent = fmt(cur) + ' / ' + fmt(mx) + ' HP';
+      var extra = '';
+      if (k === 'money' && st === 'current') { var dl = diffDays(TODAY, addDays(TODAY.slice(0, 8) + '01', 32).slice(0, 8) + '01'); extra = 'осталось ' + rub(cur * 1000) + ' · до 1-го ' + dl + ' ' + plural(dl, ['день','дня','дней']); }
+      else if (mode === 'weight') { var w = curWeight(), tg = targetKg(b); extra = (w != null ? 'сейчас ' + fmt(w) + ' кг' : 'взвесься') + (tg != null ? ' · цель ' + fmt(tg) + ' кг' : ''); }
+      else if (b.unit && st === 'current') extra = b.unit;
+      info.querySelector('.hp-extra').textContent = extra;
+    }
+  }
+  var actSig = '';
+  function renderAct(k, b){
+    var act = $('act'), mode = bossMode(k, b), wr = db && canWrite;
+    act.hidden = !wr || mode === 'none';
+    $('ro-note').hidden = !(db && !canWrite && mode !== 'none');
+    if (act.hidden) return;
+    var many = isPool(M.lines[k]) && bossesOf(k).filter(function(x){ return x.status === 'current'; }).length > 1;
+    var mult = rage() ? 2 : 1, sig = [mode, mult, k, b && b.shield, many, curWeight()].join('|');
+    act.style.setProperty('--c', lineColor(k));
+    $('act-hit').hidden = mode !== 'hit'; $('act-money').hidden = mode !== 'money'; $('act-weight').hidden = mode !== 'weight';
+    if (sig === actSig) return; actSig = sig;
+    $('hit-dmg').textContent = '−' + (1 * mult); $('crit-dmg').textContent = '−' + (3 * mult);
+    var w = curWeight(); $('kg').placeholder = w != null ? 'Было ' + fmt(w) + ' кг' : 'Вес сейчас';
+    $('act-hint').textContent = mode === 'money' ? 'Каждые 1 000 ₽ = −' + mult + ' HP. Деньги сверх босса бьют следующего.'
+      : mode === 'weight' ? 'Каждый сброшенный кг = −' + mult + ' HP. Набранный вес лечит босса.'
+      : b && b.shield ? 'Щит не пропускает удары. Крит — когда заказ сдан.'
+      : many ? 'Тапни по врагу, чтобы выбрать его, ещё раз — удар.'
+      : 'Сделал шаг к цели — тапни по врагу. Реальный результат — крит.';
+  }
+
+  /* ---------- render: journal ---------- */
+  var logSig = '';
+  function renderLog(){
+    var s = M.state; if (!s) return;
+    var log = s.log.slice(0, 40), sig = JSON.stringify(log); if (sig === logSig) return; logSig = sig;
+    var ul = $('log'); ul.replaceChildren();
+    if (!log.length) ul.append(h('li', {}, h('time', {}, '—'), h('span', {}, 'Записи появятся после первых ударов.')));
+    log.forEach(function(e){ ul.append(h('li', {}, h('time', {datetime:e.d || ''}, shortDate(e.d)), h('span', {}, e.t || ''))); });
+    $('log-sum').textContent = s.log.length ? s.log.length + ' ' + plural(s.log.length, ['запись','записи','записей']) : '';
+  }
+
+  function render(){
+    if (!tab || !M.lines[tab]) {
+      var keys = lineKeys();
+      tab = keys.find(function(k){ return bossesOf(k).length && M.lines[k].main; }) || keys.find(function(k){ return frontBoss(k); }) || keys[0] || null;
+    }
+    renderTop();
+    renderBestiary();
+    renderLog();
+    if (!arenaLock && tab) renderArena();
+  }
+
+  function showEmpty(title, text){
+    headSig = trackSig = stageSig = infoSig = '';
+    fill($('arena-head'), h('h2', {}, 'Арена'));
+    fill($('track')); fill($('info')); $('act').hidden = true;
+    fill($('stage'), h('div', {class:'stage-empty'}, h('span', {class:'ghost'}, '?'), h('b', {}, title), h('span', {}, text)));
+  }
+
+  /* ---------- boss sheet: create or edit ---------- */
+  var form = {mode:'add', key:null, idx:-1}, hpTouched = false;
+  var PLACEHOLDER = {faith:'Впиши свою цель', money:'Например: Страж 100к', body:'Например: 20 подтягиваний', meme:'Например: Разобрать 5 графиков', other:'Например: Отрисовка на Кворке'};
+  function fRank(){ var r = document.querySelector('input[name="f-rank"]:checked'); return r ? r.value : 'D'; }
+  function fLine(){ var r = document.querySelector('input[name="f-line"]:checked'); return r ? r.value : form.key; }
+  function buildRankCards(){
+    var box = $('f-ranks'); if (box.childElementCount) return;
+    RANKS.forEach(function(r){
+      var lab = h('label', {class:'rk', for:'f-rank-' + r},
+        h('input', {type:'radio', name:'f-rank', id:'f-rank-' + r, value:r, class:'sr'}),
+        h('b', {}, r), h('span', {class:'rk-name'}, RANK_INFO[r].name), h('small', {}, RANK_INFO[r].hint), h('i', {}, RANK_HP[r] + ' HP'));
+      lab.style.setProperty('--rc', RANK_COLOR[r]);
+      box.append(lab);
+    });
+  }
+  function buildLineChips(selected){
+    var box = $('f-lines'); fill(box);
+    lineKeys().forEach(function(k){
+      var lab = h('label', {class:'ln', for:'f-line-' + k}, h('input', {type:'radio', name:'f-line', id:'f-line-' + k, value:k, class:'sr', checked:k === selected}), M.lines[k].title || k);
+      lab.style.setProperty('--lc', lineColor(k));
+      box.append(lab);
+    });
+  }
+  function syncSheet(){
+    var k = fLine(), r = fRank(), strong = RANKS.indexOf(r) >= 2;
+    $('add-form').style.setProperty('--c', lineColor(k));
+    if (!hpTouched) $('f-hp').value = RANK_HP[r];
+    $('f-hpnote').textContent = k === 'money' ? 'На линии «Деньги» 1 HP = 1 000 ₽.' : RANK_INFO[r].name + ': ' + RANK_INFO[r].hint.toLowerCase() + '. HP подставлен по рангу, его можно поправить.';
+    $('f-reward-hint').textContent = strong ? 'обязательна для ранга ' + r : 'по желанию';
+    $('f-name').placeholder = PLACEHOLDER[k] || 'Имя босса';
+  }
+  function openSheet(mode, k, idx){
+    if (!db || !canWrite || !M.lines[k]) return;
+    var b = mode === 'edit' ? bossesOf(k)[idx] : null;
+    if (mode === 'edit' && !b) return;
+    form = {mode:mode, key:k, idx:idx};
+    buildRankCards(); buildLineChips(k);
+    $('f-lines-set').hidden = mode === 'edit';
+    $('f-gold-wrap').hidden = mode === 'edit';
+    $('add-title').textContent = mode === 'edit' ? 'Изменить босса' : 'Новый босс';
+    $('f-submit').textContent = mode === 'edit' ? 'Сохранить' : 'Выпустить босса';
+    $('f-name').value = b ? b.name || '' : '';
+    $('f-goal').value = b ? b.goal || '' : '';
+    $('f-reward').value = b ? b.reward || '' : '';
+    $('f-gold').checked = false; $('f-msg').textContent = '';
+    var r = b && RANK_INFO[b.rank] ? b.rank : 'D';
+    $('f-rank-' + r).checked = true;
+    hpTouched = !!b && maxOf(b) !== RANK_HP[r];
+    $('f-hp').value = b ? maxOf(b) : RANK_HP[r];
+    syncSheet();
+    $('sheet').hidden = false;
+    setTimeout(function(){ $('f-name').focus(); }, 60);
+  }
+  function openAdd(k){ openSheet('add', k, -1); }
+  function openEdit(k, idx){ openSheet('edit', k, idx); }
+  function closeAdd(){ $('sheet').hidden = true; }
+  $('f-ranks').addEventListener('change', syncSheet);
+  $('f-lines').addEventListener('change', syncSheet);
+  $('f-hp').addEventListener('input', function(){ hpTouched = true; });
+  $('add-x').addEventListener('click', closeAdd);
+  $('add-cancel').addEventListener('click', closeAdd);
+  $('sheet').addEventListener('click', function(e){ if (e.target === $('sheet')) closeAdd(); });
+  $('add-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = $('f-name').value.trim(), rank = fRank(), goal = $('f-goal').value.trim(), reward = $('f-reward').value.trim(), msg = $('f-msg');
+    if (!name) { msg.textContent = 'Дай боссу имя.'; $('f-name').focus(); return; }
+    if (RANKS.indexOf(rank) >= 2 && !reward) { msg.textContent = 'Для ранга ' + rank + ' назначь награду заранее.'; $('f-reward').focus(); return; }
+    var max = Math.max(1, Math.round(parseNum($('f-hp').value) || RANK_HP[rank]));
+    if (form.mode === 'edit') { closeAdd(); editBoss(form.key, form.idx, {name:name, rank:rank, max:max, goal:goal, reward:reward}); return; }
+    var k = fLine(), boss = {name:name, rank:rank, hp:max, max:max};
+    if (goal) boss.goal = goal;
+    if (reward) boss.reward = reward;
+    if (k === 'money') boss.unit = '₽ × 1000';
+    if ($('f-gold').checked) { boss.gold = true; boss.until = addDays(mskToday(), 2); }
+    closeAdd();
+    addBoss(k, boss);
+  });
+
+  /* ---------- action panel wiring ---------- */
+  $('btn-hit').addEventListener('click', function(){ var b = bossesOf(tab)[selIdx(tab)]; if (b) strike(tab, selIdx(tab), 'hit', null); });
+  $('btn-crit').addEventListener('click', function(){ var b = bossesOf(tab)[selIdx(tab)]; if (b) strike(tab, selIdx(tab), 'crit', null); });
+  $('act').addEventListener('submit', function(e){
+    e.preventDefault();
+    var b = bossesOf(tab)[selIdx(tab)], mode = bossMode(tab, b);
+    if (mode === 'hit') { strike(tab, selIdx(tab), 'hit', null); return; }
+    if (mode === 'money') {
+      var v = parseNum($('rub').value);
+      if (!(v > 0)) { restartClass($('rub'), 'pulse', 720); $('rub').focus(); toast('Впиши, сколько рублей заработал.'); return; }
+      $('rub').value = ''; earn(Math.round(v)); return;
+    }
+    if (mode === 'weight') {
+      var w = parseNum($('kg').value);
+      if (!(w >= 30 && w <= 250)) { restartClass($('kg'), 'pulse', 720); $('kg').focus(); toast('Впиши вес в килограммах, например 87,4.'); return; }
+      $('kg').value = ''; weigh(r3(w));
+    }
+  });
+  $('quest').addEventListener('click', doQuest);
+  $('snd').addEventListener('click', function(){ muted = !muted; lsSet('ohota.muted', muted ? '1' : '0'); renderSound(); if (!muted) SFX.quest(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { if (!$('ovl').hidden) closeOverlay(); else if (!$('sheet').hidden) closeAdd(); } });
+
+  /* pupils follow the finger or cursor; when idle, they glance around */
+  var lastMove = 0;
+  function look(x, y){
+    $('stage').querySelectorAll('.mon.is-current').forEach(function(m){
+      var r = m.getBoundingClientRect(), dx = x - (r.left + r.width / 2), dy = y - (r.top + r.height * .4), d = Math.hypot(dx, dy) || 1, s = Math.min(1, d / 160) * 3.6;
+      m.style.setProperty('--px', (dx / d * s).toFixed(2) + 'px'); m.style.setProperty('--py', (dy / d * s).toFixed(2) + 'px');
+    });
+  }
+  document.addEventListener('pointermove', function(e){ lastMove = Date.now(); look(e.clientX, e.clientY); }, {passive:true});
+  document.addEventListener('pointerdown', function(e){ lastMove = Date.now(); look(e.clientX, e.clientY); }, {passive:true});
+  if (!REDUCED) setInterval(function(){ if (Date.now() - lastMove < 3000) return; $('stage').querySelectorAll('.mon.is-current').forEach(function(m){ m.style.setProperty('--px', ((Math.random() - .5) * 6).toFixed(1) + 'px'); m.style.setProperty('--py', ((Math.random() - .5) * 4).toFixed(1) + 'px'); }); }, 2600);
+  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') { TODAY = mskToday(); render(); upkeep(); } });
+
+  /* ---------- local mode: the game opened as a plain file keeps progress in this browser ---------- */
+  function localDB(seed){
+    var data = null, docL = {}, colL = {};
+    try { localStorage.setItem(SAVE_KEY + '.t', '1'); localStorage.removeItem(SAVE_KEY + '.t'); } catch (e) { localOK = false; }
+    try { data = JSON.parse(localStorage.getItem(SAVE_KEY)); } catch (e) { data = null; }
+    if (!data || typeof data.lines !== 'object' || !data.lines) data = seed ? clone(seed) : {lines:{}, state:null};
+    function persist(){ try { localStorage.setItem(SAVE_KEY, JSON.stringify(data)); return true; } catch (e) { return false; } }
+    if (localOK) persist();
+    function get(path){ var p = path.split('/'); return p[0] === 'lines' ? data.lines[p[1]] : path === 'game/state' ? data.state : undefined; }
+    function snapDoc(path){ var d = get(path); return {id:path.split('/').pop(), exists:!!d, data:function(){ return d ? clone(d) : undefined; }, metadata:{fromCache:false, hasPendingWrites:false}}; }
+    function snapCol(){ var docs = Object.keys(data.lines).sort().map(function(k){ return snapDoc('lines/' + k); }); return {docs:docs, size:docs.length, empty:!docs.length, docChanges:function(){ return []; }}; }
+    function notify(path){ setTimeout(function(){ (docL[path] || []).forEach(function(f){ f(snapDoc(path)); }); if (path.indexOf('lines/') === 0) (colL.lines || []).forEach(function(f){ f(snapCol()); }); }, 0); }
+    window.addEventListener('storage', function(e){
+      if (e.key !== SAVE_KEY || !e.newValue) return;
+      try { var next = JSON.parse(e.newValue); if (next && next.lines) data = next; } catch (err) { return; }
+      Object.keys(docL).forEach(notify); (colL.lines || []).forEach(function(f){ f(snapCol()); });
+    });
+    return {
+      doc:function(path){ return {
+        get:function(){ return Promise.resolve(snapDoc(path)); },
+        set:function(body){
+          var p = path.split('/');
+          if (p[0] === 'lines') data.lines[p[1]] = clone(body); else if (path === 'game/state') data.state = clone(body);
+          if (!persist()) return Promise.reject({code:'quota_exceeded', message:'browser storage refused the save'});
+          notify(path); return Promise.resolve();
+        },
+        onSnapshot:function(f){ (docL[path] = docL[path] || []).push(f); setTimeout(function(){ f(snapDoc(path)); }, 0); return function(){}; }
+      }; },
+      collection:function(path){ return {onSnapshot:function(f){ (colL[path] = colL[path] || []).push(f); setTimeout(function(){ f(snapCol()); }, 0); return function(){}; }}; }
+    };
+  }
+
+  /* ---------- save box: copy progress out, paste it in ---------- */
+  function renderSaveBox(){
+    $('save-where').textContent = isLocal ? '· в этом браузере' : '· в claude.ai';
+    $('save-text').textContent = isLocal
+      ? 'Прогресс хранится в этом браузере на этом устройстве. Чтобы перенести его в игру на claude.ai или показать Claude, нажми «Скопировать прогресс» и вставь там.'
+      : 'Прогресс хранится в claude.ai, его видит и меняет Claude. Чтобы перенести его в игру-файл, нажми «Скопировать прогресс» и вставь там.';
+    $('imp-open').hidden = !db || !canWrite;
+  }
+  var impArmed = false;
+  function resetImport(){ impArmed = false; $('imp-btn').textContent = 'Заменить прогресс'; $('imp-msg').textContent = ''; }
+  $('exp-btn').addEventListener('click', function(){
+    if (!M.state || !lineKeys().length) { toast('Прогресс ещё не загрузился.'); return; }
+    var text = JSON.stringify({game:'ohota-do-20', v:1, savedAt:mskToday(), lines:M.lines, state:M.state});
+    var manual = function(){ $('imp-box').hidden = false; resetImport(); var t = $('imp-text'); t.value = text; t.focus(); t.select(); $('imp-msg').textContent = 'Скопируй выделенный текст вручную.'; };
+    try { navigator.clipboard.writeText(text).then(function(){ toast('Прогресс скопирован. Вставь его в другой версии игры или отправь Claude.'); }, manual); } catch (e) { manual(); }
+  });
+  $('imp-open').addEventListener('click', function(){
+    var box = $('imp-box'); box.hidden = !box.hidden; resetImport();
+    if (!box.hidden) { $('imp-text').value = ''; $('imp-text').focus(); }
+  });
+  $('imp-text').addEventListener('input', resetImport);
+  $('imp-btn').addEventListener('click', function(){
+    var msg = $('imp-msg'), data;
+    try { data = JSON.parse($('imp-text').value.trim()); } catch (e) { msg.textContent = 'Это не похоже на скопированный прогресс.'; return; }
+    var ok = data && typeof data.lines === 'object' && data.lines && data.state && typeof data.state === 'object' && Object.keys(data.lines).length &&
+      Object.keys(data.lines).every(function(k){ return /^[A-Za-z0-9_-]{1,40}$/.test(k) && data.lines[k] && Array.isArray(data.lines[k].bosses); });
+    if (!ok) { msg.textContent = 'В тексте нет линий и состояния игры.'; return; }
+    if (!impArmed) { impArmed = true; $('imp-btn').textContent = 'Точно заменить? Нажми ещё раз'; msg.textContent = 'Текущий прогресс здесь заменится вставленным.'; return; }
+    if (!db || !canWrite) return;
+    Object.keys(data.lines).forEach(function(k){ M.lines[k] = clone(data.lines[k]); write('lines/' + k, M.lines[k]); });
+    M.state = normState(clone(data.state)); write('game/state', M.state);
+    M.haveLines = M.haveState = true;
+    undo = null; upkeepFor = null; confirmDel = null;
+    lineKeys().forEach(function(k){ sel[k] = defaultSel(k); });
+    bestSig = headSig = trackSig = stageSig = infoSig = actSig = logSig = '';
+    if (!M.lines[tab]) tab = null;
+    $('imp-box').hidden = true; $('imp-text').value = ''; resetImport();
+    render(); toast('Прогресс загружен');
+    setTimeout(upkeep, 400);
+  });
+
+  /* ---------- boot ---------- */
+  makeTopo();
+  $('final-face').innerHTML = FINAL_FACE;
+  renderSound();
+  renderTop();
+
+  function applyLines(snap){
+    var changed = false;
+    snap.docs.forEach(function(d){
+      var p = 'lines/' + d.id; if (pending[p] > 0) return;
+      var body = d.data(); if (!body) return;
+      if (JSON.stringify(M.lines[d.id]) !== JSON.stringify(body)) { M.lines[d.id] = clone(body); if (!Array.isArray(M.lines[d.id].bosses)) M.lines[d.id].bosses = []; changed = true; }
+    });
+    var ids = snap.docs.map(function(d){ return d.id; });
+    Object.keys(M.lines).forEach(function(id){ if (ids.indexOf(id) < 0 && !(pending['lines/' + id] > 0)) { delete M.lines[id]; changed = true; } });
+    var first = !M.haveLines; M.haveLines = true;
+    afterLoad(changed || first);
+  }
+  function afterLoad(changed){
+    if (M.haveLines && M.haveState && !lineKeys().length) {
+      showEmpty('Карта охоты пуста', isLocal ? 'Вставь сохранённый прогресс в блоке «Сохранение» внизу страницы.' : 'Данных игры пока нет. Попроси Claude загрузить линии и боссов.');
+      if (isLocal) $('save-box').open = true;
+      return;
+    }
+    if (changed) render();
+    upkeep();
+  }
+  function applyState(snap){
+    if (pending['game/state'] > 0) return;
+    var first = !M.haveState; M.haveState = true;
+    if (!snap.exists) { afterLoad(first); return; }
+    var s = normState(clone(snap.data())), changed = JSON.stringify(s) !== JSON.stringify(M.state);
+    if (changed) M.state = s;
+    afterLoad(changed || first);
+  }
+  function offline(msg){ offlineMsg = msg; showEmpty('Нет связи с хранилищем игры', msg); $('quest').disabled = true; }
+
+  (async function(){
+    var api = window.claude && typeof window.claude.use === 'function' ? window.claude : null;
+    if (!api) {
+      db = localDB(LOCAL_SEED); isLocal = true;
+      if (!localOK) toast('Этот браузер не даёт файлу сохранять прогресс. Открой файл в Chrome или Edge на компьютере, или играй по ссылке claude.ai.', {err:true, ms:15000});
+    } else {
+      try { db = await api.use('db'); } catch (e) { db = null; }
+      if (!db) { offline('Открой игру в claude.ai, войдя в свой аккаунт: прогресс хранится там.'); return; }
+      try {
+        var user = await api.use('user');
+        if (user) { var w = await user.can('data.write'); if (w === false) canWrite = false; if (w !== null) permKnown = true; }
+      } catch (e) {}
+    }
+    renderSaveBox();
+    db.collection('lines').onSnapshot(applyLines, function(){ offline('Не получилось загрузить линии. Обнови страницу.'); });
+    db.doc('game/state').onSnapshot(applyState, function(){ toast('Не получилось загрузить состояние игры. Обнови страницу.', {err:true}); });
+  })();
+})();
+</script>
+</body></html>
