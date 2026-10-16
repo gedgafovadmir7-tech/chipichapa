@@ -206,12 +206,12 @@ def backgrounds(logo):
         tile(WHITE, logo, border=True),
         tile(LIGHT, logo),
         tile(BLACK, recolor(logo, ORANGE, WHITE)),
-        tile(ORANGE, recolor(logo, WHITE, WHITE)),
+        tile(ORANGE, recolor(logo, BLACK, BLACK)),
         tile((51, 51, 51), recolor(logo, ORANGE, WHITE)),
         t_photo,
     ]
     caps = ["Белый — полноцветная", "Светло-серый — полноцветная", "Чёрный — двухцветная",
-            "Оранжевый — белая", "Тёмно-серый — двухцветная", "Тёмное фото — белая"]
+            "Оранжевый — чёрная", "Тёмно-серый — двухцветная", "Тёмное фото — белая"]
     return save(caption_grid(tiles, caps, 2, marks=[True] * 6), "logo_backgrounds.png")
 
 
@@ -268,7 +268,7 @@ def color_card(d, x, y, w, h, col, name, lines, dark_text=True):
 def palette():
     W = 1800
     main = [
-        (ORANGE, "Оранжевый", ["HEX #F07D00", "RGB 240, 125, 0", "CMYK 0, 48, 100, 6"]),
+        (ORANGE, "Оранжевый", ["HEX #F07D00", "RGB 240, 125, 0", "CMYK 0, 64, 100, 0"]),
         (BLACK, "Чёрный", ["HEX #000000", "RGB 0, 0, 0", "CMYK 0, 0, 0, 100"]),
         (WHITE, "Белый", ["HEX #FFFFFF", "RGB 255, 255, 255", "CMYK 0, 0, 0, 0"]),
     ]
@@ -276,9 +276,9 @@ def palette():
         ((51, 51, 51), "Тёмно-серый", ["#333333"]),
         ((102, 102, 102), "Средне-серый", ["#666666"]),
         ((204, 204, 204), "Светло-серый", ["#CCCCCC"]),
-        ((245, 245, 245), "Фон светлый", ["#F5F5F5"]),
-        ((230, 119, 0), "Hover", ["#E67700"]),
-        ((255, 244, 230), "Оранж. фон", ["#FFF4E6"]),
+        ((245, 245, 245), "Оч. светло-серый", ["#F5F5F5"]),
+        ((230, 119, 0), "Оранж. тёмный", ["#E67700"]),
+        ((255, 244, 230), "Оранж. светлый", ["#FFF4E6"]),
     ]
     system = [((34, 197, 94), "Success", ["#22C55E"]), ((239, 68, 68), "Error", ["#EF4444"]),
               ((245, 158, 11), "Warning", ["#F59E0B"])]
@@ -347,8 +347,39 @@ def typography():
     return save(im, "typography.png")
 
 
+def pattern():
+    """Фирменный паттерн печатной платы: на чёрном и на белом фоне."""
+    w, h, gap = 880, 420, 40
+    im = Image.new("RGBA", (2 * w + gap, h), WHITE + (255,))
+    dark = Image.new("RGBA", (w, h), BLACK + (255,))
+    light = Image.new("RGBA", (w, h), WHITE + (255,))
+    rng = np.random.default_rng(11)
+    for tile_im, col in ((dark, (240, 125, 0, 60)), (light, (240, 125, 0, 45))):
+        layer = Image.new("RGBA", (w, h), (0, 0, 0, 0))
+        d = ImageDraw.Draw(layer)
+        for _ in range(34):
+            x, y = int(rng.integers(0, w)), int(rng.integers(0, h))
+            pts = [(x, y)]
+            for _ in range(3):
+                if rng.random() < 0.5:
+                    x += int(rng.integers(-180, 180))
+                else:
+                    step = int(rng.integers(-80, 80))
+                    x, y = x + step, y + abs(step)
+                pts.append((x, y))
+            d.line(pts, fill=col, width=4)
+            ex, ey = pts[-1]
+            d.ellipse([ex - 9, ey - 9, ex + 9, ey + 9], outline=col, width=4)
+        tile_im.alpha_composite(layer)
+    ImageDraw.Draw(light).rectangle([0, 0, w - 1, h - 1], outline=BORDER, width=2)
+    im.alpha_composite(dark, (0, 0))
+    im.alpha_composite(light, (w + gap, 0))
+    return save(im, "pattern.png")
+
+
 def main():
     os.makedirs(OUT, exist_ok=True)
+    pattern()
     logo = load_logo()
     logo_versions(logo)
     clear_space(logo)
