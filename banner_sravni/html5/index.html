@@ -6,65 +6,37 @@
 <meta name="ad.size" content="width=1440,height=315">
 <title>Banner</title>
 <style>
-  @font-face { font-family: Aeroport; font-weight: 400; src: url(https://s91588.cdn.ngenix.net/shared/static/fonts/aeroport/Aeroport-regular.woff2) format("woff2"); }
-  @font-face { font-family: Aeroport; font-weight: 500; src: url(https://s91588.cdn.ngenix.net/shared/static/fonts/aeroport/Aeroport-medium.woff2) format("woff2"); }
-  @font-face { font-family: Aeroport; font-weight: 700; src: url(https://s91588.cdn.ngenix.net/shared/static/fonts/aeroport/Aeroport-bold.woff2) format("woff2"); }
-  * { box-sizing: border-box; }
   html, body { margin: 0; padding: 0; }
-  body { font-family: Aeroport, Arial, sans-serif; background: #0A2242; }
-  a.banner { position: relative; display: block; width: 100%; max-width: 1440px; height: 315px;
-             overflow: hidden; text-decoration: none; color: #fff; background: #0A2242; }
+  body { background: #0A2242; }
+  a.banner { position: relative; display: block; width: 100%; max-width: 1440px; height: 315px; overflow: hidden; background: #0A2242; }
   /* картинка прибита к левому краю: при сужении экрана баннер обрезается справа */
   .art { position: absolute; left: 0; top: 0; width: 1440px; height: 315px; max-width: none; }
-  .txt { position: absolute; left: 6.5%; top: 40px; width: 470px; }
-  .brand { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; font-size: 13px; font-weight: 500; color: #C9D6E8; }
-  .brand img { width: 30px; height: 30px; }
-  h1 { margin: 0 0 12px; font-size: 30px; line-height: 1.12; font-weight: 700; }
-  h1 em { font-style: normal; color: #FFC52E; }
-  p { margin: 0 0 20px; font-size: 15px; line-height: 1.45; color: #D7E1EE; max-width: 440px; }
-  .btn { display: inline-block; background: #FFC52E; color: #14243D; font-weight: 700; font-size: 15px;
-         padding: 12px 22px; border-radius: 999px; transition: background .2s, transform .2s; }
-  a.banner:hover .btn { background: #FFD35C; transform: translateY(-1px); }
-  .disc { position: absolute; left: 6.5%; bottom: 10px; font-size: 10px; color: #7F93AF; }
-
+  /* текст — SVG с кривыми (требование площадки) */
+  .txt { position: absolute; left: 6.5%; top: 40px; width: 520px; height: 232px; }
   @keyframes up { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
   @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
   .art { animation: fade .8s ease-out both; }
-  .brand, h1, p, .btn { animation: up .6s ease-out both; }
-  h1 { animation-delay: .1s; } p { animation-delay: .25s; } .btn { animation-delay: .4s; }
+  .txt { animation: up .7s ease-out .15s both; transition: transform .2s; }
+  a.banner:hover .txt { transform: translateX(3px); }
   @media (prefers-reduced-motion: reduce) { * { animation: none !important; } }
-
   .mob { display: none; }
   @media (max-width: 767px) {
     body { background: #fff; }
-    a.banner { height: auto; background: none; color: #14243D; padding: 12px; }
-    .art, .txt, .disc { display: none; }
-    .mob { display: block; position: relative; min-height: 101px; border-radius: 14px; background: #E9EEF5;
-           overflow: hidden; padding: 12px 130px 24px 14px; }
-    .mob .logo { width: 20px; height: 20px; display: block; margin-bottom: 8px; }
-    .mob b { display: block; font-size: 13px; font-weight: 700; }
-    .mob span { display: block; font-size: 11px; color: #3D4A5C; margin-top: 2px; }
+    a.banner { height: auto; background: none; padding: 12px; }
+    .art, .txt { display: none; }
+    .mob { display: block; position: relative; height: 101px; border-radius: 14px; background: #E9EEF5; overflow: hidden; }
+    .mob .t { position: absolute; left: 14px; top: 12px; width: 160px; height: 66px; }
     .mob .pic { position: absolute; right: 0; top: 0; width: 124px; height: 101px; }
-    .mob small { position: absolute; left: 14px; bottom: 8px; font-size: 7px; color: #8B95A3; }
   }
 </style>
 </head>
 <body>
 <a class="banner" href="%banner.reference_mrc_user1%" target="%banner.target%">
   <img class="art" src="images/desktop.svg" width="1440" height="315" alt="">
-  <div class="txt">
-    <div class="brand"><img src="images/logo.svg" alt="">Банкрот Консалт</div>
-    <h1>Реструктуризация долгов — <em>новый план, а не точка.</em></h1>
-    <p>Снизим ежемесячную нагрузку, остановим рост долга и вернём контроль над финансами.</p>
-    <span class="btn">Получить консультацию →</span>
-  </div>
-  <div class="disc">Реклама. ООО «Банкрот Консалт», ИНН 7704250024</div>
+  <img class="txt" src="images/text_desktop.svg" width="520" height="232" alt="Реструктуризация долгов — новый план, а не точка.">
   <div class="mob">
-    <img class="logo" src="images/logo.svg" alt="">
-    <b>Долги под контролем</b>
-    <span>Снизим платёж и рост долга</span>
+    <img class="t" src="images/text_mobile.svg" width="160" height="66" alt="Долги под контролем">
     <img class="pic" src="images/mobile.png" width="124" height="101" alt="">
-    <small>Реклама. ООО «Банкрот Консалт», ИНН 7704250024</small>
   </div>
 </a>
 </body>
