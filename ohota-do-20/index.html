@@ -161,9 +161,11 @@ h1 span{color:var(--boss)}
 @keyframes ashake{15%{transform:translate(-6px,3px)}30%{transform:translate(5px,-4px)}45%{transform:translate(-4px,2px)}60%{transform:translate(3px,-1px)}80%{transform:translate(-1px,1px)}}
 .arena-head{display:flex;flex-wrap:wrap;align-items:baseline;gap:2px 10px}
 .arena-head h2{font-family:var(--font-display);font-weight:800;font-size:18px;color:var(--c)}
-.arena-head p{font-size:12.5px;color:var(--muted)}
+.arena-head p{font-size:12.5px;color:var(--muted);flex-basis:100%}
+.head-right{margin-left:auto;display:flex;align-items:center;gap:6px}
+.head-add{border:1px solid color-mix(in srgb,var(--c) 60%,transparent);background:color-mix(in srgb,var(--c) 12%,transparent);color:var(--c);border-radius:999px;padding:4px 12px;font-size:12.5px;font-weight:600;white-space:nowrap}
 .chip{font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--c);border:1px solid color-mix(in srgb,var(--c) 55%,transparent);border-radius:999px;padding:2px 8px}
-.rage-chip{color:var(--body);border-color:color-mix(in srgb,var(--body) 60%,transparent);margin-left:auto}
+.rage-chip{color:var(--body);border-color:color-mix(in srgb,var(--body) 60%,transparent)}
 
 .track-scroll{overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;scrollbar-color:var(--rule) transparent;margin-inline:-4px}
 .track{list-style:none;margin:0;padding:2px 4px;display:flex;align-items:flex-start;width:max-content;min-width:100%}
@@ -317,7 +319,22 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
 .sheet-head h2 span{color:var(--c)}
 .x{width:34px;height:34px;border-radius:10px;border:1px solid var(--rule);background:none;color:var(--muted);font-size:18px;line-height:1}
 .sheet label{display:grid;gap:4px;font-size:12px;color:var(--muted);min-width:0}
-.f-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
+.f-row{display:grid;grid-template-columns:110px minmax(0,1fr);gap:12px;align-items:end}
+.f-set{border:0;margin:0;padding:0;min-width:0}
+.f-set legend{font-size:12px;color:var(--muted);padding:0;margin-bottom:6px}
+.f-lines{display:flex;flex-wrap:wrap;gap:6px}
+.sheet .ln{--lc:var(--other);display:inline-flex;align-items:center;gap:6px;border:1px solid var(--rule);border-radius:999px;padding:5px 12px;font-size:13px;color:var(--muted);cursor:pointer}
+.sheet .ln::before{content:"";width:8px;height:8px;border-radius:50%;background:var(--lc)}
+.sheet .ln:has(input:checked){border-color:var(--lc);color:var(--fg);background:color-mix(in srgb,var(--lc) 14%,transparent)}
+.f-ranks{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.sheet .rk{--rc:var(--muted);display:grid;gap:1px;align-content:start;border:1px solid var(--rule);border-radius:12px;padding:8px 9px;cursor:pointer;background:var(--bg)}
+.rk b{font-family:var(--font-display);font-weight:800;font-size:18px;line-height:1.1;color:var(--rc)}
+.rk .rk-name{font-size:12.5px;font-weight:600;color:var(--fg)}
+.rk small{font-size:11px;line-height:1.25;color:var(--muted)}
+.rk i{font-style:normal;font-family:var(--font-mono);font-size:10.5px;color:var(--muted);margin-top:3px}
+.sheet .rk:has(input:checked){border-color:var(--rc);background:color-mix(in srgb,var(--rc) 13%,var(--bg));box-shadow:0 0 16px -5px var(--rc)}
+.sheet .rk:has(input:focus-visible),.sheet .ln:has(input:focus-visible){outline:2px solid var(--fg);outline-offset:2px}
+#f-reward-hint{font-style:normal;color:var(--faith)}
 .f-note{font-size:12px;color:var(--muted)}
 .check{display:flex!important;grid-template-columns:none;align-items:flex-start;gap:10px!important;font-size:13px!important;color:var(--fg)!important;border:1px solid color-mix(in srgb,var(--faith) 40%,var(--rule));border-radius:10px;padding:9px 11px}
 .check input{margin:3px 0 0;accent-color:var(--faith);width:16px;height:16px;flex:none}
@@ -433,6 +450,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
         <li><b>Серия</b><span>квест дня выполнен — +1; пропустил день — серия сгорает</span></li>
         <li><b>+10</b><span>Обычной жизни за каждый пустой день</span></li>
         <li><b>Ранг</b><span>равен рангу сильнейшего поверженного босса</span></li>
+        <li><b>E → S</b><span>E Мелочь · D Задача · C Испытание · B Рубеж · A Вершина · S Мечта</span></li>
         <li><b>Награда</b><span>за боссов C и выше назначается заранее, забираешь после победы</span></li>
         <li><b>Золотой</b><span>враг живёт 3 дня, удары по нему бьют Обычную жизнь вдвое</span></li>
         <li><b>14.02</b><span>0 HP — «Легенда»; снял половину — «Выжил»; меньше — «Обычная жизнь победила»</span></li>
@@ -443,17 +461,18 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
 
 <div class="sheet" id="sheet" hidden>
   <form class="sheet-card" id="add-form" autocomplete="off">
-    <div class="sheet-head"><h2>Новый босс · <span id="add-line">линия</span></h2><button type="button" class="x" id="add-x" aria-label="Закрыть">×</button></div>
-    <label for="f-name">Имя босса<input class="field" id="f-name" maxlength="60" placeholder="Например: Курсовой тролль"></label>
+    <div class="sheet-head"><h2 id="add-title">Новый босс</h2><button type="button" class="x" id="add-x" aria-label="Закрыть">×</button></div>
+    <fieldset class="f-set" id="f-lines-set"><legend>Линия</legend><div class="f-lines" id="f-lines"></div></fieldset>
+    <label for="f-name">Имя босса<input class="field" id="f-name" maxlength="60" placeholder="Например: Отрисовка на Кворке"></label>
+    <fieldset class="f-set"><legend>Ранг: насколько он силён</legend><div class="f-ranks" id="f-ranks"></div></fieldset>
     <div class="f-row">
-      <label for="f-rank">Ранг<select class="field" id="f-rank"><option>E</option><option selected>D</option><option>C</option><option>B</option><option>A</option><option>S</option></select></label>
       <label for="f-hp">HP<input class="field num" id="f-hp" type="number" min="1" max="100000" step="1" inputmode="numeric" value="3"></label>
+      <p class="f-note" id="f-hpnote">HP подставляется по рангу, его можно поправить.</p>
     </div>
-    <p class="f-note" id="f-hpnote">HP подставляется по рангу: E 1 · D 3 · C 10 · B 25 · A 50 · S 100.</p>
     <label for="f-goal">Цель<input class="field" id="f-goal" maxlength="120" placeholder="Как его победить"></label>
-    <label for="f-reward" id="f-reward-wrap" hidden>Награда за победу (для C и выше обязательна)<input class="field" id="f-reward" maxlength="80" placeholder="Что подаришь себе после победы"></label>
-    <label class="check" for="f-gold"><input type="checkbox" id="f-gold"><span><b>Золотой враг.</b> <span>Живёт 3 дня, удары по нему бьют Обычную жизнь вдвое.</span></span></label>
-    <div class="f-actions"><button type="submit" class="btn-main">Выпустить босса</button><button type="button" class="btn-ghost" id="add-cancel">Отмена</button><span class="f-msg" id="f-msg" role="status"></span></div>
+    <label for="f-reward" id="f-reward-wrap"><span>Награда за победу · <i id="f-reward-hint">по желанию</i></span><input class="field" id="f-reward" maxlength="80" placeholder="Что подаришь себе после победы"></label>
+    <label class="check" id="f-gold-wrap" for="f-gold"><input type="checkbox" id="f-gold"><span><b>Золотой враг.</b> <span>Живёт 3 дня, удары по нему бьют Обычную жизнь вдвое.</span></span></label>
+    <div class="f-actions"><button type="submit" class="btn-main" id="f-submit">Выпустить босса</button><button type="button" class="btn-ghost" id="add-cancel">Отмена</button><span class="f-msg" id="f-msg" role="status"></span></div>
   </form>
 </div>
 
@@ -466,6 +485,14 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   var RANKS = ['E','D','C','B','A','S'];
   var RANK_HP = {E:1, D:3, C:10, B:25, A:50, S:100};
   var RANK_COLOR = {E:'#8e96aa', D:'#8db4cc', C:'#48c08c', B:'#b48cf2', A:'#e8674f', S:'#e2b55b'};
+  var RANK_INFO = {
+    E:{name:'Мелочь', hint:'Одно действие, один подход'},
+    D:{name:'Задача', hint:'Несколько шагов, пара дней'},
+    C:{name:'Испытание', hint:'Неделя-две упорной работы'},
+    B:{name:'Рубеж', hint:'Месяц, нужна система'},
+    A:{name:'Вершина', hint:'Несколько месяцев'},
+    S:{name:'Мечта', hint:'Цель, которая меняет жизнь'}
+  };
   var LINE_COLOR = {faith:'#e2b55b', money:'#48c08c', body:'#e8674f', meme:'#b48cf2', other:'#8db4cc'};
   var STATUS = {done:'Повержен', current:'Бой сейчас', next:'Впереди', sealed:'Скрыт'};
   var ARRIVAL = '2027-02-14';
@@ -898,8 +925,25 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     logAdd('➕ Новый босс «' + boss.name + '» (' + boss.rank + ', ' + fmt(boss.max) + ' HP)' + (boss.gold ? ' · ⭐ золотой' : ''));
     sel[k] = line.bosses.length - 1;
     enterKeys[k + '|' + sel[k]] = true;
+    if (tab !== k) { tab = k; lsSet('ohota.tab', k); confirmDel = null; }
     save(T, true); SFX.coin(); render(); toastUndo('Босс выпущен');
     return true;
+  }
+  function editBoss(k, idx, f){
+    if (!guard()) return;
+    var b = bossesOf(k)[idx]; if (!b) return;
+    var T = begin(), oldMax = maxOf(b), dealt = oldMax - hpOf(b), was = b.name;
+    b.name = f.name; b.rank = f.rank;
+    if (f.goal) b.goal = f.goal; else delete b.goal;
+    if (f.reward) b.reward = f.reward; else delete b.reward;
+    if (f.max !== oldMax) {
+      b.max = f.max;
+      if (b.status === 'current') b.hp = r3(clamp(f.max - dealt, Math.min(1, f.max), f.max));
+      else if (b.status !== 'done') b.hp = f.max;
+    }
+    T.touched[k] = true; confirmDel = null;
+    logAdd('✏️ Босс «' + was + '» изменён' + (was !== b.name ? ' → «' + b.name + '»' : '') + ' (' + b.rank + ' · ' + RANK_INFO[b.rank].name + ', ' + fmt(maxOf(b)) + ' HP)');
+    save(T, true); render(); toastUndo('Босс изменён');
   }
   function doUndo(){
     if (!undo || !db) return;
@@ -1088,7 +1132,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
       ]);
     } else if (o.type === 'rank') {
       card.style.setProperty('--c', RANK_COLOR[o.rank] || '#e2b55b');
-      add(card, [h('div', {class:'rank-big'}, o.rank), h('h2', {}, 'Новый ранг: ' + o.rank), h('p', {class:'ovl-sub'}, 'Ранг равен сильнейшему боссу, которого ты победил.')]);
+      add(card, [h('div', {class:'rank-big'}, o.rank), h('h2', {}, 'Новый ранг: ' + o.rank + ' · ' + RANK_INFO[o.rank].name), h('p', {class:'ovl-sub'}, 'Ранг равен сильнейшему боссу, которого ты победил.')]);
       SFX.rank();
     } else if (o.type === 'rage') {
       card.style.setProperty('--c', '#e8674f');
@@ -1180,10 +1224,12 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     var k = tab, line = M.lines[k], arr = bossesOf(k), pool = isPool(line), si = selIdx(k), color = lineColor(k);
     arena.style.setProperty('--c', color);
     arena.classList.toggle('rage', rage());
-    var hs = [k, line.title, line.rule, line.main, rage()].join('|');
+    var hs = [k, line.title, line.rule, line.main, rage(), !!db && canWrite].join('|');
     if (hs !== headSig) {
       headSig = hs;
-      fill($('arena-head'), h('h2', {}, line.title || k), line.main ? h('span', {class:'chip'}, 'Главная') : null, rage() ? h('span', {class:'chip rage-chip'}, 'Ярость ×2') : null, line.rule ? h('p', {}, line.rule) : null);
+      fill($('arena-head'), h('h2', {}, line.title || k), line.main ? h('span', {class:'chip'}, 'Главная') : null,
+        h('span', {class:'head-right'}, rage() ? h('span', {class:'chip rage-chip'}, 'Ярость ×2') : null, db && canWrite ? h('button', {type:'button', class:'head-add', onclick:function(){ openAdd(k); }}, '+ Новый босс') : null),
+        line.rule ? h('p', {}, line.rule) : null);
     }
     // path of bosses
     var ts = [k, si, canWrite, pool].concat(arr.map(function(b){ return b.name + b.rank + b.status + (b.gold ? 'g' : ''); })).join('|');
@@ -1283,7 +1329,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     var sig = [k, si, b.name, b.rank, st, b.goal, b.ability, b.shield, b.reward, b.gold, b.until, b.unit, b.doneAt, maxOf(b), armed, wr, TODAY].join('|');
     if (sig !== infoSig) {
       infoSig = sig;
-      var tag = (st === 'sealed' ? 'Скрыт' : STATUS[st] + ' · ранг ' + (b.rank || '?')) + (st === 'done' && b.doneAt ? ' · ' + shortDate(b.doneAt) : '');
+      var tag = (st === 'sealed' ? 'Скрыт' : STATUS[st] + ' · ранг ' + (b.rank || '?') + (RANK_INFO[b.rank] ? ' · ' + RANK_INFO[b.rank].name : '')) +(st === 'done' && b.doneAt ? ' · ' + shortDate(b.doneAt) : '');
       var kids = [h('div', {class:'info-top'}, h('h3', {}, st === 'sealed' ? '???' : b.name), h('span', {class:'tag'}, tag))];
       if (st !== 'sealed') {
         kids.push(h('div', {class:'bar big', role:'img'}, h('i')), h('div', {class:'hp-line'}, h('span', {class:'num hp-now'}), h('span', {class:'hp-extra'})));
@@ -1301,7 +1347,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
         kids.push(h('form', {class:'reward-set', onsubmit:function(e){ e.preventDefault(); var v = rin.value.trim(); if (v) setReward(k, si, v); else rin.focus(); }},
           h('span', {}, 'Ранг ' + b.rank + ': назначь награду заранее, заберёшь после победы.'), rin, h('button', {type:'submit', class:'btn-ghost'}, 'Назначить')));
       }
-      if (wr && st !== 'done') kids.push(h('div', {class:'info-actions'}, h('button', {type:'button', class:'link-btn' + (armed ? ' danger' : ''), onclick:function(){ if (armed) removeBoss(k, si); else { confirmDel = {key:k, i:si}; render(); } }}, armed ? 'Точно убрать? Нажми ещё раз' : 'Убрать босса')));
+      if (wr && st !== 'done') kids.push(h('div', {class:'info-actions'}, h('button', {type:'button', class:'link-btn', onclick:function(){ openEdit(k, si); }}, 'Изменить'), h('button', {type:'button', class:'link-btn' + (armed ? ' danger' : ''), onclick:function(){ if (armed) removeBoss(k, si); else { confirmDel = {key:k, i:si}; render(); } }}, armed ? 'Точно убрать? Нажми ещё раз' : 'Убрать босса')));
       fill(info, kids);
     }
     var bar = info.querySelector('.bar i');
@@ -1366,41 +1412,81 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     fill($('stage'), h('div', {class:'stage-empty'}, h('span', {class:'ghost'}, '?'), h('b', {}, title), h('span', {}, text)));
   }
 
-  /* ---------- add-boss sheet ---------- */
-  var addKey = null, hpTouched = false;
-  function syncRewardField(){ $('f-reward-wrap').hidden = RANKS.indexOf($('f-rank').value) < 2; }
-  function openAdd(k){
-    if (!db || !canWrite) return;
-    addKey = k; hpTouched = false;
-    var line = M.lines[k];
+  /* ---------- boss sheet: create or edit ---------- */
+  var form = {mode:'add', key:null, idx:-1}, hpTouched = false;
+  var PLACEHOLDER = {faith:'Впиши свою цель', money:'Например: Страж 100к', body:'Например: 20 подтягиваний', meme:'Например: Разобрать 5 графиков', other:'Например: Отрисовка на Кворке'};
+  function fRank(){ var r = document.querySelector('input[name="f-rank"]:checked'); return r ? r.value : 'D'; }
+  function fLine(){ var r = document.querySelector('input[name="f-line"]:checked'); return r ? r.value : form.key; }
+  function buildRankCards(){
+    var box = $('f-ranks'); if (box.childElementCount) return;
+    RANKS.forEach(function(r){
+      var lab = h('label', {class:'rk', for:'f-rank-' + r},
+        h('input', {type:'radio', name:'f-rank', id:'f-rank-' + r, value:r, class:'sr'}),
+        h('b', {}, r), h('span', {class:'rk-name'}, RANK_INFO[r].name), h('small', {}, RANK_INFO[r].hint), h('i', {}, RANK_HP[r] + ' HP'));
+      lab.style.setProperty('--rc', RANK_COLOR[r]);
+      box.append(lab);
+    });
+  }
+  function buildLineChips(selected){
+    var box = $('f-lines'); fill(box);
+    lineKeys().forEach(function(k){
+      var lab = h('label', {class:'ln', for:'f-line-' + k}, h('input', {type:'radio', name:'f-line', id:'f-line-' + k, value:k, class:'sr', checked:k === selected}), M.lines[k].title || k);
+      lab.style.setProperty('--lc', lineColor(k));
+      box.append(lab);
+    });
+  }
+  function syncSheet(){
+    var k = fLine(), r = fRank(), strong = RANKS.indexOf(r) >= 2;
     $('add-form').style.setProperty('--c', lineColor(k));
-    $('add-line').textContent = line.title || k;
-    $('f-name').value = ''; $('f-goal').value = ''; $('f-reward').value = ''; $('f-gold').checked = false; $('f-msg').textContent = '';
-    $('f-name').placeholder = {faith:'Впиши свою цель', money:'Например: Страж 100к', body:'Например: 20 подтягиваний', meme:'Например: Разобрать 5 графиков', other:'Например: Курсовой тролль'}[k] || 'Имя босса';
-    $('f-rank').value = 'D'; $('f-hp').value = RANK_HP.D;
-    $('f-hpnote').textContent = k === 'money' ? 'На этой линии 1 HP = 1 000 ₽.' : 'HP подставляется по рангу: E 1 · D 3 · C 10 · B 25 · A 50 · S 100.';
-    syncRewardField();
+    if (!hpTouched) $('f-hp').value = RANK_HP[r];
+    $('f-hpnote').textContent = k === 'money' ? 'На линии «Деньги» 1 HP = 1 000 ₽.' : RANK_INFO[r].name + ': ' + RANK_INFO[r].hint.toLowerCase() + '. HP подставлен по рангу, его можно поправить.';
+    $('f-reward-hint').textContent = strong ? 'обязательна для ранга ' + r : 'по желанию';
+    $('f-name').placeholder = PLACEHOLDER[k] || 'Имя босса';
+  }
+  function openSheet(mode, k, idx){
+    if (!db || !canWrite || !M.lines[k]) return;
+    var b = mode === 'edit' ? bossesOf(k)[idx] : null;
+    if (mode === 'edit' && !b) return;
+    form = {mode:mode, key:k, idx:idx};
+    buildRankCards(); buildLineChips(k);
+    $('f-lines-set').hidden = mode === 'edit';
+    $('f-gold-wrap').hidden = mode === 'edit';
+    $('add-title').textContent = mode === 'edit' ? 'Изменить босса' : 'Новый босс';
+    $('f-submit').textContent = mode === 'edit' ? 'Сохранить' : 'Выпустить босса';
+    $('f-name').value = b ? b.name || '' : '';
+    $('f-goal').value = b ? b.goal || '' : '';
+    $('f-reward').value = b ? b.reward || '' : '';
+    $('f-gold').checked = false; $('f-msg').textContent = '';
+    var r = b && RANK_INFO[b.rank] ? b.rank : 'D';
+    $('f-rank-' + r).checked = true;
+    hpTouched = !!b && maxOf(b) !== RANK_HP[r];
+    $('f-hp').value = b ? maxOf(b) : RANK_HP[r];
+    syncSheet();
     $('sheet').hidden = false;
     setTimeout(function(){ $('f-name').focus(); }, 60);
   }
-  function closeAdd(){ $('sheet').hidden = true; addKey = null; }
-  $('f-rank').addEventListener('change', function(){ if (!hpTouched) $('f-hp').value = RANK_HP[$('f-rank').value]; syncRewardField(); });
+  function openAdd(k){ openSheet('add', k, -1); }
+  function openEdit(k, idx){ openSheet('edit', k, idx); }
+  function closeAdd(){ $('sheet').hidden = true; }
+  $('f-ranks').addEventListener('change', syncSheet);
+  $('f-lines').addEventListener('change', syncSheet);
   $('f-hp').addEventListener('input', function(){ hpTouched = true; });
   $('add-x').addEventListener('click', closeAdd);
   $('add-cancel').addEventListener('click', closeAdd);
   $('sheet').addEventListener('click', function(e){ if (e.target === $('sheet')) closeAdd(); });
   $('add-form').addEventListener('submit', function(e){
     e.preventDefault();
-    var name = $('f-name').value.trim(), rank = $('f-rank').value, goal = $('f-goal').value.trim(), reward = $('f-reward').value.trim(), msg = $('f-msg');
+    var name = $('f-name').value.trim(), rank = fRank(), goal = $('f-goal').value.trim(), reward = $('f-reward').value.trim(), msg = $('f-msg');
     if (!name) { msg.textContent = 'Дай боссу имя.'; $('f-name').focus(); return; }
     if (RANKS.indexOf(rank) >= 2 && !reward) { msg.textContent = 'Для ранга ' + rank + ' назначь награду заранее.'; $('f-reward').focus(); return; }
     var max = Math.max(1, Math.round(parseNum($('f-hp').value) || RANK_HP[rank]));
-    var boss = {name:name, rank:rank, hp:max, max:max};
+    if (form.mode === 'edit') { closeAdd(); editBoss(form.key, form.idx, {name:name, rank:rank, max:max, goal:goal, reward:reward}); return; }
+    var k = fLine(), boss = {name:name, rank:rank, hp:max, max:max};
     if (goal) boss.goal = goal;
     if (reward) boss.reward = reward;
-    if (addKey === 'money') boss.unit = '₽ × 1000';
+    if (k === 'money') boss.unit = '₽ × 1000';
     if ($('f-gold').checked) { boss.gold = true; boss.until = addDays(mskToday(), 2); }
-    var k = addKey; closeAdd();
+    closeAdd();
     addBoss(k, boss);
   });
 
