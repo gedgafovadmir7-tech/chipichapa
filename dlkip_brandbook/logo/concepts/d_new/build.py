@@ -5,18 +5,23 @@
 Генерирует все SVG концепции, проверочные листы sheet_*.png и схему construction.png,
 и сам проверяет результат (элементы/цвета SVG, сквозные вырезы, отсутствие острых стыков).
 
-Знак: квадрат 12×12 модулей (M) разделён белой дорожкой на чёрную «Г» и оранжевый блок.
-Дорожка-зонд сверху опускается к чувствительному элементу (точка в кольце-площадке), от него вправо
-бежит сигнал и делает прямоугольный импульс. Все вырезы ровно 1 M. Площадка R 2 M, точка r 1 M.
-Скругления дорожек по осевой 0,75 M (1,25 M снаружи / 0,25 M внутри), в стыках дорожек
-с площадкой галтели 0,25 M — острых углов внутри знака нет. Углы только 90°.
+Знак: квадрат-плата 12×12 модулей (M). Одна белая дорожка проходит его насквозь слева направо
+и делит на оранжевый верх и чёрный низ (как половины домика Домалогики). Слева дорожка входит
+в датчик — оранжевую точку в кольце-площадке; от датчика сигнал идёт вправо, ступенькой спускается
+на уровень выхода и уходит за край знака — в горизонтальной версии ровно в просвет между DLKIP
+и ELECTRONICS. Чёрное — нижний угловой блок (основание, «объект измерения»), оранжевое — верх
+с правым блоком; ни вертикальных полос, ни П-образного импульса — знак не складывается в буквы.
+Все вырезы ровно 1 M. Площадка R 2 M, точка r 1 M. Скругления дорожки по осевой 0,75 M
+(1,25 M снаружи / 0,25 M внутри), в стыках дорожки с площадкой галтели 0,25 M — острых углов
+внутри знака нет. Углы только 90°.
 
-Надпись: Orbitron 800 в кривых с доработкой, DL оранжевым, KIP чёрным:
+Надпись: Orbitron 800 в кривых с доработкой; как в действующем логотипе DLKIP: D, L, стойка и верхняя
+ветвь K оранжевые, нижняя ветвь K, i, P чёрные:
   * у D открыт верх левого штриха, как в действующей надписи DLKIP;
   * «I» заменена на «i» с круглой оранжевой точкой — сенсор из знака (и перекрёстная точка, как в DOMA.LOGICA);
   * верх укороченных штрихов D и i = верх перемычки K: одна горизонталь через всё слово;
     вырез D = толщине штриха, точка i — круг ⌀ 1,08 штриха (оптическая компенсация).
-Компоновки: горизонтальная, вертикальная, короткие (знак + DLKiP), знак, фавикон 16 px, вариант K.
+Компоновки: горизонтальная, вертикальная, короткие (знак + DLKiP), знак, фавикон 16 px.
 ELECTRONICS: Orbitron 700, выровнена по ширине DLKIP.
 """
 import io
@@ -42,18 +47,19 @@ FONT = "Orbitron[wght].ttf"
 M = 10.0          # 1 модуль = 10 единиц SVG
 N = 12            # знак 12×12 модулей
 TRACE = 1.0       # ширина дорожки / любого выреза
-LEAD_X = 3.0      # ось дорожки-зонда
-BASE_Y = 9.0      # ось дорожки сигнала
+SENSOR_X = 3.0    # центр площадки-датчика
+SENSOR_Y = 4.5    # ось входа и датчика: поле над площадкой 2,5 M = нижней чёрной полосе
+STEP_X = 6.5      # ось ступеньки: чёрный блок 6 M | вырез 1 M | оранжевый блок 5 M
+BASE_Y = 9.0      # ось выхода сигнала: оранжевое 8,5 M | вырез 1 M | чёрное 2,5 M у правого края
 PAD_R = 2.0       # внешний радиус площадки
 DOT_R = 1.0       # точка — чувствительный элемент
-RISE_X = 6.5      # фронт импульса (ось)
-FALL_X = 10.0     # спад импульса (ось)
-TOP_Y = 3.5       # вершина импульса (ось)
 FILLET = 0.75     # скругление дорожек по осевой
 JOINT_R = 0.25    # галтели в стыках дорожек с площадкой (= внутренний радиус дорожек)
 
 # ---------------------------------------------------------------- надпись
 WORD_WEIGHT = 800
+K_SPLIT = True    # K как в действующем логотипе: стойка и верхняя ветвь оранжевые, нижняя ветвь чёрная
+K_TRAP = 4.0      # заход оранжевой части K под чёрную, ед. шрифта (UPM 1000) — против волоска на стыке
 # просветы между буквами DLKiP по краям штрихов, в модулях знака при прописных 8,5 M
 # D–L и i–P «прямая к прямой» 1,8; L–K плотнее (над лапой L открытый воздух); K–i 1,4
 WORD_GAPS = (1.8, 1.15, 1.4, 1.8)
@@ -173,25 +179,23 @@ def trace_outline(pts, r, width):
             + f"L{fmt(b[0][0])},{fmt(b[0][1])}" + _fillet_cmds(b, rb) + "Z")
 
 
-def junctions(cx, cy, R, h, rf):
-    """Стыки прямых кромок дорожек (зонд уходит вверх, сигнал — вправо) с окружностью площадки.
-    Для каждой из 4 кромок: (C — центр галтели, T1 — касание с кромкой, P — острый угол без галтели,
+LEADS = ((-1, 0), (1, 0))   # от площадки дорожка уходит влево (вход) и вправо (сигнал)
+
+
+def junctions(cx, cy, R, h, rf, leads=LEADS):
+    """Стыки прямых кромок дорожек с окружностью площадки. leads — направления дорожек от центра.
+    Для каждой кромки: (C — центр галтели, T1 — касание с кромкой, P — острый угол без галтели,
     T2 — касание с площадкой). Галтель касается кромки и внешне касается окружности: |C−O| = R + rf."""
-    out, Rr = [], R + rf
-    for s in (-1, 1):                          # зонд: кромки x = cx ± h
-        xe = cx + s * h
-        C = (xe + s * rf, cy - math.sqrt(Rr ** 2 - (s * (h + rf)) ** 2))
-        P = (xe, cy - math.sqrt(R ** 2 - h ** 2))
-        out.append((C, (xe, C[1]), P))
-    for s in (-1, 1):                          # выход сигнала: кромки y = cy ± h
-        ye = cy + s * h
-        C = (cx + math.sqrt(Rr ** 2 - (s * (h + rf)) ** 2), ye + s * rf)
-        P = (cx + math.sqrt(R ** 2 - h ** 2), ye)
-        out.append((C, (C[0], ye), P))
-    res = []
-    for C, T1, P in out:
-        T2 = (cx + (C[0] - cx) * R / Rr, cy + (C[1] - cy) * R / Rr)
-        res.append((C, T1, P, T2))
+    res, Rr = [], R + rf
+    tc, tp = math.sqrt(Rr ** 2 - (h + rf) ** 2), math.sqrt(R ** 2 - h ** 2)
+    for ux, uy in leads:
+        nx, ny = -uy, ux                       # нормаль к дорожке
+        for s in (-1, 1):                      # две кромки дорожки
+            C = (cx + nx * s * (h + rf) + ux * tc, cy + ny * s * (h + rf) + uy * tc)
+            T1 = (cx + nx * s * h + ux * tc, cy + ny * s * h + uy * tc)
+            P = (cx + nx * s * h + ux * tp, cy + ny * s * h + uy * tp)
+            T2 = (cx + (C[0] - cx) * R / Rr, cy + (C[1] - cy) * R / Rr)
+            res.append((C, T1, P, T2))
     return res
 
 
@@ -205,34 +209,35 @@ def joint_patches(cx, cy, R, h, rf):
 def build_sign(pad_r=PAD_R, dot_r=DOT_R, joint_r=JOINT_R):
     """Возвращает [(d, цвет), ...] в координатах 0..N*M."""
     S = N * M
-    ext = 2 * M  # дорожки выводим за край, потом обрезаем контуром
-    line = [(LEAD_X * M, -ext), (LEAD_X * M, BASE_Y * M),
-            (RISE_X * M, BASE_Y * M), (RISE_X * M, TOP_Y * M),
-            (FALL_X * M, TOP_Y * M), (FALL_X * M, BASE_Y * M), (S + ext, BASE_Y * M)]
+    ext = 2 * M  # дорожку выводим за край, потом обрезаем контуром
+    line = [(-ext, SENSOR_Y * M), (STEP_X * M, SENSOR_Y * M),
+            (STEP_X * M, BASE_Y * M), (S + ext, BASE_Y * M)]
     axis = fillet_path(line, FILLET * M)
     outer = rect_d(0, 0, S, S)
-    region = axis + f"L{fmt(S + ext)},{fmt(-ext)}Z"     # оранжевая сторона от осевой
+    region = axis + f"L{fmt(S + ext)},{fmt(-ext)}L{fmt(-ext)},{fmt(-ext)}Z"   # оранжевая сторона — над осевой
     trace = trace_outline(line, FILLET * M, TRACE * M)
-    cuts = [trace, circle_d(LEAD_X * M, BASE_Y * M, pad_r * M)]
+    cx, cy = SENSOR_X * M, SENSOR_Y * M
+    cuts = [trace, circle_d(cx, cy, pad_r * M)]
     if joint_r > 0:
-        cuts += joint_patches(LEAD_X * M, BASE_Y * M, pad_r * M, TRACE * M / 2, joint_r * M)
+        cuts += joint_patches(cx, cy, pad_r * M, TRACE * M / 2, joint_r * M)
     cut = boolean("union", *cuts)
     orange = boolean("difference", boolean("intersection", outer, region), cut)
     black = boolean("difference", boolean("difference", outer, region), cut)
-    orange = boolean("union", orange, circle_d(LEAD_X * M, BASE_Y * M, dot_r * M))
+    orange = boolean("union", orange, circle_d(cx, cy, dot_r * M))
     return [(clean(orange), ORANGE), (clean(black), BLACK)]
 
 
 def build_favicon():
-    """Упрощённый знак для 16 px: сетка в пикселях, дорожки 2 px (= 1,5 M), углы прямые (резко на пиксельной
-    сетке), площадка — круг без точки. Пропорции и деление те же: чёрная «Г», зонд, импульс, выход вправо."""
+    """Упрощённый знак для 16 px: сетка в пикселях, дорожка 2 px (= 1,5 M), углы прямые (резко на пиксельной
+    сетке), площадка — круг ⌀ 5 px без точки. Деление то же (1 M = 1,33 px): слева оранжевое 5 | 2 | чёрное 9,
+    справа оранжевое 11 | 2 | чёрное 3, по ширине чёрный блок 8 | 2 | оранжевый блок 6."""
     F = FAV
-    probe = rect_d(4, -2, 6, 11)
-    sig = [rect_d(5, 10, 10, 12), rect_d(8, 3, 10, 12), rect_d(8, 3, 14, 5),
-           rect_d(12, 3, 14, 12), rect_d(12, 10, F + 2, 12)]
-    pad = circle_d(5, 11, 3)
-    cut = boolean("union", probe, *sig, pad)
-    region = poly_d([(5, -2), (5, 11), (9, 11), (9, 4), (13, 4), (13, 11), (F + 2, 11), (F + 2, -2)])
+    lead = rect_d(-2, 5, 9, 7)                 # вход и сигнал от датчика, ось y 6
+    step = rect_d(8, 5, 10, 13)                # ступенька, ось x 9
+    out = rect_d(8, 11, F + 2, 13)             # выход, ось y 12
+    pad = circle_d(3.5, 6, 2.5)
+    cut = boolean("union", lead, step, out, pad)
+    region = poly_d([(-2, -2), (-2, 6), (9, 6), (9, 12), (F + 2, 12), (F + 2, -2)])
     outer = rect_d(0, 0, F, F)
     orange = boolean("difference", boolean("intersection", outer, region), cut)
     black = boolean("difference", boolean("difference", outer, region), cut)
@@ -278,11 +283,17 @@ def k_split(dK):
     y_bar = min(y for x, y in pts if abs(x - stem_r) < 0.01 and -cap + 1 < y < -1)   # верх перемычки
     bar_r = max(x for x, y in pts if abs(y - y_bar) < 0.01)             # правый край перемычки
     t = (vx - bar_r) / dx                   # прямая на вертикали bar_r (левее — только стойка)
-    region = poly_d([(vx, vy), (vx + 2000, vy), (vx + 2000, 200), (bar_r, 200), (bar_r, vy - dy * t)])
-    return boolean("difference", dK, region), boolean("intersection", dK, region)
+    poly = [(vx, vy), (vx + 2000, vy), (vx + 2000, 200), (bar_r, 200), (bar_r, vy - dy * t)]
+    region = poly_d(poly)
+    # треппинг: оранжевая часть заходит под чёрную на K_TRAP по нормали к линии раздела — чёрная её
+    # перекрывает, а в монохроме и при сглаживании на стыке не остаётся светлого волоска
+    L = math.hypot(dx, dy)
+    nx, ny = -dy / L * K_TRAP, dx / L * K_TRAP
+    region_in = poly_d([(x + nx, y + ny) for x, y in poly])
+    return boolean("difference", dK, region_in), boolean("intersection", dK, region)
 
 
-def dlkip_parts(weight=WORD_WEIGHT, notch=True, dot="round", ksplit=False):
+def dlkip_parts(weight=WORD_WEIGHT, notch=True, dot="round", ksplit=K_SPLIT):
     """Буквы DLKiP в единицах шрифта (y вниз, базовая y = 0) с доработками.
     Возвращает список [(d, роль)], роль: 'D','L','K','K2','i','dot','P' + стойки для интервалов."""
     r = font_refs()
@@ -316,7 +327,7 @@ def dlkip_parts(weight=WORD_WEIGHT, notch=True, dot="round", ksplit=False):
     return out, r
 
 
-def build_dlkip(cap_h, gaps=WORD_GAPS, notch=True, dot="round", ksplit=False):
+def build_dlkip(cap_h, gaps=WORD_GAPS, notch=True, dot="round", ksplit=K_SPLIT):
     """DLKiP при высоте прописных cap_h. Просветы gaps — в модулях знака горизонтальной версии
     (прописные = 8,5 M), т. е. масштабируются вместе с надписью.
     Возвращает ([(d, цвет)], ширина, толщина штриха); левый верхний угол прописных — (0, 0)."""
@@ -413,11 +424,11 @@ def write_svg(path, parts, x0, y0, w, h):
         f.write(svg)
 
 
-def lockups(sign, notch=True, dot="round", ksplit=False, sh_mode=SH_ALIGN):
+def lockups(sign, notch=True, dot="round", ksplit=K_SPLIT, sh_mode=SH_ALIGN):
     """Все компоновки: {имя: (parts, x0, y0, w, h, инфо)} — поле 1 M вокруг."""
     S, pad = N * M, M
     res, info = {}, {}
-    # горизонтальная: прописные DLKIP = оранжевый блок над дорожкой (8,5 M); ELECTRONICS = нижняя
+    # горизонтальная: прописные DLKIP = оранжевое поле у правого края знака (8,5 M); ELECTRONICS = нижняя
     # чёрная полоса (2,5 M); просвет 1 M — продолжение выхода сигнала
     cap1 = (BASE_Y - TRACE / 2) * M
     word, ww, stem_h = build_dlkip(cap1, notch=notch, dot=dot, ksplit=ksplit)
@@ -498,25 +509,34 @@ def construction(svg_path, out_png):
         d.text((x + 14, (y0 + y1) / 2 - 15), text, fill=ink, font=font)
 
     X = lambda v: off + v * px  # noqa: E731
-    top, bot = off - 40, off + size + 50
-    dim_h(X(0), X(N), off + size + 110, "12 M")
-    dim_h(X(0), X(LEAD_X - TRACE / 2), top, "2,5 M")
-    dim_h(X(LEAD_X - TRACE / 2), X(LEAD_X + TRACE / 2), top - 50, "1 M")
-    dim_h(X(LEAD_X + TRACE / 2), X(RISE_X - TRACE / 2), top, "2,5 M")
-    dim_h(X(RISE_X + TRACE / 2), X(FALL_X - TRACE / 2), bot, "2,5 M")
-    dim_h(X(FALL_X + TRACE / 2), X(N), top, "1,5 M*")
-    dim_v(X(BASE_Y + TRACE / 2), X(N), X(N) + 30, "2,5 M")
-    dim_v(X(0), X(TOP_Y - TRACE / 2), X(N) + 30, "3 M")
+
+    def dim_v_left(y0, y1, x, text):
+        d.line([(x, y0), (x, y1)], fill=ink, width=2)
+        for y in (y0, y1):
+            d.line([(x - 8, y), (x + 8, y)], fill=ink, width=2)
+        d.text((x - 14 - d.textlength(text, font=font), (y0 + y1) / 2 - 15), text, fill=ink, font=font)
+
+    top = off - 40
+    h = TRACE / 2
+    dim_h(X(0), X(N), off + size + 60, "12 M")
+    dim_h(X(0), X(STEP_X - h), top, "6 M")
+    dim_h(X(STEP_X - h), X(STEP_X + h), top - 50, "1 M")
+    dim_h(X(STEP_X + h), X(N), top, "5 M")
+    dim_v(X(0), X(BASE_Y - h), X(N) + 30, "8,5 M")
+    dim_v(X(BASE_Y + h), X(N), X(N) + 30, "2,5 M")
+    dim_v_left(X(0), X(SENSOR_Y - PAD_R), X(0) - 30, "2,5 M")
+    dim_v_left(X(SENSOR_Y + h), X(N), X(0) - 30, "7 M")
     # центры галтелей в стыках с площадкой
-    for C, T1, P, T2 in junctions(LEAD_X, BASE_Y, PAD_R, TRACE / 2, JOINT_R):
+    for C, T1, P, T2 in junctions(SENSOR_X, SENSOR_Y, PAD_R, h, JOINT_R):
         cx, cy, rr = X(C[0]), X(C[1]), JOINT_R * px
         d.ellipse([cx - rr, cy - rr, cx + rr, cy + rr], outline=(220, 0, 90, 255), width=2)
     notes = ("M = 1/12 знака = ширина всех вырезов;  углы 90°",
-             "площадка R 2 M, точка r 1 M;  скругления дорожек 1,25 M / 0,25 M;",
-             "галтели в стыках с площадкой r 0,25 M (обведены)",
-             "* правая колонка 1,5 M — осознанное исключение: поле платы до края")
+             "площадка R 2 M, точка r 1 M;  поле над площадкой 2,5 M = нижней полосе",
+             "скругления дорожки 1,25 M / 0,25 M;  галтели у площадки r 0,25 M (обведены)",
+             "у правого края: оранжевое 8,5 M = прописные DLKiP,",
+             "вырез 1 M = просвет строк, чёрное 2,5 M = ELECTRONICS")
     for j, note in enumerate(notes):
-        d.text(((W - d.textlength(note, font=font)) / 2, X(N) + 150 + j * 36), note, fill=ink, font=font)
+        d.text(((W - d.textlength(note, font=font)) / 2, X(N) + 110 + j * 36), note, fill=ink, font=font)
     im.convert("RGB").save(out_png)
 
 
@@ -532,7 +552,7 @@ def construction_lockup(svg_path, out_png):
     lw, lh = round(vb[2] / M * px), round(vb[3] / M * px)
     logo = Image.open(io.BytesIO(cairosvg.svg2png(url=svg_path, output_width=lw))).convert("RGBA")
     ox, oy, right = 40, 70, 600
-    im = Image.new("RGBA", (ox + lw + right, oy + lh + 150), "#FFFFFF")
+    im = Image.new("RGBA", (ox + lw + right + 120, oy + lh + 150), "#FFFFFF")
     im.alpha_composite(logo, (ox, oy))
     d = ImageDraw.Draw(im)
     try:
@@ -548,9 +568,9 @@ def construction_lockup(svg_path, out_png):
     x_end = ox + lw + 10
     rows = [(0, guide, "0 — верх знака = верх прописных"),
             (yt, accent, f"{yt:.2f} M — верх штрихов D, i = верх перемычки K".replace(".", ",")),
-            (cap1, guide, "8,5 M — прописные DLKiP = оранжевый блок"),
-            (BASE_Y + TRACE / 2, guide, "9,5 M — просвет 1 M = дорожка сигнала"),
-            (N, guide, "12 M — ELECTRONICS 2,5 M = нижняя полоса")]
+            (cap1, guide, "8,5 M — прописные DLKiP = оранжевое поле у правого края знака"),
+            (BASE_Y + TRACE / 2, guide, "9,5 M — просвет 1 M = выход сигнала из знака"),
+            (N, guide, "12 M — ELECTRONICS 2,5 M = нижняя чёрная полоса")]
     for y, col, text in rows:
         d.line([(X(0) - 20, Y(y)), (x_end, Y(y))], fill=col, width=1)
         d.text((x_end + 10, Y(y) - 12), text, fill=ink, font=font)
@@ -561,7 +581,7 @@ def construction_lockup(svg_path, out_png):
         d.line([(x, yb - 7), (x, yb + 7)], fill=ink, width=2)
     d.text(((xa + xb) / 2 - 16, yb + 8), "3 M", fill=ink, font=font)
     note = ("Модуль M = 1/12 знака. Штрих DLKiP 0,2 прописной; вырез D = толщине штриха; "
-            "точка i — круг ⌀ 1,08 штриха, верх по прописным.")
+            "точка i — круг Ø 1,08 штриха, верх по прописным.")
     d.text((ox, Y(N) + 90), note, fill=ink, font=font)
     im.convert("RGB").save(out_png)
 
@@ -603,7 +623,7 @@ def verify_joints(sign):
     """Острых стыков у площадки нет: точка в 0,03 M от прежнего острого угла (в сторону заливки)
     теперь вырез, а центр галтели — заливка."""
     fills = [skia(d) for d, _ in sign]
-    for C, T1, P, T2 in junctions(LEAD_X, BASE_Y, PAD_R, TRACE / 2, JOINT_R):
+    for C, T1, P, T2 in junctions(SENSOR_X, SENSOR_Y, PAD_R, TRACE / 2, JOINT_R):
         vx, vy = C[0] - P[0], C[1] - P[1]
         L = math.hypot(vx, vy)
         q = ((P[0] + vx / L * 0.03) * M, (P[1] + vy / L * 0.03) * M)
@@ -614,27 +634,28 @@ def verify_joints(sign):
 def sign_probes(dx=0.0, dy=0.0, k=1.0):
     """Точки проверки знака (в модулях): дорожки — дырки, поля — цвет."""
     pts = [
-        ((LEAD_X, 1.0), "hole"),                         # зонд у верхнего края
-        ((LEAD_X, BASE_Y - PAD_R + TRACE / 2), "hole"),  # кольцо сверху
-        ((LEAD_X - PAD_R + TRACE / 2, BASE_Y), "hole"),  # кольцо слева
-        ((5.5, BASE_Y), "hole"),                         # база сигнала
-        ((RISE_X, 6.0), "hole"),                         # фронт импульса
-        (((RISE_X + FALL_X) / 2, TOP_Y), "hole"),        # вершина импульса
-        ((FALL_X, 6.0), "hole"),                         # спад
-        ((N - 0.2, BASE_Y), "hole"),                     # дорожка выходит за правый край
-        ((LEAD_X, BASE_Y), ORANGE),                      # точка-сенсор
-        ((8.0, 1.5), ORANGE),                            # оранжевый блок
-        ((1.0, 4.0), BLACK),                             # чёрная полоса
-        (((RISE_X + FALL_X) / 2, 7.0), BLACK),           # зуб импульса
-        ((8.0, 11.0), BLACK),                            # нижняя полоса
+        ((0.2, SENSOR_Y), "hole"),                                   # вход: дорожка от левого края
+        ((SENSOR_X, SENSOR_Y - PAD_R + TRACE / 2), "hole"),          # кольцо сверху
+        ((SENSOR_X, SENSOR_Y + PAD_R - TRACE / 2), "hole"),          # кольцо снизу
+        ((5.5, SENSOR_Y), "hole"),                                   # сигнал от датчика
+        ((STEP_X, 7.0), "hole"),                                     # ступенька
+        ((9.0, BASE_Y), "hole"),                                     # выход
+        ((N - 0.2, BASE_Y), "hole"),                                 # дорожка выходит за правый край
+        ((SENSOR_X, SENSOR_Y), ORANGE),                              # точка-сенсор
+        ((SENSOR_X, 1.2), ORANGE),                                   # поле над площадкой
+        ((9.5, 5.0), ORANGE),                                        # правый оранжевый блок
+        ((N - 0.2, 8.2), ORANGE),                                    # угол блока у края — без скола
+        ((2.0, 9.0), BLACK),                                         # чёрный блок
+        ((5.5, 6.0), BLACK),                                         # чёрное под сигналом
+        ((9.0, 11.0), BLACK),                                        # нижняя полоса
     ]
     return [((dx + x * M * k, dy + y * M * k), c) for (x, y), c in pts]
 
 
 def fav_probes():
-    return [((5, 1), "hole"), ((5, 11), "hole"), ((9, 7), "hole"), ((11, 4), "hole"), ((15.5, 11), "hole"),
-            ((2, 6), BLACK), ((11, 7.5), BLACK), ((8, 15), BLACK), ((11, 1.5), ORANGE), ((7, 5), ORANGE),
-            ((15, 6), ORANGE)]
+    return [((0.5, 6), "hole"), ((3.5, 6), "hole"), ((7, 6), "hole"), ((9, 9), "hole"), ((15.5, 12), "hole"),
+            ((3.5, 1.5), ORANGE), ((13, 5), ORANGE), ((15.5, 10.5), ORANGE),
+            ((2, 12), BLACK), ((6.5, 10), BLACK), ((13, 14.5), BLACK)]
 
 
 def main():
@@ -644,8 +665,6 @@ def main():
     files = {"sign": (sign, -pad, -pad, S + 2 * pad, S + 2 * pad)}
     lk, info = lockups(sign)
     files.update(lk)
-    lk_k, _ = lockups(sign, ksplit=True)
-    files["option_k_horizontal"] = lk_k["logo_horizontal"]
     for name, (parts, x0, y0, w, h) in files.items():
         write_svg(os.path.join(HERE, name + ".svg"), parts, x0, y0, w, h)
     fav = build_favicon()
@@ -658,13 +677,15 @@ def main():
         ((xw + 2, 6 * M), ORANGE),                      # штрих D
         ((xw + 5, 2.5 * M), "hole")])                   # открытый верх левого штриха D
     verify(os.path.join(HERE, "logo_short_horizontal.svg"), sign_probes() + [((xw + 2, 6 * M), ORANGE)])
-    verify(os.path.join(HERE, "option_k_horizontal.svg"), sign_probes())
     for name in ("logo_vertical", "logo_short_vertical"):
         verify(os.path.join(HERE, name + ".svg"), sign_probes(info["v"]["xs"], 0))
     verify(os.path.join(HERE, "favicon.svg"), fav_probes())
 
+    for stale in ("option_k_horizontal.svg", "sheet_option_k_horizontal.png"):   # вариант K стал основным
+        if os.path.exists(os.path.join(HERE, stale)):
+            os.remove(os.path.join(HERE, stale))
     for name in ("sign", "logo_horizontal", "logo_vertical", "logo_short_horizontal", "logo_short_vertical",
-                 "favicon", "option_k_horizontal"):
+                 "favicon"):
         out = "sheet_" + name.replace("logo_", "") + ".png"
         sheet(os.path.join(HERE, name + ".svg"), os.path.join(HERE, out))
     construction(os.path.join(HERE, "sign.svg"), os.path.join(HERE, "construction.png"))
