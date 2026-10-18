@@ -64,6 +64,8 @@ h1 span{color:var(--boss)}
 .icon-btn{width:40px;height:40px;flex:none;border-radius:12px;border:1px solid var(--rule);background:var(--panel);display:grid;place-items:center;color:var(--muted)}
 .icon-btn svg{width:20px;height:20px}
 .icon-btn[aria-pressed="true"]{color:var(--fg)}
+.hdr-btns{display:flex;gap:8px;flex:none}
+#arc-open{color:var(--faith);border-color:color-mix(in srgb,var(--faith) 45%,var(--rule))}
 
 /* ---------- final boss + hunter ---------- */
 .top{
@@ -126,9 +128,9 @@ h1 span{color:var(--boss)}
 @keyframes pop{0%{transform:scale(.4)}100%{transform:scale(1)}}
 
 /* ---------- bestiary: one portrait per line ---------- */
-.bestiary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}
+.bestiary{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:4px}
 .beast{border:0;background:none;padding:4px 0 2px;display:grid;justify-items:center;gap:3px;min-width:0;border-radius:12px}
-.beast-ring{position:relative;width:58px;height:58px;max-width:100%;display:grid;place-items:center}
+.beast-ring{position:relative;width:54px;height:54px;max-width:100%;display:grid;place-items:center}
 .beast-ring > svg{position:absolute;inset:0;width:100%;height:100%;transform:rotate(-90deg)}
 .beast-ring .rb{fill:none;stroke:var(--panel-2);stroke-width:4}
 .beast-ring .rf{fill:none;stroke:var(--c);stroke-width:4;stroke-linecap:round;transition:stroke-dashoffset .6s ease}
@@ -140,6 +142,8 @@ h1 span{color:var(--boss)}
 .beast.is-sel .beast-name{color:var(--c);font-weight:600}
 .beast.is-sel .beast-face{box-shadow:0 0 0 2px var(--bg),0 0 0 3px color-mix(in srgb,var(--c) 70%,transparent),0 0 18px color-mix(in srgb,var(--c) 45%,transparent)}
 .beast.is-main .beast-name::before{content:"★ ";color:var(--faith)}
+.beast.add .beast-face{background:none;border:2px dashed color-mix(in srgb,var(--muted) 60%,transparent)}
+.beast.add .ph{color:var(--muted)}
 
 /* ---------- arena ---------- */
 .arena{
@@ -272,6 +276,14 @@ h1 span{color:var(--boss)}
 .reward-set span{font-size:12.5px;color:var(--faith);flex-basis:100%}
 .reward-set input{flex:1 1 160px;min-width:0}
 .gold-line{font-size:12.5px;color:var(--faith);font-family:var(--font-mono)}
+.armor-line{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center;font-size:12px;color:var(--muted)}
+.bar.armor{height:7px;background:color-mix(in srgb,#cfd8e6 10%,var(--bg))}
+.bar.armor > i{background:linear-gradient(90deg,#8fa1bb,#e4ecf7)}
+.abil-chips{display:flex;flex-wrap:wrap;gap:6px}
+.abil-chip{font-size:12px;border:1px solid var(--rule);border-radius:999px;padding:2px 10px;color:var(--muted)}
+.abil-chip b{color:var(--fg);font-weight:600}
+.mon.armored svg{filter:drop-shadow(0 0 1px #e4ecf7) drop-shadow(0 0 6px rgba(196,212,235,.55))}
+.head-edit{border:0;background:none;padding:2px 4px;font-size:12.5px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 .info-actions{display:flex;justify-content:flex-end;gap:14px;flex-wrap:wrap}
 .link-btn{border:0;background:none;padding:2px 0;font-size:12.5px;color:var(--muted);text-decoration:underline;text-underline-offset:3px}
 .link-btn.danger{color:var(--boss)}
@@ -340,6 +352,28 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
 .sheet .rk:has(input:checked){border-color:var(--rc);background:color-mix(in srgb,var(--rc) 13%,var(--bg));box-shadow:0 0 16px -5px var(--rc)}
 .sheet .rk:has(input:focus-visible),.sheet .ln:has(input:focus-visible){outline:2px solid var(--fg);outline-offset:2px}
 #f-reward-hint{font-style:normal;color:var(--faith)}
+.f-more{border:1px solid var(--rule);border-radius:12px;padding:10px 12px;background:none}
+.f-more summary{font-family:var(--font-body);font-weight:600;font-size:13.5px}
+.f-more summary small{font-weight:400;color:var(--muted);margin-left:6px;font-size:12px}
+.f-abil{display:grid;gap:9px;margin-top:10px}
+.ab{display:grid;grid-template-columns:18px minmax(0,1fr);gap:2px 10px;align-items:start;font-size:13px;color:var(--muted)}
+.ab > input[type=checkbox]{margin:2px 0 0;width:16px;height:16px;accent-color:var(--c)}
+.sheet .ab label{display:inline;font-size:13px;color:var(--fg);font-weight:600}
+.ab-body{display:flex;flex-wrap:wrap;align-items:center;gap:6px;min-width:0}
+.ab .field{width:72px;padding:5px 8px;font-size:13px}
+.ab .field.date{width:auto}
+.ab .field.wide{flex:1 1 170px;width:auto}
+.l-colors{display:flex;flex-wrap:wrap;gap:8px}
+.sheet .sw{display:block;width:30px;height:30px;border-radius:50%;background:var(--sw);cursor:pointer;border:2px solid transparent;box-shadow:inset 0 0 0 3px var(--panel)}
+.sheet .sw:has(input:checked){border-color:var(--fg)}
+.sheet .sw:has(input:focus-visible){outline:2px solid var(--fg);outline-offset:2px}
+.l-types{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px}
+.sheet .lt{display:grid;gap:2px;align-content:start;border:1px solid var(--rule);border-radius:12px;padding:8px 10px;cursor:pointer;background:var(--bg)}
+.sheet .lt b{font-size:13px;color:var(--fg)}
+.sheet .lt small{font-size:11.5px;color:var(--muted);line-height:1.3}
+.sheet .lt:has(input:checked){border-color:var(--c);background:color-mix(in srgb,var(--c) 12%,var(--bg))}
+.sheet .lt:has(input:focus-visible){outline:2px solid var(--fg);outline-offset:2px}
+.btn-danger{border:1px solid color-mix(in srgb,var(--boss) 60%,transparent);border-radius:10px;background:none;color:var(--boss);padding:9px 14px}
 .f-note{font-size:12px;color:var(--muted)}
 .check{display:flex!important;grid-template-columns:none;align-items:flex-start;gap:10px!important;font-size:13px!important;color:var(--fg)!important;border:1px solid color-mix(in srgb,var(--faith) 40%,var(--rule));border-radius:10px;padding:9px 11px}
 .check input{margin:3px 0 0;accent-color:var(--faith);width:16px;height:16px;flex:none}
@@ -371,6 +405,38 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
 .toast button{border:0;border-radius:8px;background:var(--fg);color:var(--bg);font-weight:600;padding:6px 12px;flex:none}
 .toast.err{border-color:color-mix(in srgb,var(--boss) 60%,var(--rule))}
 
+/* arcade: «Ночная охота», whack-a-monster just for fun */
+.arcade{position:fixed;inset:0;z-index:55;display:grid;place-items:center;overflow:auto;background:rgba(5,8,14,.92);padding:16px max(16px,env(safe-area-inset-right,0px)) calc(16px + env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));animation:fade .2s ease-out}
+.arc-card{--c:var(--faith);position:relative;width:100%;max-width:440px;display:grid;gap:10px;border:1px solid color-mix(in srgb,var(--faith) 40%,var(--rule));border-radius:20px;background-color:var(--panel);background-image:var(--topo,none);background-repeat:no-repeat;background-position:center;background-size:640px 460px;padding:14px}
+.arc-head{display:grid;grid-template-columns:minmax(0,1fr) auto auto auto;gap:12px;align-items:center}
+.arc-head small{display:block;font-family:var(--font-mono);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.arc-head > div > b{font-family:var(--font-display);font-weight:800;font-size:17px}
+.arc-stat{display:grid;justify-items:end;line-height:1.15}
+.arc-stat b{font-size:20px;font-weight:700}
+.arc-bar{height:6px;border-radius:3px;background:var(--panel-2);overflow:hidden}
+.arc-bar > i{display:block;height:100%;width:100%;background:linear-gradient(90deg,var(--boss),var(--faith));transform-origin:left}
+.arc-field{position:relative}
+.arc-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.hole{position:relative;aspect-ratio:1;border-radius:18px;overflow:hidden;background:radial-gradient(64% 22% at 50% 92%,#03050a 0 70%,transparent 72%),radial-gradient(120% 90% at 50% 100%,color-mix(in srgb,var(--faith) 9%,var(--panel-2)),var(--panel-2))}
+.mole{position:absolute;left:8%;right:8%;bottom:0;aspect-ratio:1;border:0;background:none;padding:0;transform:translateY(112%);transition:transform .14s ease-out;touch-action:manipulation;cursor:pointer;-webkit-user-select:none;user-select:none}
+.mole.up{transform:translateY(12%)}
+.mole.hit{transform:translateY(20%) scale(1.15,.8);filter:brightness(2.3);transition:transform .08s,filter .08s}
+.mole svg{display:block;width:100%;height:100%;overflow:visible;pointer-events:none}
+.mole-tag{position:absolute;left:50%;top:0;transform:translateX(-50%);font-size:10.5px;font-weight:600;color:var(--fg);background:rgba(5,8,14,.75);border-radius:999px;padding:1px 7px;white-space:nowrap;pointer-events:none}
+.arc-msg{position:absolute;inset:0;z-index:6;display:grid;place-content:center;justify-items:center;gap:10px;text-align:center;background:rgba(12,17,29,.9);border-radius:18px;padding:16px}
+.arc-msg h3{font-family:var(--font-display);font-weight:800;font-size:22px}
+.arc-rules{list-style:none;margin:0;padding:0;display:grid;gap:4px;font-size:13px;color:var(--muted);text-align:left}
+.arc-rules b{display:inline-block;min-width:44px;font-family:var(--font-mono);color:var(--fg)}
+.arc-big{font-family:var(--font-display);font-weight:800;font-size:48px;line-height:1;color:var(--faith)}
+.arc-combo{min-height:20px;text-align:center;font-family:var(--font-mono);font-size:12.5px;color:var(--faith)}
+.dmg.miss{font-size:15px;color:var(--muted)}
+.arc-field .dmg{font-size:20px}
+.arc-field .dmg.crit{font-size:24px}
+/* portraits and arcade moles: living faces only — no X eyes, cracks or shield ring */
+.beast-face .xeye,.mole .xeye{display:none}
+.beast-face .m-shield,.mole .m-shield,.beast-face .crack,.mole .crack,.beast-face .brow{opacity:0}
+.mole .brow{opacity:1}
+
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}
 }
@@ -383,7 +449,10 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
       <span class="eyebrow" id="eyebrow">Карта охоты · МСК</span>
       <h1>Охота до <span>20</span></h1>
     </div>
-    <button class="icon-btn" id="snd" type="button" aria-pressed="true" aria-label="Звук ударов"></button>
+    <div class="hdr-btns">
+      <button class="icon-btn" id="arc-open" type="button" aria-label="Мини-игра «Ночная охота»" title="Мини-игра"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7 8.5h10a4.5 4.5 0 0 1 4.4 5.4l-.5 2.4a2.6 2.6 0 0 1-4.5 1.2L14.6 15.5H9.4l-1.8 2a2.6 2.6 0 0 1-4.5-1.2l-.5-2.4A4.5 4.5 0 0 1 7 8.5z"/><path d="M8 11v3M6.5 12.5h3"/><circle cx="15.5" cy="11.6" r=".9" fill="currentColor" stroke="none"/><circle cx="17.6" cy="13.6" r=".9" fill="currentColor" stroke="none"/></svg></button>
+      <button class="icon-btn" id="snd" type="button" aria-pressed="true" aria-label="Звук ударов"></button>
+    </div>
   </header>
 
   <section class="top" id="top" aria-label="Финальный босс и охотник">
@@ -457,6 +526,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
         <li><b>+10</b><span>Обычной жизни за каждый пустой день</span></li>
         <li><b>Ранг</b><span>равен рангу сильнейшего поверженного босса</span></li>
         <li><b>E → S</b><span>E Мелочь · D Задача · C Испытание · B Рубеж · A Вершина · S Мечта</span></li>
+        <li><b>Свои</b><span>линии и боссов создаёшь сам; способности: регенерация, броня, срок, щит, кнопка «Подлечить», возрождение</span></li>
         <li><b>Награда</b><span>за боссов C и выше назначается заранее, забираешь после победы</span></li>
         <li><b>Золотой</b><span>враг живёт 3 дня, удары по нему бьют Обычную жизнь вдвое</span></li>
         <li><b>14.02</b><span>0 HP — «Легенда»; снял половину — «Выжил»; меньше — «Обычная жизнь победила»</span></li>
@@ -496,9 +566,53 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     </div>
     <label for="f-goal">Цель<input class="field" id="f-goal" maxlength="120" placeholder="Как его победить"></label>
     <label for="f-reward" id="f-reward-wrap"><span>Награда за победу · <i id="f-reward-hint">по желанию</i></span><input class="field" id="f-reward" maxlength="80" placeholder="Что подаришь себе после победы"></label>
-    <label class="check" id="f-gold-wrap" for="f-gold"><input type="checkbox" id="f-gold"><span><b>Золотой враг.</b> <span>Живёт 3 дня, удары по нему бьют Обычную жизнь вдвое.</span></span></label>
+    <details class="f-more" id="f-more">
+      <summary>Способности <small>по желанию</small></summary>
+      <div class="f-abil">
+        <div class="ab"><input type="checkbox" id="ab-regen"><span class="ab-body"><label for="ab-regen">Регенерация</label> +<input class="field num" id="ab-regen-n" type="number" min="1" max="1000" step="1" value="1" aria-label="HP регенерации в день"> HP за каждый день без ударов по нему</span></div>
+        <div class="ab"><input type="checkbox" id="ab-heal"><span class="ab-body"><label for="ab-heal">Кнопка «Подлечить»</label> +<input class="field num" id="ab-heal-n" type="number" min="1" max="1000" step="1" value="1" aria-label="HP лечения по кнопке"> HP, жмёшь сам, когда сдал позиции</span></div>
+        <div class="ab"><input type="checkbox" id="ab-armor"><span class="ab-body"><label for="ab-armor">Броня</label><input class="field num" id="ab-armor-n" type="number" min="1" max="1000" step="1" value="2" aria-label="Очки брони"> очков, ломается раньше HP</span></div>
+        <div class="ab"><input type="checkbox" id="ab-term"><span class="ab-body"><label for="ab-term">На срок</label> до <input class="field date" id="ab-term-d" type="date" aria-label="Последний день"> — не успел, он сбегает и лечит Обычную жизнь на +<input class="field num" id="ab-term-p" type="number" min="0" max="1000" step="1" value="10" aria-label="Штраф HP"> HP</span></div>
+        <div class="ab"><input type="checkbox" id="ab-shield"><span class="ab-body"><label for="ab-shield">Щит</label> пока <input class="field wide" id="ab-shield-t" maxlength="80" placeholder="заказчик не ответит" aria-label="Условие щита"> удары не проходят, крит проходит</span></div>
+        <div class="ab" id="ab-respawn-row"><input type="checkbox" id="ab-respawn"><span class="ab-body"><label for="ab-respawn">Возрождается</label> каждое воскресенье после победы</span></div>
+        <label class="check" id="f-gold-wrap" for="f-gold"><input type="checkbox" id="f-gold"><span><b>Золотой враг.</b> <span>Живёт 3 дня, удары по нему бьют Обычную жизнь вдвое.</span></span></label>
+        <label for="f-ability">Описание способности своими словами<input class="field" id="f-ability" maxlength="120" placeholder="Например: крит только когда заказ сдан"></label>
+      </div>
+    </details>
     <div class="f-actions"><button type="submit" class="btn-main" id="f-submit">Выпустить босса</button><button type="button" class="btn-ghost" id="add-cancel">Отмена</button><span class="f-msg" id="f-msg" role="status"></span></div>
   </form>
+</div>
+
+<div class="sheet" id="line-sheet" hidden>
+  <form class="sheet-card" id="line-form" autocomplete="off">
+    <div class="sheet-head"><h2 id="l-title">Новая линия</h2><button type="button" class="x" id="l-x" aria-label="Закрыть">×</button></div>
+    <label for="l-name">Название<input class="field" id="l-name" maxlength="30" placeholder="Например: Учёба"></label>
+    <fieldset class="f-set"><legend>Цвет</legend><div class="l-colors" id="l-colors"></div></fieldset>
+    <fieldset class="f-set"><legend>Как выходят боссы</legend><div class="l-types">
+      <label class="lt" for="l-seq"><input type="radio" class="sr" name="l-type" id="l-seq" value="seq" checked><b>По очереди</b><small>один за другим, как в «Деньгах»</small></label>
+      <label class="lt" for="l-pool"><input type="radio" class="sr" name="l-type" id="l-pool" value="pool"><b>Пул</b><small>все сразу, бей любого, как в «Других делах»</small></label>
+    </div></fieldset>
+    <label for="l-rule">Правило или девиз<input class="field" id="l-rule" maxlength="80" placeholder="Например: каждая пара и каждая глава"></label>
+    <div class="f-actions"><button type="submit" class="btn-main" id="l-submit">Создать линию</button><button type="button" class="btn-ghost" id="l-cancel">Отмена</button><button type="button" class="btn-danger" id="l-del" hidden>Удалить линию</button><span class="f-msg" id="l-msg" role="status"></span></div>
+  </form>
+</div>
+
+<div class="arcade" id="arcade" hidden>
+  <div class="arc-card" role="dialog" aria-label="Мини-игра «Ночная охота»">
+    <div class="arc-head">
+      <div><small>Аркада</small><b>Ночная охота</b></div>
+      <span class="arc-stat"><small>счёт</small><b class="num" id="arc-score">0</b></span>
+      <span class="arc-stat"><small>время</small><b class="num" id="arc-time">30</b></span>
+      <button type="button" class="x" id="arc-x" aria-label="Закрыть мини-игру">×</button>
+    </div>
+    <div class="arc-bar"><i id="arc-bar"></i></div>
+    <div class="arc-field" id="arc-field">
+      <div class="arc-grid" id="arc-grid"></div>
+      <div class="arc-msg" id="arc-msg"></div>
+      <div class="fx" id="arc-fx" aria-hidden="true"></div>
+    </div>
+    <p class="arc-combo" id="arc-combo" aria-live="polite"></p>
+  </div>
 </div>
 
 <div class="ovl" id="ovl" hidden></div>
@@ -519,6 +633,8 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     S:{name:'Мечта', hint:'Цель, которая меняет жизнь'}
   };
   var LINE_COLOR = {faith:'#e2b55b', money:'#48c08c', body:'#e8674f', meme:'#b48cf2', other:'#8db4cc'};
+  var LINE_PALETTE = ['#e2b55b', '#48c08c', '#e8674f', '#b48cf2', '#8db4cc', '#e86fa8', '#4fc6d6', '#b5d64a', '#f0954a'];
+  var MAX_LINES = 12;
   var STATUS = {done:'Повержен', current:'Бой сейчас', next:'Впереди', sealed:'Скрыт'};
   var ARRIVAL = '2027-02-14';
   var QUEST_TEXT = 'Лёгкая тренировка · мониторинг Кворка';
@@ -744,11 +860,15 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   function lineKeys(){ return Object.keys(M.lines).sort(function(a, b){ return num(M.lines[a].order, 99) - num(M.lines[b].order, 99); }); }
   function bossesOf(k){ var l = M.lines[k]; return l && Array.isArray(l.bosses) ? l.bosses : []; }
   function isPool(line){ return !!line && line.layout === 'pool'; }
-  function lineColor(k){ return Object.prototype.hasOwnProperty.call(LINE_COLOR, k) ? LINE_COLOR[k] : '#8db4cc'; }
+  function lineColor(k){
+    var l = Object.prototype.hasOwnProperty.call(M.lines, k) ? M.lines[k] : null;
+    if (l && typeof l.color === 'string' && /^#[0-9a-fA-F]{6}$/.test(l.color)) return l.color;
+    return Object.prototype.hasOwnProperty.call(LINE_COLOR, k) ? LINE_COLOR[k] : '#8db4cc';
+  }
   function maxOf(b){ return num(b.max, RANK_HP[b.rank] || 1); }
   function hpOf(b){ return b.status === 'done' ? 0 : clamp(num(b.hp, maxOf(b)), 0, maxOf(b)); }
   function isWeightBoss(b){ return !!b && (b.unit === 'кг' || /\d\s*→\s*\d+(?:[.,]\d+)?\s*кг/.test(b.goal || '')); }
-  function isWeekly(b){ return b.respawn === 'weekly' || /воскресень/i.test(b.ability || ''); }
+  function isWeekly(b){ return b.respawn === 'weekly' || (b.respawn !== 'none' && /воскресень/i.test(b.ability || '')); }
   function bossMode(k, b){ if (!b || b.status !== 'current') return 'none'; if (k === 'money') return 'money'; if (k === 'body' && isWeightBoss(b)) return 'weight'; return 'hit'; }
   function rage(){ return !!M.state && num(M.state.streak, 0) >= 7; }
   function defaultSel(k){
@@ -809,7 +929,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   }
   function begin(){ return {before:{lines:clone(M.lines), state:clone(M.state)}, touched:{}, fx:[]}; }
   function save(T, undoLabel){
-    Object.keys(T.touched).forEach(function(k){ write('lines/' + k, M.lines[k]); });
+    Object.keys(T.touched).forEach(function(k){ if (M.lines[k]) write('lines/' + k, M.lines[k]); else remove('lines/' + k); });
     write('game/state', M.state);
     undo = undoLabel ? {before:T.before, touched:Object.keys(T.touched), at:Date.now()} : null;
   }
@@ -830,11 +950,18 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     nb.status = 'current'; nb.max = maxOf(nb); nb.hp = nb.max;
     return nb;
   }
+  var armorHitFx = 0;
   function damage(T, k, idx, amount, carry){
     var line = M.lines[k], b = line.bosses[idx], left = amount, kills = [];
-    T.touched[k] = true;
+    T.touched[k] = true; armorHitFx = 0;
     while (b && b.status === 'current' && left > 0) {
-      b.max = maxOf(b);
+      b.max = maxOf(b); b.lastHit = TODAY;
+      // armor breaks before HP
+      if (num(b.armor, 0) > 0) {
+        var a = Math.min(b.armor, left);
+        b.armor = r3(b.armor - a); left = r3(left - a); armorHitFx = r3(armorHitFx + a);
+        if (left <= 0) break;
+      }
       var hp = hpOf(b), take = Math.min(hp, left);
       b.hp = r3(hp - take); left = r3(left - take);
       if (b.hp > 0) break;
@@ -977,16 +1104,90 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
       if (b.status === 'current') b.hp = r3(clamp(f.max - dealt, Math.min(1, f.max), f.max));
       else if (b.status !== 'done') b.hp = f.max;
     }
+    applyAbilities(b, f.abil);
     T.touched[k] = true; confirmDel = null;
     logAdd('✏️ Босс «' + was + '» изменён' + (was !== b.name ? ' → «' + b.name + '»' : '') + ' (' + b.rank + ' · ' + RANK_INFO[b.rank].name + ', ' + fmt(maxOf(b)) + ' HP)');
     save(T, true); render(); toastUndo('Босс изменён');
   }
+  // boss abilities from the form: set what is on, remove what was switched off
+  function applyAbilities(b, a){
+    if (!a) return;
+    if (a.regen) { if (!b.regen) b.regenAt = TODAY; b.regen = a.regen; } else { delete b.regen; delete b.regenAt; }
+    if (a.healBtn) b.healBtn = a.healBtn; else delete b.healBtn;
+    if (a.armorMax) {
+      var had = num(b.armorMax, 0) > 0;
+      b.armor = had ? Math.min(num(b.armor, a.armorMax), a.armorMax) : a.armorMax;
+      b.armorMax = a.armorMax;
+    } else { delete b.armor; delete b.armorMax; }
+    if (a.until) { b.until = a.until; b.penalty = a.penalty; }
+    else if (!b.gold) { delete b.until; delete b.penalty; }
+    if (a.shield) b.shield = a.shield; else delete b.shield;
+    // the description goes first: old bosses say "воскресенье" in it, and the respawn switch must win over that text
+    if (a.ability) b.ability = a.ability; else delete b.ability;
+    if (a.respawn) b.respawn = 'weekly'; else if (isWeekly(b)) b.respawn = 'none'; else delete b.respawn;
+  }
+  function healBoss(k, idx){
+    if (!guard()) return;
+    var b = bossesOf(k)[idx]; if (!b || b.status !== 'current') return;
+    var heal = Math.min(num(b.healBtn, 1), maxOf(b) - hpOf(b));
+    if (heal <= 0) { toast('«' + b.name + '» и так полон сил.'); return; }
+    var T = begin(); b.hp = r3(hpOf(b) + heal); T.touched[k] = true;
+    logAdd('💚 «' + b.name + '» подлечился +' + fmt(heal));
+    save(T, true); fxHeal(k, idx, heal); render(); toastUndo('Босс подлечился');
+  }
+
+  /* ---------- your own lines ---------- */
+  function addLine(f){
+    if (!guard()) return;
+    if (lineKeys().length >= MAX_LINES) { toast('Линий уже ' + MAX_LINES + ': больше экран не вместит. Удали ненужную.'); return; }
+    var T = begin(), key = 'l' + Date.now().toString(36) + Math.floor(Math.random() * 1296).toString(36);
+    var order = lineKeys().reduce(function(m, k){ return Math.max(m, num(M.lines[k].order, 0)); }, 0) + 1;
+    var line = {order:order, title:f.title, color:f.color, custom:true, bosses:[]};
+    if (f.rule) line.rule = f.rule;
+    if (f.pool) line.layout = 'pool';
+    M.lines[key] = line; T.touched[key] = true;
+    logAdd('🗺 Новая линия «' + f.title + '»');
+    tab = key; lsSet('ohota.tab', key); confirmDel = null;
+    save(T, true); SFX.coin(); render(); toastUndo('Линия создана');
+  }
+  function editLine(k, f){
+    if (!guard()) return;
+    var line = M.lines[k]; if (!line || !line.custom) return;
+    var T = begin(), wasPool = isPool(line);
+    line.title = f.title; line.color = f.color;
+    if (f.rule) line.rule = f.rule; else delete line.rule;
+    if (f.pool && !wasPool) {
+      line.layout = 'pool';
+      line.bosses.forEach(function(b){ if (b.status === 'next' || b.status === 'sealed') { b.status = 'current'; b.max = maxOf(b); b.hp = num(b.hp, b.max); } });
+    } else if (!f.pool && wasPool) {
+      delete line.layout;
+      var seen = false;
+      line.bosses.forEach(function(b){ if (b.status === 'current') { if (seen) b.status = 'next'; seen = true; } });
+    }
+    T.touched[k] = true;
+    logAdd('✏️ Линия «' + line.title + '» изменена');
+    sel[k] = defaultSel(k);
+    save(T, true); render(); toastUndo('Линия изменена');
+  }
+  function deleteLine(k){
+    if (!guard()) return;
+    var line = M.lines[k]; if (!line || !line.custom) return;
+    var T = begin(); delete M.lines[k]; T.touched[k] = true;
+    logAdd('🗑 Линия «' + (line.title || k) + '» удалена');
+    if (tab === k) tab = null;
+    save(T, true); render(); toastUndo('Линия удалена');
+  }
   function doUndo(){
     if (!undo || !db) return;
     var u = undo; undo = null;
-    u.touched.forEach(function(k){ if (u.before.lines[k]) M.lines[k] = u.before.lines[k]; write('lines/' + k, M.lines[k]); });
+    u.touched.forEach(function(k){
+      if (u.before.lines[k]) { M.lines[k] = u.before.lines[k]; write('lines/' + k, M.lines[k]); }
+      else { delete M.lines[k]; remove('lines/' + k); }
+    });
     M.state = u.before.state; write('game/state', M.state);
     lineKeys().forEach(function(k){ sel[k] = defaultSel(k); });
+    if (!M.lines[tab]) tab = null;
+    bestSig = headSig = trackSig = stageSig = infoSig = '';
     hideToast(); render(); toast('Ход отменён');
   }
 
@@ -1029,10 +1230,28 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
           b.status = 'current'; b.max = maxOf(b); b.hp = b.max; delete b.doneAt; T.touched[k] = true;
           logAdd('🟢 «' + b.name + '» возродился'); notes.push('«' + b.name + '» возродился');
         }
-        if (b.gold && b.status !== 'done' && isDate(b.until) && b.until < TODAY) {
+        // a boss with a deadline (golden or "на срок") runs away the day after it; the penalty heals ordinary life
+        if (b.status !== 'done' && isDate(b.until) && b.until < TODAY) {
           arr.splice(i, 1); T.touched[k] = true;
           if (b.status === 'current') promote(line);
-          logAdd('💨 Золотой враг «' + b.name + '» сбежал'); notes.push('золотой враг «' + b.name + '» сбежал');
+          var pen = Math.max(0, num(b.penalty, 0));
+          if (pen > 0) s.final.hp = Math.min(s.final.max, r3(s.final.hp + pen));
+          logAdd('💨 ' + (b.gold ? 'Золотой враг' : 'Босс') + ' «' + b.name + '» сбежал: срок вышел' + (pen > 0 ? ' · Обычная жизнь +' + fmt(pen) + ' HP' : ''));
+          notes.push('«' + b.name + '» сбежал' + (pen > 0 ? ', Обычная жизнь +' + fmt(pen) : ''));
+          continue;
+        }
+        // regeneration: +N HP for every full day without a hit
+        if (b.status === 'current' && num(b.regen, 0) > 0) {
+          var rFrom = maxDate(b.lastHit, b.regenAt) || yest, rDays = diffDays(rFrom, yest);
+          if (rDays > 0) {
+            var rHeal = Math.min(b.regen * rDays, maxOf(b) - hpOf(b));
+            if (rHeal > 0) {
+              b.hp = r3(hpOf(b) + rHeal);
+              logAdd('💚 «' + b.name + '» отрос на +' + fmt(rHeal) + ' HP: ' + rDays + ' ' + plural(rDays, ['день','дня','дней']) + ' без ударов');
+              notes.push('«' + b.name + '» отрос на +' + fmt(rHeal) + ' HP');
+            }
+            b.regenAt = yest; T.touched[k] = true;
+          }
         }
       }
     });
@@ -1065,9 +1284,9 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     if (!el.animate || REDUCED) { el.style.transform = to; setTimeout(function(){ el.remove(); }, 900); return; }
     el.animate([{transform:from, opacity:0}, {transform:'translate(' + (x - w / 2) + 'px,' + (y - ht / 2 - 18) + 'px) scale(1.25)', opacity:1, offset:.18}, {transform:to, opacity:0}], {duration:cls && cls.indexOf('crit') >= 0 ? 1300 : 1000, easing:'cubic-bezier(.2,.8,.3,1)'}).onfinish = function(){ el.remove(); };
   }
-  function burst(x, y, n, colors, big){
+  function burst(x, y, n, colors, big, layer){
     if (REDUCED || !document.body.animate) return;
-    var fx = $('fx');
+    var fx = layer || $('fx');
     for (var i = 0; i < n; i++) {
       var s = (big ? 5 : 3) + Math.random() * (big ? 8 : 5), a = Math.random() * Math.PI * 2, d = (big ? 70 : 40) + Math.random() * (big ? 140 : 70);
       var p = h('span', {class:'pt'}); p.style.width = p.style.height = s + 'px'; p.style.background = colors[i % colors.length];
@@ -1117,6 +1336,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     slash(p.x, p.y, o.crit);
     burst(p.x, p.y, o.crit ? 20 : 10, o.coin ? ['#e2b55b', '#f5d48a', col] : [col, shade(col, .5), '#fff'], o.crit);
     floatText($('fx'), p.x, p.y - 10, '−' + fmt(o.dmg) + (o.crit ? '<small>КРИТ' + (o.rage ? ' · ×2' : '') + '</small>' : o.rage ? '<small>ЯРОСТЬ ×2</small>' : ''), o.crit ? 'crit' : '', o.crit ? 110 : 90);
+    if (armorHitFx > 0) { floatText($('fx'), p.x + 46, p.y - 34, 'БРОНЯ −' + fmt(armorHitFx), 'block', 50); burst(p.x, p.y, 8, ['#e4ecf7', '#8fa1bb'], false); armorHitFx = 0; }
     hurtFinal(o.finalDmg);
     if (o.kills.length) killSequence(o, node, p);
     else { render(); toastUndo(o.label); queueOverlays(o.fx); }
@@ -1124,7 +1344,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   function killSequence(o, node, p){
     arenaLock = true;
     renderTop(); renderBestiary(); renderLog();
-    var bar = $('info').querySelector('.bar i'); if (bar) bar.style.width = '0%';
+    var bar = $('info').querySelector('.bar.big i'); if (bar) bar.style.width = '0%';
     var hpTxt = $('info').querySelector('.hp-now'); if (hpTxt) hpTxt.textContent = '0 / ' + fmt(maxOf(o.kills[0])) + ' HP';
     setTimeout(function(){
       if (node) node.classList.add('dying');
@@ -1230,8 +1450,8 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   var bestSig = '';
   function frontBoss(k){ var arr = bossesOf(k), i = arr.findIndex(function(b){ return b.status === 'current'; }); return i < 0 ? null : arr[i]; }
   function renderBestiary(){
-    var keys = lineKeys(), parts = [tab];
-    keys.forEach(function(k){ var b = frontBoss(k); parts.push(k, M.lines[k].title, b ? b.name + b.rank + hpOf(b) + '/' + maxOf(b) : '-', bossesOf(k).filter(function(x){ return x.status === 'done'; }).length, bossesOf(k).length); });
+    var keys = lineKeys(), parts = [tab, !!db && canWrite];
+    keys.forEach(function(k){ var b = frontBoss(k); parts.push(k, M.lines[k].title, lineColor(k), b ? b.name + b.rank + hpOf(b) + '/' + maxOf(b) : '-', bossesOf(k).filter(function(x){ return x.status === 'done'; }).length, bossesOf(k).length); });
     var sig = parts.join('|'); if (sig === bestSig) return; bestSig = sig;
     var nav = $('bestiary'), C = 2 * Math.PI * 29;
     nav.replaceChildren();
@@ -1249,6 +1469,10 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
       btn.style.setProperty('--c', lineColor(k));
       nav.append(btn);
     });
+    if (db && canWrite && keys.length < MAX_LINES) nav.append(h('button', {type:'button', class:'beast add', 'aria-label':'Новая линия', onclick:function(){ openLineSheet('add'); }},
+      h('span', {class:'beast-ring'}, h('span', {class:'beast-face'}, h('span', {class:'ph'}, '+'))),
+      h('span', {class:'beast-name'}, 'Линия'),
+      h('span', {class:'beast-count num'}, 'новая')));
   }
   function setTab(k){ if (tab === k) return; tab = k; lsSet('ohota.tab', k); confirmDel = null; render(); }
 
@@ -1260,10 +1484,11 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     var k = tab, line = M.lines[k], arr = bossesOf(k), pool = isPool(line), si = selIdx(k), color = lineColor(k);
     arena.style.setProperty('--c', color);
     arena.classList.toggle('rage', rage());
-    var hs = [k, line.title, line.rule, line.main, rage(), !!db && canWrite].join('|');
+    var hs = [k, line.title, line.rule, line.main, line.custom, color, rage(), !!db && canWrite].join('|');
     if (hs !== headSig) {
       headSig = hs;
       fill($('arena-head'), h('h2', {}, line.title || k), line.main ? h('span', {class:'chip'}, 'Главная') : null,
+        line.custom && db && canWrite ? h('button', {type:'button', class:'head-edit', onclick:function(){ openLineSheet('edit', k); }}, 'изменить') : null,
         h('span', {class:'head-right'}, rage() ? h('span', {class:'chip rage-chip'}, 'Ярость ×2') : null, db && canWrite ? h('button', {type:'button', class:'head-add', onclick:function(){ openAdd(k); }}, '+ Новый босс') : null),
         line.rule ? h('p', {}, line.rule) : null);
     }
@@ -1329,6 +1554,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
       btn.dataset.crack = cur ? String(ratio >= .75 ? 0 : ratio >= .5 ? 1 : ratio >= .25 ? 2 : 3) : '0';
       btn.classList.toggle('shielded', cur && !!b.shield);
       btn.classList.toggle('gold', !!b.gold && b.status !== 'done');
+      btn.classList.toggle('armored', cur && num(b.armor, 0) > 0);
       var slot = btn.parentNode.classList.contains('slot') ? btn.parentNode : null;
       if (slot) slot.classList.toggle('picked', i === si);
       var mode = bossMode(k, b);
@@ -1362,15 +1588,24 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     if (!b) { infoSig = ''; info.replaceChildren(); return; }
     var st = STATUS[b.status] ? b.status : 'next', mode = bossMode(k, b), wr = db && canWrite;
     var armed = !!confirmDel && confirmDel.key === k && confirmDel.i === si;
-    var sig = [k, si, b.name, b.rank, st, b.goal, b.ability, b.shield, b.reward, b.gold, b.until, b.unit, b.doneAt, maxOf(b), armed, wr, TODAY].join('|');
+    var sig = [k, si, b.name, b.rank, st, b.goal, b.ability, b.shield, b.reward, b.gold, b.until, b.penalty, b.unit, b.doneAt, maxOf(b), b.armorMax, b.regen, b.healBtn, isWeekly(b), armed, wr, TODAY].join('|');
     if (sig !== infoSig) {
       infoSig = sig;
       var tag = (st === 'sealed' ? 'Скрыт' : STATUS[st] + ' · ранг ' + (b.rank || '?') + (RANK_INFO[b.rank] ? ' · ' + RANK_INFO[b.rank].name : '')) +(st === 'done' && b.doneAt ? ' · ' + shortDate(b.doneAt) : '');
       var kids = [h('div', {class:'info-top'}, h('h3', {}, st === 'sealed' ? '???' : b.name), h('span', {class:'tag'}, tag))];
+      if (num(b.armorMax, 0) > 0 && st !== 'done' && st !== 'sealed') kids.push(h('div', {class:'armor-line'}, h('div', {class:'bar armor', role:'img'}, h('i')), h('span', {class:'num armor-now'})));
       if (st !== 'sealed') {
         kids.push(h('div', {class:'bar big', role:'img'}, h('i')), h('div', {class:'hp-line'}, h('span', {class:'num hp-now'}), h('span', {class:'hp-extra'})));
       }
       if (b.goal && st !== 'sealed') kids.push(h('p', {class:'goal'}, b.goal));
+      var chips = [];
+      if (num(b.regen, 0) > 0 && st !== 'done') chips.push(h('span', {class:'abil-chip'}, '💚 ', h('b', {}, 'Реген +' + fmt(b.regen)), ' за день без ударов'));
+      if (isDate(b.until) && !b.gold && st !== 'done') {
+        var dLeft = diffDays(TODAY, b.until) + 1;
+        chips.push(h('span', {class:'abil-chip'}, '⏳ ', h('b', {}, 'до ' + shortDate(b.until)), dLeft > 1 ? ' · ' + dLeft + ' ' + plural(dLeft, ['день','дня','дней']) : ' · последний день', num(b.penalty, 0) > 0 ? ' · не успеешь: Обычная жизнь +' + fmt(b.penalty) : ''));
+      }
+      if (b.respawn === 'weekly' && !/воскресень/i.test(b.ability || '')) chips.push(h('span', {class:'abil-chip'}, '♻ ', h('b', {}, 'Возрождается'), ' по воскресеньям'));
+      if (chips.length) kids.push(h('div', {class:'abil-chips'}, chips));
       if (b.gold && st !== 'done') {
         var esc = isDate(b.until) ? diffDays(TODAY, b.until) + 1 : null;
         kids.push(h('p', {class:'gold-line'}, '⭐ Золотой враг · удары бьют Обычную жизнь ×2' + (esc == null ? '' : esc > 1 ? ' · сбежит через ' + esc + ' ' + plural(esc, ['день','дня','дней']) : ' · последний день, завтра сбежит')));
@@ -1383,10 +1618,19 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
         kids.push(h('form', {class:'reward-set', onsubmit:function(e){ e.preventDefault(); var v = rin.value.trim(); if (v) setReward(k, si, v); else rin.focus(); }},
           h('span', {}, 'Ранг ' + b.rank + ': назначь награду заранее, заберёшь после победы.'), rin, h('button', {type:'submit', class:'btn-ghost'}, 'Назначить')));
       }
-      if (wr && st !== 'done') kids.push(h('div', {class:'info-actions'}, h('button', {type:'button', class:'link-btn', onclick:function(){ openEdit(k, si); }}, 'Изменить'), h('button', {type:'button', class:'link-btn' + (armed ? ' danger' : ''), onclick:function(){ if (armed) removeBoss(k, si); else { confirmDel = {key:k, i:si}; render(); } }}, armed ? 'Точно убрать? Нажми ещё раз' : 'Убрать босса')));
+      if (wr && st !== 'done') kids.push(h('div', {class:'info-actions'},
+        num(b.healBtn, 0) > 0 && st === 'current' ? h('button', {type:'button', class:'link-btn accent', onclick:function(){ healBoss(k, si); }}, 'Подлечить +' + fmt(b.healBtn)) : null,
+        h('button', {type:'button', class:'link-btn', onclick:function(){ openEdit(k, si); }}, 'Изменить'), h('button', {type:'button', class:'link-btn' + (armed ? ' danger' : ''), onclick:function(){ if (armed) removeBoss(k, si); else { confirmDel = {key:k, i:si}; render(); } }}, armed ? 'Точно убрать? Нажми ещё раз' : 'Убрать босса')));
       fill(info, kids);
     }
-    var bar = info.querySelector('.bar i');
+    var abar = info.querySelector('.bar.armor i');
+    if (abar) {
+      var am = num(b.armorMax, 1), ac = clamp(num(b.armor, 0), 0, am);
+      abar.style.width = (ac / am * 100) + '%';
+      abar.parentNode.setAttribute('aria-label', 'Броня ' + fmt(ac) + ' из ' + fmt(am));
+      info.querySelector('.armor-now').textContent = ac > 0 ? 'броня ' + fmt(ac) + ' / ' + fmt(am) : 'броня сломана';
+    }
+    var bar = info.querySelector('.bar.big i');
     if (bar) {
       var cur = hpOf(b), mx = maxOf(b);
       bar.style.width = (cur / mx * 100) + '%';
@@ -1478,7 +1722,43 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     $('f-hpnote').textContent = k === 'money' ? 'На линии «Деньги» 1 HP = 1 000 ₽.' : RANK_INFO[r].name + ': ' + RANK_INFO[r].hint.toLowerCase() + '. HP подставлен по рангу, его можно поправить.';
     $('f-reward-hint').textContent = strong ? 'обязательна для ранга ' + r : 'по желанию';
     $('f-name').placeholder = Object.prototype.hasOwnProperty.call(PLACEHOLDER, k) ? PLACEHOLDER[k] : 'Имя босса';
+    $('ab-respawn-row').hidden = !isPool(M.lines[k]);
   }
+  function intIn(id, lo, hi, dflt){ var v = Math.round(parseNum($(id).value)); return isFinite(v) ? clamp(v, lo, hi) : dflt; }
+  function fillAbilities(b){
+    $('ab-regen').checked = !!(b && num(b.regen, 0) > 0); $('ab-regen-n').value = b && num(b.regen, 0) > 0 ? b.regen : 1;
+    $('ab-heal').checked = !!(b && num(b.healBtn, 0) > 0); $('ab-heal-n').value = b && num(b.healBtn, 0) > 0 ? b.healBtn : 1;
+    $('ab-armor').checked = !!(b && num(b.armorMax, 0) > 0); $('ab-armor-n').value = b && num(b.armorMax, 0) > 0 ? b.armorMax : 2;
+    var term = !!(b && isDate(b.until) && !b.gold);
+    $('ab-term').checked = term; $('ab-term-d').min = TODAY;
+    $('ab-term-d').value = term ? b.until : addDays(TODAY, 7);
+    $('ab-term-p').value = term && num(b.penalty, -1) >= 0 ? b.penalty : 10;
+    $('ab-shield').checked = !!(b && b.shield); $('ab-shield-t').value = b && b.shield ? b.shield : '';
+    $('ab-respawn').checked = !!(b && isWeekly(b));
+    $('f-ability').value = b && b.ability ? b.ability : '';
+    $('f-more').open = !!(b && ($('ab-regen').checked || $('ab-heal').checked || $('ab-armor').checked || term || b.shield || isWeekly(b) || b.ability));
+  }
+  // returns the abilities object, or a string with the reason the form cannot be saved
+  function readAbilities(isEdit, b){
+    var a = {};
+    if ($('ab-regen').checked) a.regen = intIn('ab-regen-n', 1, 1000, 1);
+    if ($('ab-heal').checked) a.healBtn = intIn('ab-heal-n', 1, 1000, 1);
+    if ($('ab-armor').checked) a.armorMax = intIn('ab-armor-n', 1, 1000, 2);
+    if ($('ab-term').checked) {
+      var d = $('ab-term-d').value;
+      if (!isDate(d)) return 'Выбери день, до которого надо победить босса.';
+      if (d < TODAY && !(isEdit && b && b.until === d)) return 'Срок не может быть в прошлом.';
+      a.until = d; a.penalty = intIn('ab-term-p', 0, 1000, 10);
+    }
+    if ($('ab-shield').checked) a.shield = $('ab-shield-t').value.trim() || 'условие не выполнено';
+    if ($('ab-respawn').checked && isPool(M.lines[isEdit ? form.key : fLine()])) a.respawn = true;
+    var txt = $('f-ability').value.trim(); if (txt) a.ability = txt;
+    return a;
+  }
+  // typing into an ability's field switches that ability on
+  [['ab-regen', 'ab-regen-n'], ['ab-heal', 'ab-heal-n'], ['ab-armor', 'ab-armor-n'], ['ab-term', 'ab-term-d'], ['ab-term', 'ab-term-p'], ['ab-shield', 'ab-shield-t']].forEach(function(p){
+    $(p[1]).addEventListener('input', function(){ $(p[0]).checked = true; });
+  });
   function openSheet(mode, k, idx){
     if (!db || !canWrite || !M.lines[k]) return;
     var b = mode === 'edit' ? bossesOf(k)[idx] : null;
@@ -1497,6 +1777,7 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     $('f-rank-' + r).checked = true;
     hpTouched = !!b && maxOf(b) !== RANK_HP[r];
     $('f-hp').value = b ? maxOf(b) : RANK_HP[r];
+    fillAbilities(b);
     syncSheet();
     $('sheet').hidden = false;
     setTimeout(function(){ $('f-name').focus(); }, 60);
@@ -1516,15 +1797,199 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
     if (!name) { msg.textContent = 'Дай боссу имя.'; $('f-name').focus(); return; }
     if (RANKS.indexOf(rank) >= 2 && !reward) { msg.textContent = 'Для ранга ' + rank + ' назначь награду заранее.'; $('f-reward').focus(); return; }
     var max = Math.max(1, Math.round(parseNum($('f-hp').value) || RANK_HP[rank]));
-    if (form.mode === 'edit') { closeAdd(); editBoss(form.key, form.idx, {name:name, rank:rank, max:max, goal:goal, reward:reward}); return; }
-    var k = fLine(), boss = {name:name, rank:rank, hp:max, max:max};
+    var editB = form.mode === 'edit' ? bossesOf(form.key)[form.idx] : null;
+    var abil = readAbilities(form.mode === 'edit', editB);
+    if (typeof abil === 'string') { msg.textContent = abil; $('f-more').open = true; return; }
+    if (form.mode === 'edit') { closeAdd(); editBoss(form.key, form.idx, {name:name, rank:rank, max:max, goal:goal, reward:reward, abil:abil}); return; }
+    var k = fLine(), boss = {name:name, rank:rank, hp:max, max:max, bornAt:TODAY};
     if (goal) boss.goal = goal;
     if (reward) boss.reward = reward;
     if (k === 'money') boss.unit = '₽ × 1000';
     if ($('f-gold').checked) { boss.gold = true; boss.until = addDays(mskToday(), 2); }
+    applyAbilities(boss, abil);
     closeAdd();
     addBoss(k, boss);
   });
+
+  /* ---------- line sheet: create, edit, delete your own lines ---------- */
+  var lineForm = {mode:'add', key:null}, lineDelArmed = false;
+  function lColor(){ var r = document.querySelector('input[name="l-color"]:checked'); return r ? r.value : LINE_PALETTE[5]; }
+  function buildColorChips(){
+    var box = $('l-colors'); if (box.childElementCount) return;
+    LINE_PALETTE.forEach(function(c, i){
+      var lab = h('label', {class:'sw', for:'l-color-' + i, title:'Цвет ' + (i + 1)}, h('input', {type:'radio', name:'l-color', id:'l-color-' + i, value:c, class:'sr', 'aria-label':'Цвет ' + (i + 1)}));
+      lab.style.setProperty('--sw', c);
+      box.append(lab);
+    });
+  }
+  function openLineSheet(mode, k){
+    if (!db || !canWrite) return;
+    var line = mode === 'edit' ? M.lines[k] : null;
+    if (mode === 'edit' && (!line || !line.custom)) return;
+    if (mode === 'add' && lineKeys().length >= MAX_LINES) { toast('Линий уже ' + MAX_LINES + ': больше экран не вместит. Удали ненужную.'); return; }
+    lineForm = {mode:mode, key:k || null}; lineDelArmed = false;
+    buildColorChips();
+    $('l-title').textContent = mode === 'edit' ? 'Изменить линию' : 'Новая линия';
+    $('l-submit').textContent = mode === 'edit' ? 'Сохранить' : 'Создать линию';
+    $('l-del').hidden = mode !== 'edit'; $('l-del').textContent = 'Удалить линию';
+    $('l-name').value = line ? line.title || '' : '';
+    $('l-rule').value = line ? line.rule || '' : '';
+    var used = lineKeys().map(lineColor);
+    var color = line ? lineColor(k) : (LINE_PALETTE.filter(function(c){ return used.indexOf(c) < 0; })[0] || LINE_PALETTE[5]);
+    var ci = LINE_PALETTE.indexOf(color); $('l-color-' + (ci < 0 ? 5 : ci)).checked = true;
+    (isPool(line) ? $('l-pool') : $('l-seq')).checked = true;
+    $('l-msg').textContent = '';
+    $('line-form').style.setProperty('--c', lColor());
+    $('line-sheet').hidden = false;
+    setTimeout(function(){ $('l-name').focus(); }, 60);
+  }
+  function closeLineSheet(){ $('line-sheet').hidden = true; }
+  $('l-colors').addEventListener('change', function(){ $('line-form').style.setProperty('--c', lColor()); });
+  $('l-x').addEventListener('click', closeLineSheet);
+  $('l-cancel').addEventListener('click', closeLineSheet);
+  $('line-sheet').addEventListener('click', function(e){ if (e.target === $('line-sheet')) closeLineSheet(); });
+  $('line-form').addEventListener('submit', function(e){
+    e.preventDefault();
+    var name = $('l-name').value.trim().replace(/\s+/g, ' ');
+    if (!name) { $('l-msg').textContent = 'Дай линии название.'; $('l-name').focus(); return; }
+    var f = {title:name, rule:$('l-rule').value.trim(), color:lColor(), pool:$('l-pool').checked};
+    closeLineSheet();
+    if (lineForm.mode === 'edit') editLine(lineForm.key, f); else addLine(f);
+  });
+  $('l-del').addEventListener('click', function(){
+    var k = lineForm.key, line = M.lines[k]; if (!line) return;
+    if (!lineDelArmed) {
+      lineDelArmed = true; $('l-del').textContent = 'Точно удалить? Ещё раз';
+      var n = bossesOf(k).length;
+      $('l-msg').textContent = n ? 'Боссов в линии: ' + n + '. Они удалятся вместе с ней, отменить можно сразу после удаления.' : 'Линия пустая.';
+      return;
+    }
+    closeLineSheet(); deleteLine(k);
+  });
+
+  /* ---------- arcade: «Ночная охота», a whack-a-monster just for fun (does not touch the hunt) ---------- */
+  var PESTS = ['Лень', 'Прокраст', 'Скролл', 'Отмазка', 'FOMO', 'Тильт', 'Шум', 'Хаос', 'Отложу', 'Сонник', 'Дедлайн', 'Срыв'];
+  var RUG_SVG = '<svg viewBox="0 0 200 200" aria-hidden="true" focusable="false"><ellipse cx="100" cy="186" rx="58" ry="8" fill="#000" opacity=".45"/><circle cx="100" cy="120" r="62" fill="#1b2130" stroke="#d43a52" stroke-width="6"/><rect x="87" y="44" width="26" height="20" rx="5" fill="#3a4258"/><path d="M100 44 Q114 20 136 26" fill="none" stroke="#c9a46a" stroke-width="6" stroke-linecap="round"/><circle cx="140" cy="24" r="9" fill="#ffb347"/><circle cx="140" cy="24" r="4" fill="#fff3c4"/><text x="100" y="134" text-anchor="middle" font-family="Unbounded, Arial Black, sans-serif" font-weight="800" font-size="36" fill="#d43a52">RUG</text></svg>';
+  var ARC_DUR = 30000;
+  var A = {on:false, score:0, combo:0, hits:0, t0:0, timers:[], raf:0, built:false};
+  function arcBest(){ var s = M.state && M.state.arcade; return Math.max(num(s && s.best, 0), num(parseNum(lsGet('ohota.arcade.best')), 0)); }
+  function arcMoles(){ return $('arc-grid').querySelectorAll('.mole'); }
+  function arcBuild(){
+    if (A.built) return; A.built = true;
+    for (var i = 0; i < 9; i++) (function(i){
+      var mole = h('button', {type:'button', class:'mole', tabindex:'-1', 'aria-label':'Монстр ' + (i + 1)});
+      mole.addEventListener('pointerdown', function(e){ e.preventDefault(); arcWhack(i); });
+      mole.addEventListener('click', function(e){ if (e.detail === 0) arcWhack(i); });
+      $('arc-grid').append(h('div', {class:'hole'}, mole));
+    })(i);
+  }
+  function arcOpen(){ arcBuild(); $('arcade').hidden = false; arcIntro(); }
+  function arcClose(){ arcStop(); $('arcade').hidden = true; }
+  function arcIntro(title){
+    $('arc-time').textContent = '30'; $('arc-score').textContent = '0'; $('arc-bar').style.transform = 'scaleX(1)';
+    $('arc-combo').textContent = 'На компьютере бей клавишами 1–9';
+    var play = h('button', {type:'button', class:'btn-main', onclick:arcStart}, 'Играть · 30 секунд');
+    fill($('arc-msg'), h('h3', {}, title || 'Ночная охота'),
+      h('ul', {class:'arc-rules'},
+        h('li', {}, h('b', {}, '+1'), 'монстр-привычка: Лень, Скролл, FOMO…'),
+        h('li', {}, h('b', {}, '+5'), 'золотой Памп'),
+        h('li', {}, h('b', {}, '+10'), 'Обычная жизнь, прячется быстрее всех'),
+        h('li', {}, h('b', {}, '−5'), 'Рагпул: не трогай'),
+        h('li', {}, h('b', {}, '×2 ×3'), 'за 5 и 10 попаданий подряд')),
+      h('p', {class:'ovl-sub'}, 'Рекорд: ', h('b', {class:'num'}, String(arcBest()))),
+      play);
+    $('arc-msg').hidden = false;
+    setTimeout(function(){ try { play.focus({preventScroll:true}); } catch (e) {} }, 50);
+  }
+  function arcStop(){
+    A.on = false; A.timers.forEach(clearTimeout); A.timers = []; cancelAnimationFrame(A.raf);
+    arcMoles().forEach(function(m){ m.classList.remove('up', 'hit'); });
+  }
+  function arcStart(){
+    arcStop(); A.on = true; A.score = 0; A.combo = 0; A.hits = 0; A.t0 = performance.now();
+    $('arc-msg').hidden = true; $('arc-score').textContent = '0'; $('arc-combo').textContent = '';
+    SFX.quest();
+    arcSpawnLoop(); A.raf = requestAnimationFrame(arcTick);
+  }
+  function arcProgress(){ return Math.min(1, (performance.now() - A.t0) / ARC_DUR); }
+  function arcTick(now){
+    if (!A.on) return;
+    var left = Math.max(0, ARC_DUR - (now - A.t0));
+    $('arc-time').textContent = Math.ceil(left / 1000);
+    $('arc-bar').style.transform = 'scaleX(' + (left / ARC_DUR).toFixed(4) + ')';
+    if (left <= 0) { arcEnd(); return; }
+    A.raf = requestAnimationFrame(arcTick);
+  }
+  function arcSpawnLoop(){
+    if (!A.on) return;
+    arcSpawn();
+    A.timers.push(setTimeout(arcSpawnLoop, (850 - 470 * arcProgress()) * (.7 + Math.random() * .6)));
+  }
+  function arcSpawn(){
+    var moles = arcMoles(), free = [];
+    moles.forEach(function(m, i){ if (!m.classList.contains('up')) free.push(i); });
+    if (!free.length) return;
+    var i = free[Math.floor(Math.random() * free.length)], m = moles[i], r = Math.random(), p = arcProgress();
+    var type = r < .06 ? 'boss' : r < .16 ? 'gold' : r < .33 ? 'rug' : 'pest';
+    var name = type === 'boss' ? 'Обычная жизнь' : type === 'gold' ? 'Памп' : type === 'rug' ? 'Рагпул' : PESTS[Math.floor(Math.random() * PESTS.length)];
+    m.innerHTML = type === 'boss' ? FINAL_FACE : type === 'rug' ? RUG_SVG
+      : monsterSVG(name + (type === 'pest' ? Math.floor(Math.random() * 4) : ''), type === 'gold' ? '#e2b55b' : LINE_PALETTE[Math.floor(Math.random() * LINE_PALETTE.length)], type === 'gold' ? 'S' : RANKS[Math.floor(Math.random() * 3)]);
+    m.append(h('span', {class:'mole-tag'}, name));
+    m.dataset.type = type; m.dataset.name = name; m.dataset.hit = '';
+    m.classList.remove('hit'); void m.offsetWidth; m.classList.add('up');
+    var stay = type === 'boss' ? 640 : (1150 - 520 * p) * (.85 + Math.random() * .3);
+    A.timers.push(setTimeout(function(){
+      if (!m.classList.contains('up') || m.dataset.hit) return;
+      m.classList.remove('up');
+      if (type !== 'rug' && A.on) { if (A.combo >= 3) arcFloat(i, 'серия сорвана', 'miss'); A.combo = 0; arcCombo(); }
+    }, stay));
+  }
+  function arcFloat(i, text, cls){
+    var hole = arcMoles()[i].parentNode, fr = $('arc-field').getBoundingClientRect(), r = hole.getBoundingClientRect();
+    floatText($('arc-fx'), r.left - fr.left + r.width / 2, r.top - fr.top + r.height * .35, text, cls, 60);
+    return {x:r.left - fr.left + r.width / 2, y:r.top - fr.top + r.height * .55};
+  }
+  function arcCombo(){ $('arc-combo').textContent = A.combo >= 10 ? 'Серия ' + A.combo + ' · очки ×3' : A.combo >= 5 ? 'Серия ' + A.combo + ' · очки ×2' : A.combo >= 2 ? 'Серия ' + A.combo : ''; }
+  function arcWhack(i){
+    if (!A.on) return;
+    var m = arcMoles()[i];
+    if (!m || !m.classList.contains('up') || m.dataset.hit) return;
+    m.dataset.hit = '1';
+    var type = m.dataset.type, name = m.dataset.name, pts;
+    if (type === 'rug') { pts = -5; A.combo = 0; SFX.block(); SFX.nope(); buzz([30, 40, 30]); }
+    else {
+      A.combo++; A.hits++;
+      pts = (type === 'boss' ? 10 : type === 'gold' ? 5 : 1) * (A.combo >= 10 ? 3 : A.combo >= 5 ? 2 : 1);
+      if (type === 'boss') { SFX.crit(); buzz([20, 30, 40]); } else if (type === 'gold') { SFX.coin(); buzz(15); } else { SFX.hit(); buzz(10); }
+    }
+    A.score = Math.max(0, A.score + pts);
+    m.classList.add('hit');
+    var pt = arcFloat(i, (pts > 0 ? '+' : '−') + Math.abs(pts) + ' ' + name, type === 'rug' ? 'block' : type === 'boss' ? 'crit' : '');
+    burst(pt.x, pt.y, type === 'boss' ? 18 : 9, type === 'rug' ? ['#d43a52', '#3a4258'] : type === 'gold' || type === 'boss' ? ['#e2b55b', '#f5d48a', '#fff'] : ['#ece6d6', '#8db4cc'], type === 'boss', $('arc-fx'));
+    A.timers.push(setTimeout(function(){ m.classList.remove('up'); }, 140));
+    $('arc-score').textContent = A.score; arcCombo();
+  }
+  function arcEnd(){
+    var score = A.score, hits = A.hits, best = arcBest();
+    arcStop();
+    $('arc-time').textContent = '0'; $('arc-bar').style.transform = 'scaleX(0)';
+    var rec = score > best;
+    if (rec) {
+      lsSet('ohota.arcade.best', String(score));
+      if (db && canWrite && M.state) { M.state.arcade = {best:score, at:mskToday()}; write('game/state', M.state); }
+      SFX.rank();
+    } else SFX.kill();
+    var again = h('button', {type:'button', class:'btn-main', onclick:arcStart}, 'Ещё раз');
+    fill($('arc-msg'), h('h3', {}, rec ? 'Новый рекорд!' : 'Время вышло'),
+      h('div', {class:'arc-big num'}, String(score)),
+      h('p', {class:'ovl-sub'}, 'Побито монстров: ', h('b', {}, String(hits)), ' · рекорд: ', h('b', {class:'num'}, String(Math.max(score, best)))),
+      again);
+    $('arc-msg').hidden = false; $('arc-combo').textContent = '';
+    setTimeout(function(){ try { again.focus({preventScroll:true}); } catch (e) {} }, 50);
+  }
+  $('arc-open').addEventListener('click', arcOpen);
+  $('arc-x').addEventListener('click', arcClose);
+  $('arcade').addEventListener('click', function(e){ if (e.target === $('arcade')) arcClose(); });
 
   /* ---------- action panel wiring ---------- */
   $('btn-hit').addEventListener('click', function(){ var b = bossesOf(tab)[selIdx(tab)]; if (b) strike(tab, selIdx(tab), 'hit', null); });
@@ -1546,7 +2011,14 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   });
   $('quest').addEventListener('click', doQuest);
   $('snd').addEventListener('click', function(){ muted = !muted; lsSet('ohota.muted', muted ? '1' : '0'); renderSound(); if (!muted) SFX.quest(); });
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape') { if (!$('ovl').hidden) closeOverlay(); else if (!$('sheet').hidden) closeAdd(); } });
+  document.addEventListener('keydown', function(e){
+    if (!$('arcade').hidden) {
+      if (e.key === 'Escape') arcClose();
+      else if (/^[1-9]$/.test(e.key) && A.on) { e.preventDefault(); arcWhack(Number(e.key) - 1); }
+      return;
+    }
+    if (e.key === 'Escape') { if (!$('ovl').hidden) closeOverlay(); else if (!$('sheet').hidden) closeAdd(); else if (!$('line-sheet').hidden) closeLineSheet(); }
+  });
 
   /* pupils follow the finger or cursor; when idle, they glance around */
   var lastMove = 0;
@@ -1559,7 +2031,10 @@ details li b,details li time{font-family:var(--font-mono);font-size:12px;color:v
   document.addEventListener('pointermove', function(e){ lastMove = Date.now(); look(e.clientX, e.clientY); }, {passive:true});
   document.addEventListener('pointerdown', function(e){ lastMove = Date.now(); look(e.clientX, e.clientY); }, {passive:true});
   if (!REDUCED) setInterval(function(){ if (Date.now() - lastMove < 3000) return; $('stage').querySelectorAll('.mon.is-current').forEach(function(m){ m.style.setProperty('--px', ((Math.random() - .5) * 6).toFixed(1) + 'px'); m.style.setProperty('--py', ((Math.random() - .5) * 4).toFixed(1) + 'px'); }); }, 2600);
-  document.addEventListener('visibilitychange', function(){ if (document.visibilityState === 'visible') { TODAY = mskToday(); render(); upkeep(); } });
+  document.addEventListener('visibilitychange', function(){
+    if (document.visibilityState === 'visible') { TODAY = mskToday(); render(); upkeep(); }
+    else if (A.on) { arcStop(); arcIntro('Игра прервана'); }
+  });
 
   /* ---------- local mode: the game opened as a plain file keeps progress in this browser ---------- */
   function localDB(seed){
