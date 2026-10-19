@@ -33,8 +33,8 @@ def panel(key, title, text):
     d.text((60, 40), title, fill="#000000", font=ImageFont.truetype(INTER.format("Bold"), 56))
     d.text((60, 120), text, fill="#666666", font=ImageFont.truetype(INTER.format("Regular"), 30))
     folder = os.path.join(LOGO, "concepts", key)
-    h_svg = open(os.path.join(folder, "logo_horizontal.svg")).read()
-    v_svg = open(os.path.join(folder, "logo_vertical.svg")).read()
+    h_svg = open(os.path.join(folder, "logo_horizontal_slogan.svg")).read()
+    v_svg = open(os.path.join(folder, "logo_vertical_slogan.svg")).read()
     s_svg = open(os.path.join(folder, "sign.svg")).read()
     # основной горизонтальный на белом
     box = (60, 200, 1300, 760)
