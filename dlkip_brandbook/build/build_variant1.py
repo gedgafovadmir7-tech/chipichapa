@@ -109,7 +109,6 @@ def about(d):
         f"**E-mail:** {TODO}",
         f"**Сайт:** {TODO}",
     ])
-    d.page_break()
 
 
 def sample_sections():
@@ -117,6 +116,10 @@ def sample_sections():
     doma_paras = paragraphs(read_zip(SRC_DOMA)["word/document.xml"].decode())
     start = next(i for i, p in enumerate(doma_paras) if "ЦВЕТОВАЯ ПАЛИТРА" in p)
     out = []
+    # палитра с новой страницы — через свойство абзаца, а не пустым абзацем с разрывом
+    # (иначе, если «Контакты» доходят до конца страницы, появляется пустой лист)
+    doma_paras[start] = doma_paras[start].replace('<w:pStyle w:val="Heading1"/>',
+                                                  '<w:pStyle w:val="Heading1"/><w:pageBreakBefore/>', 1)
     for p in doma_paras[start:]:
         if "w:hyperlink" in p:  # «Все форматы доступны в официальном пакете брендбука» -> заглушка
             p = para(rich(f"**Все форматы доступны в официальном пакете брендбука:** {TODO}"), before=240, after=240)
