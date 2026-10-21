@@ -9,6 +9,7 @@ sys.path.insert(0, os.path.join(HERE, "..", "..", "tools"))
 from logokit import boolean, circle_d, stroke_to_fill, text_path  # noqa: E402
 
 OR, BK, GR = "#F07D00", "#1A1A1A", "#333333"
+TX = "#111111"  # цвет надписи (отдельно от тёмной середины микросхемы — для версии на тёмном фоне)
 SLOGAN = "Мы превратим ваши идеи в реальность"
 FONT = "Montserrat-Variable.ttf"
 
@@ -79,11 +80,11 @@ def wordmark():
     cap = 70
     ye = cap + 24 + 70 * ke
     ys = ye + 20 + 70 * ks
-    g = (f'<path fill="{BK}" d="{a}"/>'
+    g = (f'<path fill="{TX}" d="{a}"/>'
          f'<g transform="translate({wa:.2f},0)"><path fill="{OR}" d="{k}"/></g>'
-         f'<g transform="translate({wa + wk:.2f},0)"><path fill="{BK}" d="{b}"/></g>')
+         f'<g transform="translate({wa + wk:.2f},0)"><path fill="{TX}" d="{b}"/></g>')
     body = (f'<g transform="translate(0,{cap})">{g}</g>'
-            f'<g transform="translate(0,{ye:.2f}) scale({ke:.4f})"><path fill="{BK}" d="{e}"/></g>'
+            f'<g transform="translate(0,{ye:.2f}) scale({ke:.4f})"><path fill="{TX}" d="{e}"/></g>'
             f'<g transform="translate(0,{ys:.2f}) scale({ks:.4f})"><path fill="{GR}" d="{s}"/></g>')
     return body, W, ys + 18 * ks + 4
 

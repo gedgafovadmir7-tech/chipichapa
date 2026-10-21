@@ -24,7 +24,7 @@ for k, title, text in V:
     d.rectangle((60, 200, 1300, 760), outline="#CCCCCC", width=3)
     im = fit(_png(h, 2400), 1100, 420); p.alpha_composite(im, (60 + (1240 - im.width) // 2, 200 + (560 - im.height) // 2))
     d.rectangle((1340, 200, 1900, 760), fill="#000000")
-    im = fit(_png(invert_for_dark(v).replace('"#666666"', '"#CCCCCC"'), 1600), 460, 460); p.alpha_composite(im, (1340 + (560 - im.width) // 2, 200 + (560 - im.height) // 2))
+    im = fit(_png(invert_for_dark(v).replace('"#666666"', '"#CCCCCC"').replace('"#111111"', '"#FFFFFF"').replace('"#333333"', '"#CCCCCC"'), 1600), 460, 460); p.alpha_composite(im, (1340 + (560 - im.width) // 2, 200 + (560 - im.height) // 2))
     d.rectangle((1940, 200, 2340, 600), fill="#F5F5F5")
     im = fit(_png(s, 1200), 300, 300); p.alpha_composite(im, (1940 + (400 - im.width) // 2, 250))
     x = 1940
