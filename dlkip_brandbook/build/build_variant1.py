@@ -181,10 +181,32 @@ def fix_intro(head):
     return head
 
 
+# Фавикон и мерч — текст заказчицы (21.10), ставим перед «Техническими требованиями к шаблонам»
+FAVICON = ("Фавикон - это маленькая иконка сайта, которая видна во вкладке браузера рядом с названием страницы "
+           "(размером 16–32 пикселя). Для неё берётся только знак логотипа, без надписи, поэтому знак должен "
+           "хорошо читаться даже совсем маленьким.")
+MERCH = ("Мерч - это фирменные вещи с логотипом компании: футболки, худи, кепки, кружки, ручки, блокноты, пакеты, "
+         "спецодежда для сотрудников. Их дарят клиентам и партнёрам или носят сотрудники.")
+
+
+def favicon_merch():
+    e = Doc()
+    e.label("ФАВИКОН", spaced=True)
+    e.p(FAVICON)
+    e.hr(after=0)
+    e.label("МЕРЧ", spaced=True)
+    e.p(MERCH)
+    e.hr(after=0)
+    return "".join(e.parts)
+
+
 def build():
     d = Doc()
     about(d)
-    body = fix_intro(title_and_intro(read_zip(SRC_DLKIP))) + "".join(d.parts) + "".join(sample_sections())
+    sections = sample_sections()
+    i = next(k for k, p in enumerate(sections) if "ТЕХНИЧЕСКИЕ ТРЕБОВАНИЯ К ШАБЛОНАМ" in p)
+    sections.insert(i, favicon_merch())
+    body = fix_intro(title_and_intro(read_zip(SRC_DLKIP))) + "".join(d.parts) + "".join(sections)
     return package(body, d, OUT_NAME)
 
 
