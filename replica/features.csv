@@ -1,0 +1,27 @@
+feature,area,priority,original,clone,notes
+Создание/переименование/удаление заметок,Заметки,must,yes,no,
+Папки и дерево файлов,Заметки,must,yes,no,
+Markdown-редактор (Source),Редактор,must,yes,no,
+Режим чтения (Reading view),Редактор,must,yes,no,
+Live Preview,Редактор,should,yes,no,самое сложное
+Вики-ссылки [[...]] с автодополнением,Связи,must,yes,no,
+Алиасы и ссылки на заголовки,Связи,should,yes,no,
+Обратные ссылки (linked mentions),Связи,must,yes,no,
+Неотмеченные упоминания (unlinked),Связи,could,yes,no,
+Обновление ссылок при переименовании,Связи,must,yes,no,
+Быстрый переключатель,Навигация,must,yes,no,
+Полнотекстовый поиск,Поиск,must,yes,no,
+Операторы поиска (tag: path:),Поиск,could,yes,no,
+Теги и вложенные теги,Теги,should,yes,no,
+Граф всех заметок,Граф,must,yes,no,
+Локальный граф,Граф,should,yes,no,
+Фильтры и группы графа,Граф,could,yes,no,
+Ежедневные заметки,Заметки,should,yes,no,
+Вкладки,UI,should,yes,no,
+Палитра команд,UI,could,yes,no,
+Тема светлая/тёмная,UI,could,yes,no,
+Canvas,Расширенное,could,yes,skip,вне объёма
+Плагины сообщества,Расширенное,could,yes,skip,вне объёма
+Obsidian Sync,Облако,could,yes,skip,платный сервис оригинала
+Obsidian Publish,Облако,could,yes,skip,платный сервис оригинала
+Мобильные приложения,Платформы,could,yes,skip,вне объёма: веб
