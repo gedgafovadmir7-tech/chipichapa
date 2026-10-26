@@ -20,13 +20,14 @@ CREATE TABLE folder (
 CREATE INDEX folder_vault_idx  ON folder(vault_id);
 CREATE INDEX folder_parent_idx ON folder(parent_id);
 -- уникальное имя папки внутри родителя (корень = '')
-CREATE UNIQUE INDEX folder_unique_name ON folder(vault_id, COALESCE(parent_id,''), name COLLATE NOCASE);
+CREATE UNIQUE INDEX folder_unique_name ON folder(vault_id, COALESCE(parent_id,''), name);
 
 CREATE TABLE note (
   id         TEXT PRIMARY KEY,
   vault_id   TEXT NOT NULL REFERENCES vault(id) ON DELETE CASCADE,
   folder_id  TEXT REFERENCES folder(id) ON DELETE SET NULL,
   title      TEXT NOT NULL,                 -- имя файла без .md
+  title_key  TEXT NOT NULL,                 -- title в нижнем регистре (считается в коде; NOCASE не знает кириллицу)
   content    TEXT NOT NULL DEFAULT '',
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now')),
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%fZ','now'))
@@ -35,7 +36,7 @@ CREATE INDEX note_vault_idx  ON note(vault_id);
 CREATE INDEX note_folder_idx ON note(folder_id);
 CREATE INDEX note_updated_idx ON note(vault_id, updated_at DESC);
 -- Obsidian находит [[title]] без учёта регистра и без пути: имя уникально в vault
-CREATE UNIQUE INDEX note_unique_title ON note(vault_id, title COLLATE NOCASE);
+CREATE UNIQUE INDEX note_unique_title ON note(vault_id, title_key);
 
 -- Производные данные, пересчитываются парсингом content при сохранении
 CREATE TABLE link (
@@ -49,7 +50,7 @@ CREATE TABLE link (
 );
 CREATE INDEX link_from_idx ON link(from_note_id);
 CREATE INDEX link_to_idx   ON link(to_note_id);
-CREATE INDEX link_target_idx ON link(target_text COLLATE NOCASE);
+CREATE INDEX link_target_idx ON link(target_text);
 
 CREATE TABLE tag (
   note_id TEXT NOT NULL REFERENCES note(id) ON DELETE CASCADE,
