@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Превью на странице</title>
+<style>
+  body { margin: 0; background: #F3F1EE; font-family: Inter, sans-serif; }
+  /* Десктоп: картинка 1440x315 фоном, текст выводит сайт поверх левой части */
+  #desk { position: relative; width: 1440px; height: 315px;
+          background: url(../final/desktop_1440x315.png) left top no-repeat; }
+  #desk .txt { position: absolute; left: 150px; top: 46px; width: 440px; color: #fff; }
+  #desk h1 { margin: 0 0 14px; font-size: 34px; line-height: 1.12; font-weight: 800; letter-spacing: -0.5px; }
+  #desk h1 span { color: #FFC52E; }
+  #desk p { margin: 0 0 22px; font-size: 15px; line-height: 1.45; color: #D7E1EE; }
+  #desk .btn { display: inline-block; background: #FFC52E; color: #14243D; font-weight: 700;
+               font-size: 15px; padding: 12px 22px; border-radius: 999px; }
+  #desk .disc { position: absolute; left: 150px; bottom: 14px; font-size: 10px; color: #7F93AF; }
+  /* Мобильная карточка */
+  #mob { position: absolute; left: 20px; top: 340px; width: 330px; padding: 14px; background: #fff; }
+  #mob .card { position: relative; height: 101px; border-radius: 14px; background: #E9EEF5;
+               overflow: hidden; padding: 12px 14px; box-sizing: border-box; }
+  #mob img { position: absolute; right: 0; top: 0; width: 124px; height: 101px; }
+  #mob .logo { width: 20px; height: 20px; margin-bottom: 8px; }
+  #mob .logo img { position: static; width: 20px; height: 20px; }
+  #mob b { display: block; font-size: 13px; color: #14243D; }
+  #mob i { display: block; font-style: normal; font-size: 11px; color: #3D4A5C; margin-top: 2px; }
+  #mob small { position: absolute; left: 14px; bottom: 8px; font-size: 7px; color: #8B95A3; }
+</style>
+</head>
+<body>
+  <div id="desk">
+    <div class="txt">
+      <h1>Реструктуризация долгов — <span>новый план, а не точка.</span></h1>
+      <p>Снизим ежемесячную нагрузку, остановим рост долга и вернём контроль над финансами.</p>
+      <span class="btn">Получить консультацию →</span>
+    </div>
+    <div class="disc">Реклама. ООО «Банкрот Консалт», ИНН 7704250024</div>
+  </div>
+
+  <div id="mob">
+    <div class="card">
+      <div class="logo"><img src="../final/logo_20x20.svg" alt=""></div>
+      <b>Долги под контролем</b>
+      <i>Снизим платёж и рост долга</i>
+      <img src="../final/mobile_124x101.png" alt="">
+      <small>Реклама. ООО «Банкрот Консалт», ИНН 7704250024</small>
+    </div>
+  </div>
+</body>
+</html>
