@@ -9,7 +9,7 @@ def inl(path, cls, w):
     return s.replace(f'<svg width="{w}"', f'<svg class="{cls}" width="{w}"', 1)
 
 head = '<!doctype html>\n<html lang="ru">\n<head>\n<meta charset="utf-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n'
-link = '<a class="banner" href="%banner.reference_mrc_user1%" target="%banner.target%">'
+link = '<a class="banner" href="https://dolgrest.ru/?utm_source=sravni_baner&amp;utm_medium=restruktur" target="_blank" rel="noopener">'
 
 art = inl('html5/images/desktop.svg', 'art', 1440).replace('<svg class="art" width="1440" height="315"', '<svg class="art" width="1440" height="315" preserveAspectRatio="xMinYMid slice"', 1)
 txt = inl('html5/images/text_desktop.svg', 'txt', 520)
